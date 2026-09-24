@@ -1,0 +1,621 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Kama Hospital Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EEF2F7; --surface:#FFFFFF; --surface-2:#E6ECF4; --ink:#0D1B2E; --ink-2:#4B5B72; --ink-3:#7A889C; --line:#D6DFEA;
+  --accent:#1A47B8; --accent-2:#E3EAFA; --accent-ink:#FFFFFF; --star:#F2B300;
+  --livre:#15885A; --livre-t:#DAF2E6;
+  --ocupada:#1A47B8; --ocupada-t:#E1E8F8;
+  --alta:#D24A12; --alta-t:#FCE5D8;
+  --limpeza:#A86F12; --limpeza-t:#F8EDD3;
+  --reservada:#6B46D9; --reservada-t:#ECE5FD;
+  --bloqueada:#66738A; --bloqueada-t:#E4E8EE;
+  --t-vermelho:#D62828; --t-laranja:#EE7A00; --t-amarelo:#D9A600; --t-verde:#2A9D6F;
+  --shadow:0 1px 2px rgba(13,27,46,.06),0 8px 24px rgba(13,27,46,.06);
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0A111D; --surface:#101A2A; --surface-2:#17233A; --ink:#E6EDF7; --ink-2:#A2B2C8; --ink-3:#6F8199; --line:#22314A;
+    --accent:#7098FF; --accent-2:#1A2848; --accent-ink:#0A111D; --star:#FFC933;
+    --livre:#3ECF8E; --livre-t:#10301F; --ocupada:#7098FF; --ocupada-t:#172646;
+    --alta:#FF8352; --alta-t:#3A1E12; --limpeza:#E4AE4A; --limpeza-t:#35280E;
+    --reservada:#A98BFF; --reservada-t:#261D46; --bloqueada:#8C99AD; --bloqueada-t:#1E2838;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0A111D; --surface:#101A2A; --surface-2:#17233A; --ink:#E6EDF7; --ink-2:#A2B2C8; --ink-3:#6F8199; --line:#22314A;
+  --accent:#7098FF; --accent-2:#1A2848; --accent-ink:#0A111D; --star:#FFC933;
+  --livre:#3ECF8E; --livre-t:#10301F; --ocupada:#7098FF; --ocupada-t:#172646;
+  --alta:#FF8352; --alta-t:#3A1E12; --limpeza:#E4AE4A; --limpeza-t:#35280E;
+  --reservada:#A98BFF; --reservada-t:#261D46; --bloqueada:#8C99AD; --bloqueada-t:#1E2838;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono)}
+
+/* Shell */
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100%}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px}
+.brand svg{flex:none}
+.brand b{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;line-height:1;display:block}
+.brand small{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-top:3px;font-weight:600}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:10px;background:none;border:0;padding:9px 10px;border-radius:9px;text-align:left;color:var(--ink-2);font-weight:600}
+.nav button:hover{background:var(--surface-2);color:var(--ink)}
+.nav button[aria-current="page"]{background:var(--accent-2);color:var(--accent)}
+.nav svg{width:18px;height:18px;flex:none}
+.nav .count{margin-left:auto;font-size:11px;font-family:var(--mono);background:var(--alta);color:#fff;border-radius:999px;padding:1px 7px}
+.side-foot{margin-top:auto;font-size:12px;color:var(--ink-3);padding:0 6px;display:grid;gap:8px}
+.demo-tag{display:inline-block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--limpeza);background:var(--limpeza-t);border-radius:5px;padding:3px 7px;width:max-content}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 28px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.top h1{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.015em;margin:0;text-wrap:balance}
+.top .sub{color:var(--ink-3);font-size:12.5px}
+.top-right{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+select.hsel{background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:8px 30px 8px 11px;font-weight:600;max-width:100%}
+.clock{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);background:var(--surface-2);padding:8px 10px;border-radius:9px}
+.mnav{display:none}
+
+.content{padding:24px 28px 48px;display:grid;gap:22px;max-width:1400px;width:100%}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:4px}
+.kpi .lab{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.kpi .val{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:-.02em;line-height:1.1}
+.kpi .val small{font-size:15px;color:var(--ink-3);font-weight:600}
+.kpi .hint{font-size:12px;color:var(--ink-2)}
+.kpi.hero{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.kpi.hero .lab,.kpi.hero .hint,.kpi.hero .val small{color:inherit;opacity:.8}
+.meter{height:6px;border-radius:99px;background:rgba(255,255,255,.25);overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;background:var(--star);border-radius:99px}
+
+/* Toolbar */
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-weight:600;font-size:12.5px;color:var(--ink-2)}
+.chip:hover{border-color:var(--ink-3)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dot{width:9px;height:9px;border-radius:3px;flex:none}
+.bar .search{margin-left:auto;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px;min-width:0;width:230px;max-width:100%}
+
+/* Wards */
+.wards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:16px}
+.ward{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:12px;align-content:start}
+.ward-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ward-h h3{margin:0;font-family:var(--display);font-size:17px;font-weight:700;letter-spacing:-.01em}
+.ward-h .loc{font-size:12px;color:var(--ink-3)}
+.ward-h .occ{margin-left:auto;font-family:var(--mono);font-size:12.5px;font-weight:600}
+.occbar{display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--surface-2)}
+.occbar i{display:block;height:100%}
+.beds{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:7px}
+.bed{position:relative;border:0;border-radius:10px;padding:7px 7px 6px;text-align:left;display:grid;gap:2px;min-height:58px;transition:transform .12s ease,box-shadow .12s ease}
+.bed:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.bed .n{font-family:var(--mono);font-size:11.5px;font-weight:600}
+.bed .p{font-size:11px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.9}
+.bed svg{width:16px;height:16px;position:absolute;right:6px;top:6px;opacity:.75}
+.bed.s-livre{background:var(--livre-t);color:var(--livre);outline:1.5px dashed var(--livre);outline-offset:-1.5px}
+.bed.s-ocupada{background:var(--ocupada-t);color:var(--ocupada)}
+.bed.s-alta{background:var(--alta-t);color:var(--alta)}
+.bed.s-limpeza{background:var(--limpeza-t);color:var(--limpeza)}
+.bed.s-reservada{background:var(--reservada-t);color:var(--reservada)}
+.bed.s-bloqueada{background:var(--bloqueada-t);color:var(--bloqueada);background-image:repeating-linear-gradient(135deg,transparent 0 6px,rgba(127,140,160,.18) 6px 8px)}
+.bed.dim{opacity:.22}
+.bed.flash{animation:flash 1.2s ease}
+@keyframes flash{0%{box-shadow:0 0 0 0 var(--accent)}40%{box-shadow:0 0 0 5px var(--accent)}100%{box-shadow:0 0 0 0 transparent}}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+/* Split layout */
+.split{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.panel-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel-h h2{margin:0;font-family:var(--display);font-size:17px;font-weight:700}
+.panel-h .meta{color:var(--ink-3);font-size:12.5px}
+.panel-h .act{margin-left:auto}
+.list{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:6px 1fr auto;gap:14px;padding:13px 16px 13px 0;border-bottom:1px solid var(--line);align-items:center}
+.row:last-child{border-bottom:0}
+.stripe{align-self:stretch;border-radius:0 4px 4px 0}
+.row .who{display:grid;gap:3px;min-width:0}
+.row .who b{font-weight:700;font-size:14.5px}
+.row .who .m{font-size:12.5px;color:var(--ink-2);display:flex;gap:6px 12px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:2px 7px}
+.wait{font-family:var(--mono);font-size:12px}
+.wait.late{color:var(--alta);font-weight:600}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 13px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.warn{background:var(--alta);border-color:var(--alta);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn.sm{padding:6px 10px;font-size:12px}
+
+/* Discharge cards */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:10px;align-content:start}
+.dcard .hd{display:flex;gap:10px;align-items:flex-start}
+.dcard .hd b{display:block;font-size:14.5px}
+.dcard .hd .m{font-size:12px;color:var(--ink-2)}
+.bedtag{font-family:var(--mono);font-weight:600;font-size:12px;border-radius:7px;padding:4px 7px;background:var(--alta-t);color:var(--alta);flex:none;margin-left:auto}
+.checks{display:grid;gap:4px}
+.check{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:8px;background:var(--surface-2);font-size:13px;cursor:pointer;border:0;text-align:left;width:100%}
+.check .box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--ink-3);display:grid;place-items:center;flex:none}
+.check.on .box{background:var(--livre);border-color:var(--livre)}
+.check.on{color:var(--ink-2)}
+.check.on span.t{text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.prog{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-2)}
+.prog .track{flex:1;height:5px;border-radius:9px;background:var(--surface-2);overflow:hidden}
+.prog .track i{display:block;height:100%;background:var(--livre)}
+
+/* Reports */
+.rgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:12px;align-content:start}
+.card h2{margin:0;font-family:var(--display);font-size:17px;font-weight:700}
+.card .meta{color:var(--ink-3);font-size:12.5px;margin-top:-8px}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--ink-3);font-family:var(--mono);font-size:10.5px}
+.hbar{display:grid;grid-template-columns:130px 1fr 48px;gap:10px;align-items:center;font-size:13px}
+.hbar .tr{height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden;position:relative}
+.hbar .tr i{display:block;height:100%;border-radius:99px}
+.hbar .tr .mk{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-3)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+td.r,th.r{text-align:right}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(8,15,28,.42);z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--surface);z-index:21;transform:translateX(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;border-left:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.open{transform:none}
+.dr-h{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.dr-h h2{margin:0;font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.01em}
+.dr-h .x{margin-left:auto;background:var(--surface-2);border:0;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;flex:none}
+.dr-b{padding:18px 20px;overflow:auto;display:grid;gap:16px;align-content:start;flex:1}
+.dr-f{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+dl.kv{display:grid;grid-template-columns:120px 1fr;gap:8px 12px;margin:0;font-size:13.5px}
+dl.kv dt{color:var(--ink-3)}
+dl.kv dd{margin:0;font-weight:600}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.pick button{border:1.5px dashed var(--livre);background:var(--livre-t);color:var(--livre);border-radius:10px;padding:10px 8px;font-family:var(--mono);font-weight:600;font-size:12.5px;text-align:left}
+.pick button:hover{border-style:solid}
+.pick button small{display:block;font-family:var(--body);font-weight:500;font-size:11px;opacity:.8}
+.field{display:grid;gap:5px}
+.field label{font-size:12px;font-weight:700;color:var(--ink-2)}
+.field input,.field select{background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%}
+.note{font-size:12.5px;color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:10px 12px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:11px;font-weight:600;font-size:13.5px;opacity:0;transition:all .25s;z-index:30;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.empty{padding:28px 16px;text-align:center;color:var(--ink-3)}
+
+@media (max-width:1180px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.split{grid-template-columns:1fr}.rgrid{grid-template-columns:1fr}}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{display:none}
+  .top{padding:12px 16px;gap:10px}
+  .top h1{font-size:19px}
+  .mnav{display:flex;gap:6px;overflow-x:auto;width:100%;padding-bottom:2px}
+  .mnav button{flex:none;border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:6px 12px;font-weight:600;font-size:12.5px;color:var(--ink-2)}
+  .mnav button[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .mbrand{display:flex!important}
+  .content{padding:16px 16px 40px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi.hero{grid-column:1/-1}
+  .bar .search{margin-left:0;width:100%}
+  .hbar{grid-template-columns:96px 1fr 42px}
+  .clock{display:none}
+  .top-right{margin-left:0;width:100%}
+  select.hsel{width:100%}
+}
+.mbrand{display:none;align-items:center;gap:8px}
+.mbrand b{font-family:var(--display);font-weight:800;font-size:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 40 40">
+      <rect width="40" height="40" rx="11" fill="#1A47B8"/>
+      <path d="M8 29V12" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M8 23h24v6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="11.5" y="17.5" width="7" height="4" rx="2" fill="#fff"/>
+      <path d="M20 21.5v-4h9.5a2.5 2.5 0 0 1 2.5 2.5v1.5z" fill="#fff" opacity=".55"/>
+      <path d="M28.5 6.2l1.25 2.55 2.8.4-2.03 1.98.48 2.8-2.5-1.32-2.5 1.32.48-2.8-2.03-1.98 2.8-.4z" fill="#F2B300"/>
+    </symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18V7M3 14h18v4M7 11h4M21 14v-2a2 2 0 0 0-2-2h-6v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-in" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-broom" viewBox="0 0 24 24"><path d="M19 3l-7 7M9 11l4 4M4 20c1-4 3-7 5-9l4 4c-2 2-5 4-9 5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="M10.5 13.5L3 11l1.5-1.5 8 1 4-4c1-1 2.5-1.5 3.5-.5s.5 2.5-.5 3.5l-4 4 1 8L15 23l-2.5-7.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <svg width="40" height="40"><use href="#logo"/></svg>
+      <div><b>Kama</b><small>Hospital Services</small></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <span class="demo-tag">Demonstração</span>
+      <span>Dados fictícios para apresentação. Nenhum doente real.</span>
+      <span>Kama = “cama” em kriolu.</span>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="mbrand"><svg width="30" height="30"><use href="#logo"/></svg><b>Kama</b></div>
+      <div>
+        <h1 id="vtitle">Mapa de camas</h1>
+        <div class="sub" id="vsub"></div>
+      </div>
+      <div class="top-right">
+        <select class="hsel" id="hsel" aria-label="Hospital"></select>
+        <span class="clock num" id="clock"></span>
+      </div>
+      <div class="mnav" id="mnav"></div>
+    </header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+const HOSPITALS = [
+  {id:"HAN", name:"Hospital Dr. Agostinho Neto", short:"HAN · Praia", island:"Santiago", seed:7, scale:1},
+  {id:"HBS", name:"Hospital Dr. Baptista de Sousa", short:"HBS · Mindelo", island:"São Vicente", seed:19, scale:.8},
+  {id:"HRSN", name:"Hospital Regional Santiago Norte", short:"HRSN · Santa Catarina", island:"Santiago", seed:33, scale:.5}
+];
+const SERVICES = [
+  {id:"MED", name:"Medicina Interna", loc:"Pavilhão A · Piso 1", n:24, dx:["Pneumonia adquirida na comunidade","Descompensação diabética","Insuficiência cardíaca","AVC isquémico","Hipertensão descontrolada","Anemia grave","Insuficiência renal aguda"]},
+  {id:"CIR", name:"Cirurgia Geral", loc:"Pavilhão B · Piso 2", n:20, dx:["Apendicectomia","Colecistectomia","Hérnia inguinal","Oclusão intestinal","Politraumatismo","Abcesso perianal"]},
+  {id:"PED", name:"Pediatria", loc:"Pavilhão C · Piso 1", n:16, dx:["Bronquiolite","Gastroenterite com desidratação","Paludismo importado","Crise asmática","Pneumonia","Febre em estudo"]},
+  {id:"MAT", name:"Maternidade", loc:"Pavilhão D", n:18, dx:["Pós-parto eutócico","Pós-cesariana","Pré-eclâmpsia","Ameaça de parto pré-termo","Vigilância gravidez de risco"]},
+  {id:"ORT", name:"Ortopedia", loc:"Pavilhão B · Piso 1", n:12, dx:["Fratura do fémur","Fratura do rádio distal","Fratura da tíbia","Lombalgia aguda","Artroplastia da anca"]},
+  {id:"PSI", name:"Psiquiatria", loc:"Pavilhão E", n:10, dx:["Episódio psicótico","Depressão major","Síndrome de abstinência alcoólica","Perturbação bipolar"]}
+];
+const FIRST_F=["Maria da Luz","Antónia","Djamila","Carla","Sónia","Eunice","Ivanilda","Mariza","Odete","Crispina","Joana","Elisângela","Nádia","Adelina","Filomena","Zenaida","Rosa","Arlinda"];
+const FIRST_M=["José","João","Manuel","Edson","Nilton","Adilson","Elton","Arlindo","Domingos","Kevin","Hélder","Júlio","Francisco","Aristides","Vladimir","Admilson","Carlos","Evandro"];
+const LAST=["Tavares","Semedo","Furtado","Varela","Monteiro","Fernandes","Gomes","Lopes","Rodrigues","Mendes","Correia","Moreira","Borges","Andrade","Silva","Brito","Delgado","Fortes","Évora","Lima","Pina","Barbosa","Cabral","Spencer"];
+const DOCTORS=["Dra. Lígia Fortes","Dr. Arlindo Pina","Dra. Nelsa Andrade","Dr. Hélio Rocha","Dra. Sandra Cabral","Dr. Jailson Brito"];
+const ORIGINS=[
+  {t:"Urgência HAN",ev:false},{t:"Centro de Saúde Achada Santo António",ev:false},{t:"Centro de Saúde Fazenda",ev:false},
+  {t:"Evacuação · Fogo (Hosp. Regional São Filipe)",ev:true},{t:"Evacuação · Maio (Delegacia de Saúde)",ev:true},
+  {t:"Evacuação · Sal (Hosp. Regional Ramiro Figueira)",ev:true},{t:"Consulta externa",ev:false},{t:"Bloco operatório (programada)",ev:false}
+];
+const TRIAGE={vermelho:{l:"Emergente",c:"var(--t-vermelho)",max:0},laranja:{l:"Muito urgente",c:"var(--t-laranja)",max:10},amarelo:{l:"Urgente",c:"var(--t-amarelo)",max:60},verde:{l:"Pouco urgente",c:"var(--t-verde)",max:120}};
+const STATES={
+  livre:{l:"Livre",c:"var(--livre)",t:"var(--livre-t)"},
+  ocupada:{l:"Ocupada",c:"var(--ocupada)",t:"var(--ocupada-t)"},
+  alta:{l:"Alta prevista hoje",c:"var(--alta)",t:"var(--alta-t)"},
+  limpeza:{l:"Em higienização",c:"var(--limpeza)",t:"var(--limpeza-t)"},
+  reservada:{l:"Reservada",c:"var(--reservada)",t:"var(--reservada-t)"},
+  bloqueada:{l:"Bloqueada",c:"var(--bloqueada)",t:"var(--bloqueada-t)"}
+};
+const CHECKS=[["nota","Nota de alta assinada"],["med","Receita e medicação explicadas"],["fam","Família / transporte contactados"],["cons","Consulta de seguimento marcada"]];
+
+let S={};
+let rnd;
+function seeded(s){return function(){s=(s*9301+49297)%233280;return s/233280}}
+const pick=a=>a[Math.floor(rnd()*a.length)];
+const ri=(a,b)=>a+Math.floor(rnd()*(b-a+1));
+function person(){const f=rnd()<.52;return {name:(f?pick(FIRST_F):pick(FIRST_M))+" "+pick(LAST)+" "+pick(LAST),sex:f?"F":"M"}}
+function proc(){return String(ri(210000,289999))+"/"+ri(24,26)}
+
+function build(h){
+  rnd=seeded(h.seed);
+  const beds=[];
+  SERVICES.forEach(sv=>{
+    const n=Math.max(6,Math.round(sv.n*h.scale));
+    for(let i=1;i<=n;i++){
+      const r=rnd();
+      let st = r<.08?"livre":r<.13?"limpeza":r<.16?"reservada":r<.18?"bloqueada":"ocupada";
+      const b={id:sv.id+"-"+String(i).padStart(2,"0"),svc:sv.id,state:st,pt:null};
+      if(st==="ocupada"){
+        const p=person();
+        let age = sv.id==="PED"?ri(0,14):sv.id==="MAT"?ri(18,41):ri(19,88);
+        if(sv.id==="MAT") p.sex="F";
+        b.pt={...p,age,proc:proc(),dx:pick(sv.dx),doc:pick(DOCTORS),days:ri(0,14),origin:pick(ORIGINS).t,checks:{}};
+        if(rnd()<.11){b.state="alta";CHECKS.forEach(([k])=>b.pt.checks[k]=rnd()<.5)}
+      }
+      if(st==="reservada") b.note="Reservada para admissão programada";
+      if(st==="bloqueada") b.note=pick(["Avaria da cama articulada","Isolamento de contacto","Manutenção da rampa de oxigénio"]);
+      beds.push(b);
+    }
+  });
+  const queue=[];
+  const tri=["vermelho","laranja","laranja","amarelo","amarelo","amarelo","verde","verde"];
+  const nq=Math.round(9*h.scale)+2;
+  for(let i=0;i<nq;i++){
+    const sv=pick(SERVICES), p=person(), o=pick(ORIGINS);
+    if(sv.id==="MAT")p.sex="F";
+    queue.push({id:"Q"+i,...p,age:sv.id==="PED"?ri(0,14):sv.id==="MAT"?ri(18,40):ri(20,85),svc:sv.id,dx:pick(sv.dx),origin:o.t,ev:o.ev,triage:pick(tri),wait:0,proc:proc()});const qq=queue[queue.length-1];qq.wait=qq.triage==="vermelho"?ri(8,45):qq.triage==="laranja"?ri(25,190):ri(40,540);
+  }
+  queue.sort((a,b)=>order(a)-order(b));
+  const hist=[];let v=.86;
+  for(let d=13;d>=0;d--){v=Math.min(.99,Math.max(.78,v+(rnd()-.42)*.05));hist.push(v)}
+  return {beds,queue,hist,discharged:ri(4,9),admitted:ri(5,11)};
+}
+function order(q){return ({vermelho:0,laranja:1,amarelo:2,verde:3})[q.triage]*10000-q.wait}
+
+const state={h:HOSPITALS[0],view:"mapa",filter:"todos",q:"",data:null,drawer:null};
+function load(h){state.h=h;state.data=build(h);}
+
+const $=s=>document.querySelector(s);
+const svc=id=>SERVICES.find(s=>s.id===id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtWait=m=>m<60?m+" min":Math.floor(m/60)+"h"+String(m%60).padStart(2,"0");
+const icon=(id,w=18)=>`<svg width="${w}" height="${w}" aria-hidden="true"><use href="#${id}"/></svg>`;
+
+function stats(){
+  const b=state.data.beds, total=b.filter(x=>x.state!=="bloqueada").length;
+  const occ=b.filter(x=>x.state==="ocupada"||x.state==="alta").length;
+  return {total,all:b.length,occ,livre:b.filter(x=>x.state==="livre").length,alta:b.filter(x=>x.state==="alta").length,limp:b.filter(x=>x.state==="limpeza").length,res:b.filter(x=>x.state==="reservada").length,queue:state.data.queue.length,pct:occ/total};
+}
+
+const VIEWS=[
+  {id:"mapa",l:"Mapa de camas",ic:"i-bed",sub:()=>"Estado de cada cama em tempo real, por serviço"},
+  {id:"admissoes",l:"Pedidos de internamento",ic:"i-in",sub:()=>"Doentes à espera de cama, ordenados por prioridade de triagem"},
+  {id:"altas",l:"Altas do dia",ic:"i-out",sub:()=>"Preparar a saída a tempo liberta camas para quem espera"},
+  {id:"relatorios",l:"Indicadores",ic:"i-chart",sub:()=>"Ocupação, rotação e demora média de internamento"}
+];
+
+function renderNav(){
+  const s=stats();
+  const badge=v=>v.id==="admissoes"&&s.queue?`<span class="count">${s.queue}</span>`:v.id==="altas"&&s.alta?`<span class="count" style="background:var(--ink-2)">${s.alta}</span>`:"";
+  $("#nav").innerHTML=VIEWS.map(v=>`<button data-view="${v.id}" ${state.view===v.id?'aria-current="page"':""}>${icon(v.ic)}<span>${v.l}</span>${badge(v)}</button>`).join("");
+  $("#mnav").innerHTML=VIEWS.map(v=>`<button data-view="${v.id}" ${state.view===v.id?'aria-current="page"':""}>${v.l}${v.id==="admissoes"&&s.queue?" · "+s.queue:""}</button>`).join("");
+  const v=VIEWS.find(x=>x.id===state.view);
+  $("#vtitle").textContent=v.l;
+  $("#vsub").textContent=state.h.name+" · "+v.sub();
+}
+
+function kpis(){
+  const s=stats();
+  return `<section class="kpis">
+    <div class="kpi hero"><span class="lab">Taxa de ocupação</span><span class="val num">${Math.round(s.pct*100)}<small>%</small></span><div class="meter"><i style="width:${Math.round(s.pct*100)}%"></i></div><span class="hint num">${s.occ} de ${s.total} camas operacionais</span></div>
+    <div class="kpi"><span class="lab" style="color:var(--livre)">Camas livres</span><span class="val num">${s.livre}</span><span class="hint">+ ${s.limp} em higienização</span></div>
+    <div class="kpi"><span class="lab" style="color:var(--t-vermelho)">À espera de cama</span><span class="val num">${s.queue}</span><span class="hint">${state.data.queue.filter(q=>q.ev).length} evacuações inter-ilhas</span></div>
+    <div class="kpi"><span class="lab" style="color:var(--alta)">Altas previstas hoje</span><span class="val num">${s.alta}</span><span class="hint">${state.data.discharged} altas já concluídas</span></div>
+    <div class="kpi"><span class="lab">Entradas hoje</span><span class="val num">${state.data.admitted}</span><span class="hint">${s.res} camas reservadas</span></div>
+  </section>`;
+}
+
+function viewMapa(){
+  const counts={};state.data.beds.forEach(b=>counts[b.state]=(counts[b.state]||0)+1);
+  const chips=[["todos","Todas",null]].concat(Object.entries(STATES).map(([k,v])=>[k,v.l,v.c]));
+  const q=state.q.trim().toLowerCase();
+  const match=b=>(state.filter==="todos"||b.state===state.filter)&&(!q||b.id.toLowerCase().includes(q)||(b.pt&&b.pt.name.toLowerCase().includes(q)));
+  const wards=SERVICES.map(sv=>{
+    const bs=state.data.beds.filter(b=>b.svc===sv.id);
+    const op=bs.filter(b=>b.state!=="bloqueada").length;
+    const oc=bs.filter(b=>b.state==="ocupada"||b.state==="alta").length;
+    const seg=Object.keys(STATES).map(k=>{const n=bs.filter(b=>b.state===k).length;return n?`<i style="width:${n/bs.length*100}%;background:${STATES[k].c}" title="${STATES[k].l}: ${n}"></i>`:""}).join("");
+    return `<article class="ward">
+      <div class="ward-h"><h3>${sv.name}</h3><span class="loc">${sv.loc}</span><span class="occ num" style="color:${oc/op>.92?"var(--alta)":"var(--ink-2)"}">${oc}/${op} · ${Math.round(oc/op*100)}%</span></div>
+      <div class="occbar">${seg}</div>
+      <div class="beds">${bs.map(b=>bedBtn(b,match(b))).join("")}</div>
+    </article>`;
+  }).join("");
+  return kpis()+`
+  <div class="bar" role="toolbar" aria-label="Filtrar camas">
+    ${chips.map(([k,l,c])=>`<button class="chip" data-filter="${k}" aria-pressed="${state.filter===k}">${c?`<span class="dot" style="background:${c}"></span>`:""}${l}${k!=="todos"?` <span class="num" style="opacity:.6">${counts[k]||0}</span>`:""}</button>`).join("")}
+    <input class="search" id="search" type="search" placeholder="Procurar cama ou doente…" value="${esc(state.q)}" aria-label="Procurar">
+  </div>
+  <section class="wards">${wards}</section>`;
+}
+function bedBtn(b,on){
+  const lab = b.pt? b.pt.name.split(" ")[0]+" "+b.pt.name.split(" ").slice(-1)[0] : STATES[b.state].l;
+  const ic = b.state==="limpeza"?icon("i-broom",16):b.state==="bloqueada"?icon("i-lock",16):b.state==="alta"?icon("i-out",16):b.state==="reservada"?icon("i-clock",16):"";
+  return `<button class="bed s-${b.state} ${on?"":"dim"}" data-bed="${b.id}" id="bed-${b.id}" title="${esc(b.id+" · "+STATES[b.state].l+(b.pt?" · "+b.pt.name:""))}"><span class="n">${b.id.split("-")[1]}</span><span class="p">${esc(lab)}</span>${ic}</button>`;
+}
+
+function viewAdmissoes(){
+  const s=stats(), Q=state.data.queue;
+  const free=SERVICES.map(sv=>({sv,n:state.data.beds.filter(b=>b.svc===sv.id&&b.state==="livre").length,need:Q.filter(q=>q.svc===sv.id).length}));
+  const rows=Q.length?Q.map(q=>{const t=TRIAGE[q.triage];const late=q.wait>t.max&&t.max>0||q.triage==="vermelho";
+    return `<div class="row"><span class="stripe" style="background:${t.c}"></span>
+      <div class="who"><b>${esc(q.name)} <span style="font-weight:500;color:var(--ink-3);font-size:12.5px">${q.sex} · ${q.age} anos</span></b>
+      <div class="m"><span class="tag" style="background:${t.c};color:#fff">${t.l}</span><span>${svc(q.svc).name}</span><span>${esc(q.dx)}</span></div>
+      <div class="m"><span>${q.ev?icon("i-plane",13)+" ":""}${esc(q.origin)}</span><span class="mono">Proc. ${q.proc}</span></div></div>
+      <div style="display:grid;gap:6px;justify-items:end"><span class="wait num ${late?"late":""}">${icon("i-clock",12)} ${fmtWait(q.wait)}</span><button class="btn primary sm" data-assign="${q.id}">Atribuir cama</button></div>
+    </div>`}).join(""):`<div class="empty">Nenhum doente à espera. Todas as admissões têm cama.</div>`;
+  return kpis()+`<div class="split">
+    <section class="panel"><div class="panel-h"><h2>Fila de internamento</h2><span class="meta">${Q.length} doentes · Triagem de Manchester</span><button class="btn sm act" data-new>+ Novo pedido</button></div><div class="list">${rows}</div></section>
+    <section class="panel"><div class="panel-h"><h2>Capacidade por serviço</h2></div>
+      <div style="padding:14px 16px;display:grid;gap:12px">
+      ${free.map(f=>`<div style="display:flex;align-items:center;gap:10px"><span style="flex:1;font-weight:600">${f.sv.name}</span><span class="tag" style="background:var(--livre-t);color:var(--livre)">${f.n} livres</span><span class="tag" style="background:${f.need>f.n?"var(--alta-t)":"var(--surface-2)"};color:${f.need>f.n?"var(--alta)":"var(--ink-2)"}">${f.need} em espera</span></div>`).join("")}
+      <p class="note" style="margin:4px 0 0">Quando um serviço não tem cama livre, o Kama sugere camas de serviços afins e as altas previstas para as próximas horas.</p>
+      </div></section>
+  </div>`;
+}
+
+function viewAltas(){
+  const list=state.data.beds.filter(b=>b.state==="alta");
+  const cands=state.data.beds.filter(b=>b.state==="ocupada"&&b.pt.days>=6).slice(0,6);
+  const card=b=>{const done=CHECKS.filter(([k])=>b.pt.checks[k]).length;const all=done===CHECKS.length;
+    return `<article class="dcard"><div class="hd"><div><b>${esc(b.pt.name)}</b><span class="m">${b.pt.sex} · ${b.pt.age} anos · ${svc(b.svc).name}</span><br><span class="m">${esc(b.pt.dx)} · ${b.pt.days} dias internado</span></div><span class="bedtag">${b.id}</span></div>
+    <div class="checks">${CHECKS.map(([k,l])=>`<button class="check ${b.pt.checks[k]?"on":""}" data-check="${b.id}|${k}" aria-pressed="${!!b.pt.checks[k]}"><span class="box">${b.pt.checks[k]?icon("i-ok",12):""}</span><span class="t">${l}</span></button>`).join("")}</div>
+    <div class="prog"><div class="track"><i style="width:${done/CHECKS.length*100}%"></i></div><span class="num">${done}/${CHECKS.length}</span></div>
+    <button class="btn ${all?"warn":""}" data-discharge="${b.id}" ${all?"":"disabled"}>${icon("i-out",16)} Confirmar alta e libertar cama</button></article>`};
+  return kpis()+`
+  <section style="display:grid;gap:12px"><div class="bar"><h2 style="margin:0;font-family:var(--display);font-size:18px">Altas previstas hoje</h2><span class="meta" style="color:var(--ink-3)">Complete a lista para confirmar a saída. A cama passa para higienização.</span></div>
+  ${list.length?`<div class="dgrid">${list.map(card).join("")}</div>`:`<div class="panel empty">Sem altas pendentes para hoje.</div>`}</section>
+  <section class="panel"><div class="panel-h"><h2>Candidatos a alta</h2><span class="meta">Internamentos com 6 ou mais dias. Reavaliar na visita médica.</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Cama</th><th>Doente</th><th>Serviço</th><th>Diagnóstico</th><th class="r">Dias</th><th>Médico</th><th></th></tr></thead><tbody>
+  ${cands.map(b=>`<tr><td class="mono">${b.id}</td><td>${esc(b.pt.name)}</td><td>${svc(b.svc).name}</td><td>${esc(b.pt.dx)}</td><td class="r num">${b.pt.days}</td><td>${b.pt.doc}</td><td><button class="btn sm" data-plan="${b.id}">Prever alta hoje</button></td></tr>`).join("")||`<tr><td colspan="7" class="empty">Sem candidatos.</td></tr>`}
+  </tbody></table></div></section>`;
+}
+
+function viewRel(){
+  const H=state.data.hist, W=640,Hh=220,pl=38,pr=14,pt=14,pb=28;
+  const x=i=>pl+i*(W-pl-pr)/(H.length-1), y=v=>pt+(1-(v-.7)/.3)*(Hh-pt-pb);
+  const line=H.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(v).toFixed(1)).join(" ");
+  const area=line+` L${x(H.length-1)} ${y(.7)} L${x(0)} ${y(.7)} Z`;
+  const ticks=[.7,.8,.9,1];
+  const days=H.map((_,i)=>{const d=new Date();d.setDate(d.getDate()-(H.length-1-i));return d.getDate()+"/"+(d.getMonth()+1)});
+  const bySvc=SERVICES.map(sv=>{const bs=state.data.beds.filter(b=>b.svc===sv.id);const op=bs.filter(b=>b.state!=="bloqueada").length;const oc=bs.filter(b=>b.pt).length;const d=bs.filter(b=>b.pt).map(b=>b.pt.days);return {sv,p:oc/op,dm:d.length?(d.reduce((a,b)=>a+b,0)/d.length):0,oc,op}});
+  const col=p=>p>.92?"var(--alta)":p>.85?"var(--limpeza)":"var(--livre)";
+  return `<div class="rgrid">
+   <section class="card"><h2>Ocupação nos últimos 14 dias</h2><div class="meta">Linha tracejada: meta de 85%, acima da qual o risco de falta de camas aumenta.</div>
+   <svg class="chart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Taxa de ocupação diária">
+     <defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".28"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+     ${ticks.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${y(t)+3.5}" text-anchor="end">${t*100}%</text>`).join("")}
+     <line x1="${pl}" x2="${W-pr}" y1="${y(.85)}" y2="${y(.85)}" stroke="var(--alta)" stroke-dasharray="4 4" stroke-width="1.5"/>
+     <text x="${W-pr}" y="${y(.85)-6}" text-anchor="end" style="fill:var(--alta)">meta 85%</text>
+     <path d="${area}" fill="url(#ga)"/>
+     <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>
+     ${H.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===H.length-1?5:2.5}" fill="${i===H.length-1?"var(--accent)":"var(--surface)"}" stroke="var(--accent)" stroke-width="2"><title>${days[i]}: ${Math.round(v*100)}%</title></circle>`).join("")}
+     <text x="${x(H.length-1)-8}" y="${y(H[H.length-1])-10}" text-anchor="end" style="fill:var(--ink);font-weight:600">${Math.round(H[H.length-1]*100)}%</text>
+     ${days.map((d,i)=>i%2===0||i===H.length-1?`<text x="${x(i)}" y="${Hh-8}" text-anchor="middle">${d}</text>`:"").join("")}
+   </svg></section>
+   <section class="card"><h2>Ocupação por serviço</h2><div class="meta">Agora · marca vertical em 85%</div>
+   ${bySvc.map(r=>`<div class="hbar"><span>${r.sv.name}</span><span class="tr"><i style="width:${Math.min(100,r.p*100)}%;background:${col(r.p)}"></i><span class="mk" style="left:85%"></span></span><span class="num mono" style="text-align:right">${Math.round(r.p*100)}%</span></div>`).join("")}
+   </section>
+  </div>
+  <section class="panel"><div class="panel-h"><h2>Indicadores por serviço</h2><span class="meta">Demora média calculada sobre os doentes internados agora</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Serviço</th><th class="r">Camas operacionais</th><th class="r">Ocupadas</th><th class="r">Ocupação</th><th class="r">Demora média</th><th class="r">Em espera</th></tr></thead><tbody>
+  ${bySvc.map(r=>`<tr><td>${r.sv.name}</td><td class="r num">${r.op}</td><td class="r num">${r.oc}</td><td class="r num" style="color:${col(r.p)};font-weight:700">${Math.round(r.p*100)}%</td><td class="r num">${r.dm.toFixed(1)} dias</td><td class="r num">${state.data.queue.filter(q=>q.svc===r.sv.id).length}</td></tr>`).join("")}
+  </tbody></table></div></section>`;
+}
+
+function render(){
+  renderNav();
+  const v={mapa:viewMapa,admissoes:viewAdmissoes,altas:viewAltas,relatorios:viewRel}[state.view];
+  $("#view").innerHTML=v();
+  const se=$("#search");
+  if(se){se.addEventListener("input",e=>{state.q=e.target.value;const pos=e.target.selectionStart;render();const n=$("#search");n.focus();n.setSelectionRange(pos,pos)})}
+}
+
+/* Drawer */
+function openDrawer(html){$("#drawer").innerHTML=html;$("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#scrim").classList.add("open");const x=$("#drawer .x");x&&x.focus()}
+function closeDrawer(){$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#scrim").classList.remove("open");state.drawer=null}
+const head=(t,sub,color)=>`<div class="dr-h"><div><div class="tag" style="background:${color||"var(--surface-2)"};color:#fff;margin-bottom:6px">${sub}</div><h2>${t}</h2></div><button class="x" data-close aria-label="Fechar">${icon("i-x",16)}</button></div>`;
+
+function bedDrawer(id){
+  const b=state.data.beds.find(x=>x.id===id), sv=svc(b.svc), st=STATES[b.state];
+  let body="",foot="";
+  if(b.pt){
+    body=`<dl class="kv"><dt>Doente</dt><dd>${esc(b.pt.name)}</dd><dt>Sexo · idade</dt><dd>${b.pt.sex} · ${b.pt.age} anos</dd><dt>Nº processo</dt><dd class="mono">${b.pt.proc}</dd><dt>Diagnóstico</dt><dd>${esc(b.pt.dx)}</dd><dt>Médico</dt><dd>${b.pt.doc}</dd><dt>Proveniência</dt><dd>${esc(b.pt.origin)}</dd><dt>Internado há</dt><dd class="num">${b.pt.days} ${b.pt.days===1?"dia":"dias"}</dd></dl>`;
+    foot = b.state==="alta"
+      ? `<button class="btn warn" data-view-go="altas">${icon("i-out",16)} Preparar alta</button><button class="btn" data-unplan="${b.id}">Cancelar alta prevista</button>`
+      : `<button class="btn primary" data-plan="${b.id}">${icon("i-out",16)} Prever alta hoje</button><button class="btn" data-transfer="${b.id}">Transferir de cama</button>`;
+  } else if(b.state==="livre"){
+    const cand=state.data.queue.filter(q=>q.svc===b.svc);
+    body=`<p class="note" style="margin:0">Cama pronta a receber doente.</p>`+(cand.length?`<div class="field"><label>Doentes à espera para ${sv.name}</label></div><div class="list" style="border:1px solid var(--line);border-radius:12px;overflow:hidden">${cand.map(q=>`<div class="row" style="grid-template-columns:6px 1fr auto"><span class="stripe" style="background:${TRIAGE[q.triage].c}"></span><div class="who"><b style="font-size:13.5px">${esc(q.name)}</b><div class="m">${esc(q.dx)} · ${fmtWait(q.wait)}</div></div><button class="btn primary sm" data-place="${q.id}|${b.id}">Internar</button></div>`).join("")}</div>`:`<p style="margin:0;color:var(--ink-3)">Sem doentes à espera para este serviço.</p>`);
+    foot=`<button class="btn" data-reserve="${b.id}">${icon("i-clock",16)} Reservar</button><button class="btn" data-block="${b.id}">${icon("i-lock",16)} Bloquear</button>`;
+  } else if(b.state==="limpeza"){
+    body=`<p class="note" style="margin:0">A equipa de higienização foi notificada após a última alta. Confirme quando a cama estiver pronta.</p>`;
+    foot=`<button class="btn primary" data-clean="${b.id}">${icon("i-broom",16)} Marcar como pronta</button>`;
+  } else {
+    body=`<p class="note" style="margin:0">${esc(b.note||"")}</p>`;
+    foot=`<button class="btn primary" data-clean="${b.id}">Libertar cama</button>`;
+  }
+  openDrawer(head(`Cama ${b.id}`,st.l,st.c)+`<div class="dr-b"><div style="color:var(--ink-2)">${sv.name} · ${sv.loc}</div>${body}</div><div class="dr-f">${foot}</div>`);
+}
+
+function assignDrawer(qid){
+  const q=state.data.queue.find(x=>x.id===qid), sv=svc(q.svc);
+  const same=state.data.beds.filter(b=>b.svc===q.svc&&b.state==="livre");
+  const soon=state.data.beds.filter(b=>b.svc===q.svc&&(b.state==="alta"||b.state==="limpeza"));
+  const other=state.data.beds.filter(b=>b.svc!==q.svc&&b.state==="livre"&&q.svc!=="PED"&&q.svc!=="MAT"&&b.svc!=="PED"&&b.svc!=="MAT").slice(0,8);
+  const t=TRIAGE[q.triage];
+  openDrawer(head(esc(q.name),t.l,t.c)+`<div class="dr-b">
+    <dl class="kv"><dt>Serviço pedido</dt><dd>${sv.name}</dd><dt>Diagnóstico</dt><dd>${esc(q.dx)}</dd><dt>Proveniência</dt><dd>${esc(q.origin)}</dd><dt>Em espera</dt><dd class="num">${fmtWait(q.wait)}</dd></dl>
+    <div class="field"><label>Camas livres em ${sv.name}</label></div>
+    ${same.length?`<div class="pick">${same.map(b=>`<button data-place="${q.id}|${b.id}">${b.id}<small>${sv.loc.split(" · ")[0]}</small></button>`).join("")}</div>`:`<p class="note" style="margin:0">Sem camas livres neste serviço. ${soon.length?`${soon.length} ${soon.length===1?"cama fica":"camas ficam"} disponível nas próximas horas (${soon.map(b=>b.id).join(", ")}).`:""}</p>`}
+    ${!same.length&&other.length?`<div class="field"><label>Alternativa: internar em serviço afim (doente “ectópico”)</label></div><div class="pick">${other.map(b=>`<button data-place="${q.id}|${b.id}">${b.id}<small>${svc(b.svc).name}</small></button>`).join("")}</div>`:""}
+  </div>`);
+}
+
+function newDrawer(){
+  openDrawer(head("Novo pedido","Internamento","var(--accent)")+`<form class="dr-b" id="nf">
+    <div class="field"><label for="f-name">Nome do doente</label><input id="f-name" required value="Ivanilda Semedo Tavares"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label for="f-age">Idade</label><input id="f-age" type="number" min="0" max="120" value="47"></div><div class="field"><label for="f-sex">Sexo</label><select id="f-sex"><option>F</option><option>M</option></select></div></div>
+    <div class="field"><label for="f-svc">Serviço</label><select id="f-svc">${SERVICES.map(s=>`<option value="${s.id}">${s.name}</option>`).join("")}</select></div>
+    <div class="field"><label for="f-dx">Motivo de internamento</label><input id="f-dx" value="Pneumonia adquirida na comunidade"></div>
+    <div class="field"><label for="f-or">Proveniência</label><select id="f-or">${ORIGINS.map(o=>`<option>${o.t}</option>`).join("")}</select></div>
+    <div class="field"><label for="f-tr">Triagem</label><select id="f-tr">${Object.entries(TRIAGE).map(([k,v])=>`<option value="${k}" ${k==="amarelo"?"selected":""}>${v.l} (${k})</option>`).join("")}</select></div>
+    <button class="btn primary" type="submit" style="justify-content:center">Adicionar à fila</button>
+  </form>`);
+  $("#nf").addEventListener("submit",e=>{e.preventDefault();
+    const o=$("#f-or").value;
+    state.data.queue.push({id:"Q"+Date.now(),name:$("#f-name").value||"Sem nome",age:+$("#f-age").value||0,sex:$("#f-sex").value,svc:$("#f-svc").value,dx:$("#f-dx").value,origin:o,ev:o.startsWith("Evacuação"),triage:$("#f-tr").value,wait:0,proc:String(290000+Math.floor(Math.random()*9999))+"/26"});
+    state.data.queue.sort((a,b)=>order(a)-order(b));closeDrawer();render();toast("Pedido adicionado à fila de internamento");});
+}
+
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._);toast._=setTimeout(()=>t.classList.remove("show"),2600)}
+function flash(id){requestAnimationFrame(()=>{const el=document.getElementById("bed-"+id);if(el){el.classList.add("flash")}})}
+
+/* Events */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button,[data-close]");
+  if(e.target.id==="scrim"){closeDrawer();return}
+  if(!t)return;
+  const d=t.dataset, B=id=>state.data.beds.find(b=>b.id===id);
+  if(d.view){state.view=d.view;closeDrawer();render();window.scrollTo(0,0);return}
+  if(d.viewGo){state.view=d.viewGo;closeDrawer();render();return}
+  if("close" in d){closeDrawer();return}
+  if(d.filter){state.filter=d.filter;render();return}
+  if(d.bed){bedDrawer(d.bed);return}
+  if(d.assign){assignDrawer(d.assign);return}
+  if("new" in d){newDrawer();return}
+  if(d.place){const [qid,bid]=d.place.split("|");const qi=state.data.queue.findIndex(x=>x.id===qid);const q=state.data.queue[qi];const b=B(bid);
+    b.state="ocupada";b.pt={name:q.name,sex:q.sex,age:q.age,proc:q.proc,dx:q.dx,doc:DOCTORS[bid.length%DOCTORS.length],days:0,origin:q.origin,checks:{}};
+    state.data.queue.splice(qi,1);state.data.admitted++;closeDrawer();render();toast(`${q.name} internado(a) na cama ${bid}`);return}
+  if(d.check){const [bid,k]=d.check.split("|");const b=B(bid);b.pt.checks[k]=!b.pt.checks[k];render();return}
+  if(d.discharge){const b=B(d.discharge);const n=b.pt.name;b.state="limpeza";b.pt=null;state.data.discharged++;render();toast(`Alta de ${n} confirmada. Cama ${b.id} enviada para higienização.`);return}
+  if(d.plan){const b=B(d.plan);b.state="alta";b.pt.checks={};closeDrawer();render();toast(`Alta prevista para hoje na cama ${b.id}`);return}
+  if(d.unplan){const b=B(d.unplan);b.state="ocupada";closeDrawer();render();flash(b.id);return}
+  if(d.clean){const b=B(d.clean);b.state="livre";b.note=null;closeDrawer();render();flash(b.id);toast(`Cama ${b.id} disponível`);return}
+  if(d.reserve){const b=B(d.reserve);b.state="reservada";b.note="Reservada pela gestão de camas";closeDrawer();render();flash(b.id);return}
+  if(d.block){const b=B(d.block);b.state="bloqueada";b.note="Bloqueada manualmente";closeDrawer();render();flash(b.id);return}
+  if(d.transfer){const b=B(d.transfer);const free=state.data.beds.filter(x=>x.svc===b.svc&&x.state==="livre");
+    openDrawer(head(`Transferir de ${b.id}`,"Transferência","var(--accent)")+`<div class="dr-b"><p style="margin:0">${esc(b.pt.name)}</p>${free.length?`<div class="pick">${free.map(f=>`<button data-move="${b.id}|${f.id}">${f.id}<small>Livre</small></button>`).join("")}</div>`:`<p class="note">Sem camas livres no serviço.</p>`}</div>`);return}
+  if(d.move){const [a,z]=d.move.split("|");const A=B(a),Z=B(z);Z.pt=A.pt;Z.state="ocupada";A.pt=null;A.state="limpeza";closeDrawer();render();flash(z);toast(`Doente transferido de ${a} para ${z}`);return}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
+
+const hsel=$("#hsel");
+hsel.innerHTML=HOSPITALS.map((h,i)=>`<option value="${i}">${h.short}</option>`).join("");
+hsel.addEventListener("change",()=>{load(HOSPITALS[+hsel.value]);closeDrawer();render();toast(HOSPITALS[+hsel.value].name)});
+
+function tick(){const d=new Date();$("#clock").textContent=d.toLocaleDateString("pt-PT",{weekday:"short",day:"2-digit",month:"short"})+" · "+d.toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"})}
+tick();setInterval(tick,30000);
+
+load(HOSPITALS[0]);render();
+})();
+</script>
+</body></html>
