@@ -16,3 +16,11 @@ Saldo API Higgsfield expira em 1 ano; créditos de plano não acumulam; packs ex
 - Planos (confirmar no checkout, fontes divergem): Starter ~$9–19/mês · Plus ~$49–59/mês · Ultra ~$129/mês.
 - "Unlimited" (7 dias) só vale para uso MANUAL no site — não conta via agente/automação.
 - Táticas: rascunhar barato (Fast, 720p, clipes curtos), só fazer a versão final em qualidade alta; ver custo antes de cada geração.
+
+## Open-Higgsfield-AI / "Open Generative AI" (Anil Matcha) — pesquisado 2026-09-25
+- github.com/Anil-matcha/Open-Higgsfield-AI · MIT · ~29k estrelas · ativo (v1.0.9).
+- Studios: Image, Video, Audio, Cinema, Marketing, Influencer, Lip Sync, AI Clipping, Vibe Motion, Workflow (nós), Agent.
+- 400+ modelos (Nano Banana, Seedance, Kling, Veo, Sora, Wan…).
+- Software grátis; geração na nuvem paga via chave **Muapi.ai** (Nano Banana ≈ $0.12/img; Seedance 2.0 anunciado ~40% abaixo do oficial).
+- Modelos locais (sd.cpp, Wan2GP) = $0 por geração, mas precisa de PC com GPU.
+- NÃO é o código oficial do Higgsfield (esse continua fechado); é um clone comunitário das ferramentas.
