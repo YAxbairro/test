@@ -22,3 +22,4 @@ Responder em português (de Portugal / Cabo Verde), tom direto e de parceiro ("m
 ## Prompts Suno
 - Tudo (som + estrutura [Intro]/[Verse]/[Hook]…) vai num só bloco para **Style of Music**, até 1000 caracteres.
 - O campo Lyrics fica vazio (o autor não o usa para beats).
+- Músicas com letra: **dois blocos separados**. Style = beat + descrição da estrutura + voz (≤1000). Lyrics = só a letra com tags simples ([Intro], [Verse 1], [Hook]…), sem descrições.
