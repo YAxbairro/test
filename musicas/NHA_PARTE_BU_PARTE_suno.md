@@ -1,9 +1,9 @@
 # Nha parte / Bu parte — letra do autor (pronúncia ajustada)
 
-## Style of Music (797 caracteres)
+## Style of Music (857 caracteres) — v2 rua, sem gospel
 
 ```
-Emotional melodic trap rap, 140 BPM halftime, D minor, heartfelt tribute, raw but hopeful. Soft piano melody, warm strings, ambient pad, airy choir, subtle guitar, deep 808, crisp kick and snare, gentle hat rolls. [Verse] piano and 808, space for words. [Hook] strings open, melodic. [Verse] drums full, tight flow. [Break] beat cuts, piano alone. [Drop] 808 and drums slam back. [Outro] piano and strings fade. Two different male rappers trade parts: Rapper 1 deep warm raspy baritone; Rapper 2 lighter younger tenor, melodic, airy. Both rap in Cape Verdean Creole (Kriolu Badiu, Santiago), NOT Portuguese, NOT Brazilian accent: clipped vowels, swallowed endings, syllabic nasal N. Vocals crisp, loud, upfront, bright presence, clear diction, no muffled vocals. Polished radio-ready mastered mix.
+Dark street trap rap, 140 BPM halftime, D minor, raw, gritty, real, emotional but hard. Dark detuned piano loop, muted plucked guitar, deep distorted 808, dry punchy kick, crisp snare, fast hat rolls, lo-fi tape texture, street ambience. [Verse] piano and 808 only, space for words. [Hook] guitar joins, melodic flow. [Verse] full drums, tight pocket. [Break] beat cuts, piano alone. [Drop] 808 and drums slam back harder. [Outro] piano loop fades. Two different male rappers trade parts: Rapper 1 deep raspy baritone, hard; Rapper 2 younger lighter voice, melodic rap. Cape Verdean Creole (Kriolu Badiu, Santiago), NOT Portuguese, NOT Brazilian accent: clipped vowels, swallowed endings, syllabic nasal N. Dry close-mic vocals, loud, upfront, clear, not muffled. No choir, no strings, no organ, no gospel, no church feel. Human, imperfect, not AI-polished.
 ```
 
 ## Lyrics
