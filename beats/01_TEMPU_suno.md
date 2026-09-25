@@ -19,7 +19,7 @@ Soulful boom bap rap instrumental, 91 BPM, A minor. Raw, intimate, human; warm a
 [Solo: short imperfect Rhodes phrase, human, never flashy]
 [Shift: new kick pattern, halftime bass phrasing, same emotion]
 [Break: piano and bass alone, cavaquinho whisper, most personal space]
-[Final: drums heavier, harmony opens, bass grows, strings of guitar]
+[Final: drums heavier, harmony opens, bass grows, guitar fragments return]
 [Outro: strip back to the opening piano phrase and the clock tick]
 [End]
 ```
