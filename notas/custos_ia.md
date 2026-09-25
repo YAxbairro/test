@@ -24,3 +24,7 @@ Saldo API Higgsfield expira em 1 ano; créditos de plano não acumulam; packs ex
 - Software grátis; geração na nuvem paga via chave **Muapi.ai** (Nano Banana ≈ $0.12/img; Seedance 2.0 anunciado ~40% abaixo do oficial).
 - Modelos locais (sd.cpp, Wan2GP) = $0 por geração, mas precisa de PC com GPU.
 - NÃO é o código oficial do Higgsfield (esse continua fechado); é um clone comunitário das ferramentas.
+
+## Seedance 2.5 (referência padrão do autor)
+- Clip 8s 720p: Higgsfield ≈ $2.55 (52 créditos) — o mais barato entre as plataformas comparadas; Runway ≈ $5.76.
+- 480p ≈ metade do custo de 720p. Modos Fast/Mini mais baratos. Não corre localmente (modelo fechado da ByteDance).

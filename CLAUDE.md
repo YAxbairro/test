@@ -14,3 +14,7 @@ Ver `DJ_AGI_CONTEXTO.md` para as regras de escrita.
 
 ## Idioma
 Responder em português (de Portugal / Cabo Verde), tom direto e de parceiro ("mano").
+
+## Formato das respostas
+- O autor lê no **telemóvel**: **NUNCA usar tabelas**. Usar listas curtas e parágrafos curtos.
+- Exemplos de vídeo/custos: usar **sempre o Seedance 2.5** como referência.
