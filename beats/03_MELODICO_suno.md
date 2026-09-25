@@ -1,9 +1,9 @@
-# Beat 03 — Trap melódico BR (Suno)
+# Beat 03 — Trap melódico BR v2 (mais trap/rap)
 
 Custom · Instrumental ON · Lyrics vazio
 
-Style of Music (937 caracteres):
+Style of Music (929 caracteres):
 
 ```
-Soft melodic Brazilian trap instrumental, 140 BPM halftime feel, F# minor. Warm, smooth, confident, late-night, nostalgic but not sad. Organic human feel: real played guitar, slight timing drift, room noise, no quantized perfection, no generic AI sheen. Nylon and clean electric guitar arpeggios, soft Rhodes, airy pads, gentle 808 with warm glide, soft kick, rimshot snare, rolling but restrained hats, light shaker, subtle vocal chop texture. Structure: [Intro] lone guitar melody, vinyl warmth, filtered. [Verse] soft 808 and rimshot enter, guitar loops, sparse hats, space for melodic flow. [Hook] pads open, Rhodes joins, hats roll lightly, catchy guitar counter-melody. [Verse] drums thin out, 808 bounces, guitar variation. [Bridge] guitar and Rhodes alone, reverb tails. [Hook] full, warmer, extra guitar layer. [Outro] guitar melody alone, fade. Mixed clean, close, intimate. No aggressive distortion, no EDM. Instrumental only.
+Melodic Brazilian trap rap instrumental, 144 BPM halftime, F# minor. Confident, smooth, street, late-night, not sad. Human played feel, slight swing, no generic AI sheen. Hard punchy kick, snappy clap-snare, fast rolling hi-hats with triplet rolls and stutters, deep distorted 808 with long glides and bounce. Melody: clean electric and nylon guitar loop, soft Rhodes, dark bell pluck, airy pad, subtle vocal chop. Structure: [Intro] filtered guitar loop, reversed cymbal, 808 hint. [Verse] full drums drop, heavy bouncing 808, busy hats, guitar loop, tight pocket for rap flow. [Hook] bells and pad open, hats roll harder, 808 glides, catchy guitar counter-melody. [Verse] kick pattern switch, 808 slides, sparse melody, stutter hats. [Bridge] beat cuts, guitar alone, 808 drop back. [Hook] full energy, extra layer. [Outro] guitar loop filtered out. Loud modern trap mix, punchy low end, crisp highs. No EDM. Instrumental only.
 ```
