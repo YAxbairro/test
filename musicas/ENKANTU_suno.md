@@ -1,9 +1,9 @@
 # ENKANTU — declaração de amor (Cabo love)
 
-## Style of Music (884 caracteres)
+## Style of Music (991 caracteres) — v2 drums kizomba
 
 ```
-Slow sensual Cabo love ballad, R&B kizomba feel, 74 BPM, E-flat major, intimate, dreamy, light, romantic, not a dance floor track. Minimal, airy, lots of space, not a live band sound. Grows slowly: [Intro] long solo felt piano, no vocals for 30 seconds. [Build] warm deep bass enters, then soft kick, rimshot and shaker, then light nylon guitar. [Verse] minimal, voice enters late, unhurried. [Hook] warm, open. [Sound Drop] all drops, piano and whisper. [Climax Hook] fullest but gentle, subtle rhythm switch. [Piano Solo] tender, simple, human. [Sound Drop] bass and piano only. [Final] soft, ends on solo piano. Small smooth rhythm variations, no abrupt changes. Male singer from Praia, Santiago, singing Cape Verdean Creole (Kriolu Badiu), NOT Portuguese, NOT Brazilian. Soft breathy tenor, calm, soulful, behind the beat, clear diction, close-mic, upfront. Balanced clean master.
+Sensual kizomba, zouk love, Cabo love, 86 BPM, F minor, intimate, dreamy, light, romantic, slow and soft, not a club track. Classic kizomba drum groove: deep syncopated kizomba kick pattern, soft snare on the backbeat, rimshot and shaker ghost notes, gentle zouk hats. Warm deep bass, felt piano, light nylon guitar. Melody: zouk love chord progression, flowing kizomba piano riffs, sung melody with smooth kizomba phrasing and soft melismas. Grows slowly: [Intro] solo piano, no vocals for 30 seconds. [Build] bass enters, then kizomba drums, then guitar. [Verse] minimal, voice enters late, unhurried. [Hook] warm, open. [Sound Drop] piano and whisper. [Climax Hook] fullest but gentle, subtle rhythm switch. [Piano Solo] tender, human. [Sound Drop] bass and piano. [Final] ends on solo piano. No abrupt changes. Male singer from Praia, Santiago, Cape Verdean Creole (Kriolu Badiu), NOT Portuguese, NOT Brazilian. Soft breathy tenor, calm, soulful, clear, close-mic. Balanced clean master.
 ```
 
 ## Lyrics
