@@ -27,3 +27,7 @@ Responder em português (de Portugal / Cabo Verde), tom direto e de parceiro ("m
 
 ## Ajustes
 - Quando o autor pede para ajustar uma parte (ex.: "só os drums"), mudar **apenas essa parte** e manter todo o resto palavra por palavra.
+
+## Kriolu
+- Antes de escrever ou ajustar letra, ler `notas/kriolu_badiu.md` (correções do autor) e aplicar.
+- Quando o autor enviar uma letra corrigida, comparar com a minha versão e registar cada diferença nesse ficheiro.
