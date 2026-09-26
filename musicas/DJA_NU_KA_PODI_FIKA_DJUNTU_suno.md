@@ -12,7 +12,7 @@ Urban kiz, slow sensual kizomba, 82 BPM, A minor, intimate, warm, late-night, co
 gospel, choir, EDM, synth lead, guitar solo, trap hi-hats, dance pop, female vocals
 ```
 
-## Lyrics
+## Lyrics (v2 — organizada e com repetições)
 
 ```
 [Intro: felt piano chords and nylon guitar, filtered]
@@ -70,6 +70,34 @@ nu ta korda,
 bo bu ta baza,
 mas ku tcheu vontadi fika.
 
+[Pre-Chorus: drums thin out, voice closer]
+Nu djura ma Nta ben skesisi
+si nu involvi ti dimas.
+Nu ka ta daba otu pasu
+i dexa kumpanhu ketu.
+
+[Chorus: full kizomba groove, doubled harmonies]
+Ntom ka nu tchora,
+ka nu kulpa sintimentu.
+Foi bon enkuantu dura,
+mi N kurti di tudu momentu.
+
+Si gosi i ora
+di nu ronpe involvimentu,
+uza lenbransas komu kura
+si sodadi bateu petu.
+
+[Post-Chorus: groove steady, voice and guitar trade lines]
+Dja nu ka podi fika djuntu,
+nu da konta.
+Nta trabu paz,
+i senpri mi ki ta konplika.
+
+I senpri ki nu futi shit,
+nu ta konta,
+sen lavi nada dimas.
+Foi isu ki nu kombina.
+
 [Sound Drop: piano and voice only]
 Dja nu ka podi fika djuntu,
 bu podi sigui
@@ -77,11 +105,25 @@ sen pensa na mo ki N ta fika.
 Su pensa na mi un dia,
 prometen mo ka ta liga.
 
-[Outro: groove returns softly, fade to piano]
+[Final Chorus: groove returns, warmest, stacked harmonies]
+Ntom ka nu tchora,
+ka nu kulpa sintimentu.
+Foi bon enkuantu dura,
+mi N kurti di tudu momentu.
+
+Si gosi i ora
+di nu ronpe involvimentu,
+uza lenbransas komu kura
+si sodadi bateu petu.
+
+[Outro: groove fades, piano and guitar only]
 Nta ben sigui
 i fazi más midjor un dia,
 kel ki N fazi
 nunka tchiga.
+
+Dja nu ka podi fika djuntu...
+nu da konta.
 
 [End]
 ```
