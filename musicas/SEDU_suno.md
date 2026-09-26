@@ -12,61 +12,118 @@ Urban kiz, slow sensual kizomba, 80 BPM, B-flat minor, intimate, warm, late-nigh
 gospel, choir, EDM, synth lead, guitar solo, trap hi-hats, dance pop, female vocals
 ```
 
-## Lyrics
+## Lyrics (v2 — letra do autor/ChatGPT, só grafia de Santiago)
 
 ```
 [Intro: felt piano chords and nylon guitar only]
 [Instrumental]
 
 [Verse 1: kick and sub bass enter softly]
-N djura ma Nka ta ama más, nen tan sedu,
-N fitcha porta, N kebra ku distinu.
-Ma distinu ka ta obi — e toka sinu,
-i bu entra ku luz ki kema nha medu.
+Ami djan staba konvensidu
+ma Nka ta ama otu alguén tan sedu.
+Ma distinu muda kel sintidu,
+trazeu é bo, pa mi supera nha medu.
 
-N ka sabeba ma N tenba un baziu,
-ti bu benba sen avizu, sen pidi.
-Bu tchobe dentu mi sima tchuba na riu,
-i bu fazen torna vivi, ku amor sen midi.
+Bo kompleta un baziu
+dentu di mi, ki ningen ka odjaba.
+Di tantu friu ki N xinti,
+bo foi kalor ki N ka sabia ma faltaba.
 
-[Verse 2]
-N amaba un alguén, un sigredu guardadu,
-N pô kulpa na kupidu, N fla: "dja N sta en pas".
-Ma kel pas era pas di kenha ki sta interadu,
-papu di un sufridu ki ta fingi ma e kapas.
+Bo fazen torna vivi,
+ben na mi, sen pidi lisensa.
+Undi amor djan mora antigamenti,
+bo faze kaza na auzensia.
+
+Ami Nta amaba
+un alguén ki oji é só sigredu.
+N pui mal ku Kupidu,
+ma talvez era mi ki tava ku medu.
+
+Dja dura ki min
+djan faze paz ku kel pasadu.
+Ma paz é stranhu:
+N pensa ma fitcha porta, bo entra pa otu ladu.
+
+[Pre-Chorus]
+Na fundu era papu
+di alguén feridu.
+Nta fla "Nka kre amor",
+ma korason nunka tinha dizistidu.
+
+Na verdadi, ami N kria
+un novu amor, só Nka admitia.
+Nha onti djan tinha rezolvidu,
+nha prezenti foi bo, ki un dia Nka previa.
 
 [Hook: full kizomba groove]
-Nha pasadu dja staba rezolvidu,
-nha prezenti é bo, prezenti di korason.
-Bu atchan partidu, bu djuntan ku sintidu,
-pedasu pa pedasu, ku pasiénsia na mon.
+É bo, bo tchiga do nada,
+enkontra tudu partidu.
+Sen pergunta undi era ferida,
+bo toka lugar ki djan tinha skondidu.
 
-[Verse 3]
-Ma bu tchiga ku kel bistidu,
-kada pontu di el é nha pontu fraku.
-Bu kurvas é tudu definidu,
-sima strada di Serra: N ta trava, N ta kai na buraku.
-Definidu sima nha distinu,
-ki dja sabeba bu nomi, dja sabeba bu sinu.
+É bo, bo tchiga do nada
+ku kel bistidu.
+Cê sabe nha pontu fraku,
+kurvas tudu definidu.
+
+Nka sei si foi distinu
+o distinu disfarsadu,
+pamodi bo tchiga sen kaminhu,
+ma leba-m pa un lugar ki Nka tinha imajinadu.
+
+[Verse 2]
+Bo ka promete eternidadi,
+i talvez é kel ki faze-m akredita.
+Pamodi ken ki fala poku di futuru
+ta dexa prezenti fala na bida.
+
+N djan kore kontra o tempo,
+até tempo bira kontratempo.
+Oji Nka tenta ganha-l,
+N só kre vive kel momentu.
+
+Bo ten jeitu di pergunta
+sen nunka abri boka pa pergunta.
+Só ku odju bo ta le-m,
+i nha silensiu ta responde tudu na punta.
+
+Mi ki djan fitcha sintimentu
+pa ningen entra sen bate,
+bo ka bate, bo simplismenti entra.
+Agora Nka sabe si N debia proteje o agradese.
 
 [Sound Drop: piano and voice only]
-[Whispered]
-Rezolvidu ka kre fla skesidu...
-é só un ferida ki dja da sintidu.
+Talvez amor é es:
+ka é enkontra alguén perfeitu,
+é enkontra alguén ki odja ruína
+i inda asi enxerga un projetu.
+
+Bo ka kura nha pasadu,
+nen N kre bo pa faze isu.
+Bo só prova ma pasadu
+ka tinha diretu di manda na kel ki Nta sinti.
 
 [Hook: groove returns, warmer]
-Nha pasadu dja staba rezolvidu,
-nha prezenti é bo, prezenti di korason.
-Bu atchan partidu, bu djuntan ku sintidu,
-pedasu pa pedasu, ku pasiénsia na mon.
+É bo, bo tchiga do nada,
+enkontra tudu partidu.
+Sen pergunta undi era ferida,
+bo toka lugar ki djan tinha skondidu.
 
-[Break: sub bass and guitar only]
-Bu tchobe dentu mi...
-sima tchuba na riu.
+É bo, bo tchiga do nada
+ku kel bistidu.
+Cê sabe nha pontu fraku,
+kurvas tudu definidu.
 
 [Outro: fade to piano]
-N djuraba ma Nka ta ama más tan sedu...
-ma ku bo, amor ka tene ora, i ka tene medu.
+N pensaba ma amor era sedu,
+bo mostra-m ma sedu é só relójiu.
+Pamodi kuandu é pesoa serta,
+até medu ta perde negósiu.
+
+Nha pasadu djan tinha rezolvidu,
+nha prezenti foi bo, sen avizu.
+Si futuru inda é sigredu,
+pelu menus oji N dja sabe pamodi N soriu.
 
 [End]
 ```
