@@ -20,9 +20,10 @@ Responder em português (de Portugal / Cabo Verde), tom direto e de parceiro ("m
 - Exemplos de vídeo/custos: usar **sempre o Seedance 2.5** como referência.
 
 ## Prompts Suno
-- Tudo (som + estrutura [Intro]/[Verse]/[Hook]…) vai num só bloco para **Style of Music**, até 1000 caracteres.
-- O campo Lyrics fica vazio (o autor não o usa para beats).
-- Músicas com letra: **dois blocos separados**. Style = beat + descrição da estrutura + voz (≤1000). Lyrics = só a letra com tags simples ([Intro], [Verse 1], [Hook]…), sem descrições.
+- Método (pesquisado 2026-09-26): Style à frente = género, BPM, tom, mood; depois voz; depois 3–4 instrumentos com **comportamento concreto** (onde bate, como toca). Só descrições **positivas** no Style; o que não se quer vai no campo **Exclude Styles**. Sem colchetes no Style. ≤1000 caracteres.
+- Estrutura e dinâmica vão no **Lyrics** como tags com pista curta: [Intro: piano only], [Instrumental], [Sound Drop: piano and voice], [Break: bass and guitar]…
+- Beats instrumentais: Style + Lyrics só com as tags de estrutura (sem letra) e Instrumental ON.
+- Sempre **blocos de código separados** (Style / Exclude / Lyrics).
 
 ## Ajustes
 - Quando o autor pede para ajustar uma parte (ex.: "só os drums"), mudar **apenas essa parte** e manter todo o resto palavra por palavra.
