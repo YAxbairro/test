@@ -1,17 +1,15 @@
 # ENKANTU — declaração de amor (Cabo love)
 
-## Style of Music (969 caracteres) — v1 + só drums/ritmo kizomba
+## Style of Music (1003 caracteres) — v3 urban kiz
 
 ```
-Slow sensual Cabo love ballad on a kizomba rhythm, 74 BPM, E-flat major, intimate, dreamy, light, romantic, not a dance floor track. Classic kizomba drums: syncopated kizomba kick pattern, soft backbeat snare, rimshot, shaker. Minimal, airy, lots of space, not a live band sound. Grows slowly: [Intro] long solo felt piano, no vocals for 30 seconds. [Build] warm deep bass enters, then soft kizomba drums, then light nylon guitar. [Verse] minimal, voice enters late, unhurried. [Hook] warm, open. [Sound Drop] all drops, piano and whisper. [Climax Hook] fullest but gentle, subtle rhythm switch. [Piano Solo] tender, simple, human. [Sound Drop] bass and piano only. [Final] soft, ends on solo piano. Small smooth rhythm variations, no abrupt changes. Male singer from Praia, Santiago, singing Cape Verdean Creole (Kriolu Badiu), NOT Portuguese, NOT Brazilian. Soft breathy tenor, calm, soulful, behind the beat, clear diction, close-mic, upfront. Balanced clean master.
+Urban kiz, ghetto zouk, slow sensual urban kizomba, 80 BPM, B-flat minor, dark, smooth, intimate, late-night, warm, not dancefloor. Sparse modern production, lots of space. Minimal kizomba groove: soft deep syncopated kizomba kick, muted snap snare, light rim and shaker, warm round sub bass. Felt piano in the background, sparse soft chords, low in the mix, no piano melody. Soft fingerpicked acoustic guitar, subtle. Faint atmospheric pad. No lead instruments, no solos, no bright synth leads, no generic AI melodies; the voice carries the melody. [Intro] soft piano chords and guitar, filtered, no vocals. [Verse] kick and sub bass enter quietly. [Hook] groove fuller, still soft. [Sound Drop] beat cuts, piano and voice only. [Hook] groove returns warmer. [Break] bass and guitar only. [Final] fades to piano. Male singer from Praia, Santiago, Cape Verdean Creole (Kriolu Badiu), NOT Portuguese, NOT Brazilian. Smooth breathy R&B tenor, soft, sensual, relaxed, close-mic, upfront. Warm clean master.
 ```
 
 ## Lyrics
 
 ```
 [Intro]
-
-[Build]
 
 [Verse 1]
 Nka sabi si é sonhu...
@@ -43,7 +41,7 @@ Nta pidi só bo... i un noti na janela.
 Nka tene presa...
 bo é nha rikeza.
 
-[Climax Hook]
+[Hook]
 Bu é nha enkantu,
 Nta pô-u na nha kantu.
 Sima mar ta beja Praia,
@@ -51,9 +49,7 @@ N kre amau mansinhu, sen fin.
 Nos dos... más dosi,
 bo só, djuntu di mi.
 
-[Piano Solo]
-
-[Sound Drop]
+[Break]
 Kalma...
 bu é nha alma.
 
