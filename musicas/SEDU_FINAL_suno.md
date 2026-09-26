@@ -1,15 +1,15 @@
-# SEDU — final v3 (letra do autor + outro novo sensual)
+# SEDU — final v4 (sem gospel)
 
-## Style (Beat 05)
+## Style (Beat 05 v3)
 
 ```
-Urban kiz, slow sensual kizomba, 82 BPM, A minor, intimate, warm, late-night, confident. Male R&B vocalist from Praia, Cape Verde, singing Cape Verdean Creole (Kriolu Badiu), smooth breathy tenor, relaxed phrasing slightly behind the beat, close-mic, upfront, soft doubled harmonies on the hook. Kizomba groove in 4/4: deep round kick on 1, the and of 2, and 3; soft finger-snap snare on 2 and 4; rimshot ghost note on the and of 4; shaker in soft swung 16ths. Warm sub bass locked to the kick, long notes, one gentle slide every 4 bars. Felt piano far in the background, soft minor 9th chords, one per bar. Nylon-string guitar, soft fingerpicked arpeggios answering each vocal line. Airy warm pad fading in on the hooks. Sparse, wide, spacious mix; energy grows gently each section. Warm analog tape feel, crisp clear vocals, polished loud master.
+Classic Angolan kizomba, urban kiz, slow sensual, 82 BPM, A minor, intimate, late-night, confident. Male R&B vocalist from Praia, Cape Verde, singing Cape Verdean Creole (Kriolu Badiu), smooth breathy tenor, single lead voice, relaxed phrasing slightly behind the beat, close-mic, upfront. Kizomba drum machine groove in 4/4: deep round kick on 1, the and of 2, and 3; soft finger-snap snare on 2 and 4; rimshot ghost note on the and of 4; shaker in soft swung 16ths. Warm sub bass locked to the kick, long notes, one gentle slide every 4 bars. Soft electric piano far in the background, short muted minor chords, one per bar. Nylon-string guitar, soft fingerpicked arpeggios answering each vocal line. Soft kizomba synth pluck on the hooks. Sparse, wide, spacious mix; energy grows gently each section. Warm analog tape feel, crisp clear vocals, polished loud master.
 ```
 
 ## Exclude
 
 ```
-gospel, choir, EDM, synth lead, guitar solo, trap hi-hats, dance pop, female vocals
+gospel, choir, organ, worship, church, backing vocals, ballad, EDM, synth lead, guitar solo, trap hi-hats, dance pop, female vocals
 ```
 
 ## Lyrics
@@ -57,7 +57,7 @@ Chinti sabi,
 i gossi pa kel k for,
 bo Kim ta po di freti.
 
-[Chorus: full kizomba groove, doubled harmonies]
+[Chorus: full kizomba groove]
 I bo, bu tchiga do nada,
 bo bu enkontram tudu partidu.
 Sen perguntam undi k era pankada,
@@ -95,7 +95,7 @@ nha korason ta perde kompasu.
 Ningen ka sabi ma i bo ki ta sara
 kada firida ku un só abrasu.
 
-[Chorus: full kizomba groove, doubled harmonies]
+[Chorus: full kizomba groove]
 I bo, bu tchiga do nada,
 enkontra tudu partidu.
 Sen pergunta undi k era pankada,
@@ -114,7 +114,7 @@ ku kel bistidu.
 Bu konxi tudu nha pontu fraku,
 kurvas tudu difinidu.
 
-[Final Chorus: groove returns, warmest]
+[Final Chorus: full kizomba groove returns]
 I bo, bu tchiga do nada,
 enkontra tudu partidu.
 Sen pergunta undi k era pankada,
