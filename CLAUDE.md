@@ -31,3 +31,8 @@ Responder em português (de Portugal / Cabo Verde), tom direto e de parceiro ("m
 ## Kriolu
 - Antes de escrever ou ajustar letra, ler `notas/kriolu_badiu.md` (correções do autor) e aplicar.
 - Quando o autor enviar uma letra corrigida, comparar com a minha versão e registar cada diferença nesse ficheiro.
+
+## Base de Kizomba (fixa)
+- Quando o autor pede **kizomba**, a base instrumental é SEMPRE o **Beat 05 — urban kiz v2** (`beats/05_URBAN_KIZ_v2_suno.md`): Style + Exclude desse ficheiro.
+- Se ele pedir uma kizomba específica (ex.: mais triste, mais rápida, voz feminina), partir dessa base e mudar **só o que ele pedir**.
+- Referência de letra/estrutura: `musicas/SEDU_FINAL_suno.md`.

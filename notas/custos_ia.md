@@ -28,3 +28,8 @@ Saldo API Higgsfield expira em 1 ano; créditos de plano não acumulam; packs ex
 ## Seedance 2.5 (referência padrão do autor)
 - Clip 8s 720p: Higgsfield ≈ $2.55 (52 créditos) — o mais barato entre as plataformas comparadas; Runway ≈ $5.76.
 - 480p ≈ metade do custo de 720p. Modos Fast/Mini mais baratos. Não corre localmente (modelo fechado da ByteDance).
+
+## Suno — API e artistas (pesquisado 2026-09-26)
+- Suno NÃO tem API pública oficial (só programa beta de parceiros). As "Suno API" (EvoLink, Unifically, AIMusicAPI, Sunor…) são de terceiros não oficiais: risco de violar os termos e perder a conta; preços reportados $0.014–$0.111 por música.
+- Para "artistas" consistentes: **Personas** (fixa timbre/estilo de uma voz gerada) e, desde v5.5 (mar/2026), **Custom Voice** (treinar com a própria voz, com verificação de identidade).
+- Custo-benefício: plano pago oficial (direitos comerciais) + Personas > API de terceiros.
