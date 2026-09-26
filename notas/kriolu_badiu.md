@@ -16,3 +16,12 @@ e usar sempre a forma certa nas letras seguintes.
 - O autor aceita PT em alguns sítios: "tão sedu", "Nka sei", "tinha", "Agora" — não forçar.
 - Sujeito enfático: "mi N pui mal" (mi + N).
 - "só Nka admitia" → **"só ki Nka admitia"**.
+
+## Revisão SEDU final (2026-09-26)
+- **Verbo ser "é" → I**: "i bo", "paz i stranhu", "oji i só sigredu", "sedu i só relójiu", "kuandu i pesoa serta". ("i" = e/and também.)
+- "Nka ta ama" → **"Nka ta amaba"** (condicional/passado).
+- "muda kel sentidu" → **"muda tudu sentidu"**.
+- "sen pidi lisensa" → **"sen bu pidim lisensa"**.
+- "Dja dura" → **"Mas dja dura"**.
+- "undi era ferida" → **"undi k era pankada"**.
+- definidu → **difinidu**.
