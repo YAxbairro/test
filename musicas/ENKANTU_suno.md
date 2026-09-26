@@ -1,9 +1,9 @@
 # ENKANTU — declaração de amor (Cabo love)
 
-## Style of Music (1003 caracteres) — v3 urban kiz
+## Style of Music (980 caracteres) — v3 urban kiz
 
 ```
-Urban kiz, ghetto zouk, slow sensual urban kizomba, 80 BPM, B-flat minor, dark, smooth, intimate, late-night, warm, not dancefloor. Sparse modern production, lots of space. Minimal kizomba groove: soft deep syncopated kizomba kick, muted snap snare, light rim and shaker, warm round sub bass. Felt piano in the background, sparse soft chords, low in the mix, no piano melody. Soft fingerpicked acoustic guitar, subtle. Faint atmospheric pad. No lead instruments, no solos, no bright synth leads, no generic AI melodies; the voice carries the melody. [Intro] soft piano chords and guitar, filtered, no vocals. [Verse] kick and sub bass enter quietly. [Hook] groove fuller, still soft. [Sound Drop] beat cuts, piano and voice only. [Hook] groove returns warmer. [Break] bass and guitar only. [Final] fades to piano. Male singer from Praia, Santiago, Cape Verdean Creole (Kriolu Badiu), NOT Portuguese, NOT Brazilian. Smooth breathy R&B tenor, soft, sensual, relaxed, close-mic, upfront. Warm clean master.
+Urban kiz, ghetto zouk, slow sensual urban kizomba, 80 BPM, B-flat minor, dark, smooth, intimate, late-night, warm, not dancefloor. Sparse modern production, lots of space. Minimal kizomba groove: soft deep syncopated kizomba kick, muted snap snare, light rim and shaker, warm round sub bass. Felt piano in the background, sparse soft chords, low in the mix, no piano melody. Soft fingerpicked acoustic guitar, subtle. No lead instruments, no solos, no bright synth leads, no generic AI melodies; the voice carries the melody. [Intro] soft piano chords and guitar, filtered, no vocals. [Verse] kick and sub bass enter quietly. [Hook] groove fuller, still soft. [Sound Drop] beat cuts, piano and voice only. [Hook] groove returns warmer. [Break] bass and guitar only. [Final] fades to piano. Male singer from Praia, Santiago, Cape Verdean Creole (Kriolu Badiu), NOT Portuguese, NOT Brazilian. Smooth breathy R&B tenor, soft, sensual, relaxed, close-mic, upfront. Warm clean master.
 ```
 
 ## Lyrics
