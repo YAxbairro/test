@@ -12,7 +12,7 @@ Urban kiz, slow sensual kizomba, 80 BPM, B-flat minor, intimate, warm, late-nigh
 gospel, choir, EDM, synth lead, guitar solo, trap hi-hats, dance pop, female vocals
 ```
 
-## Lyrics (v2 — letra do autor/ChatGPT, só grafia de Santiago)
+## Lyrics (v3 — correções do autor aplicadas a toda a letra)
 
 ```
 [Intro: felt piano chords and nylon guitar only]
@@ -20,60 +20,60 @@ gospel, choir, EDM, synth lead, guitar solo, trap hi-hats, dance pop, female voc
 
 [Verse 1: kick and sub bass enter softly]
 Ami djan staba konvensidu
-ma Nka ta ama otu alguén tan sedu.
-Ma distinu muda kel sintidu,
-trazeu é bo, pa mi supera nha medu.
+ma Nka ta ama otu alguén tão sedu.
+Ma distinu muda kel sentidu,
+trazeum bo, i mi N supera nha medu.
 
-Bo kompleta un baziu
+Bu kompleta un vaziu
 dentu di mi, ki ningen ka odjaba.
 Di tantu friu ki N xinti,
-bo foi kalor ki N ka sabia ma faltaba.
+bu foi kalor ki N ka sabia ma faltaba.
 
-Bo fazen torna vivi,
+Bu fazen torna vivi,
 ben na mi, sen pidi lisensa.
-Undi amor djan mora antigamenti,
-bo faze kaza na auzensia.
+Undi amor dja moraba antigamenti,
+bu fazi kaza na auzensia.
 
 Ami Nta amaba
 un alguén ki oji é só sigredu.
-N pui mal ku Kupidu,
-ma talvez era mi ki tava ku medu.
+Mi N pui mal ku Kupidu,
+ma talvez era mi ki staba ku medu.
 
 Dja dura ki min
-djan faze paz ku kel pasadu.
+djan fazi paz ku kel pasadu.
 Ma paz é stranhu:
-N pensa ma fitcha porta, bo entra pa otu ladu.
+N pensa ma fitcha porta, bu entra pa otu ladu.
 
 [Pre-Chorus]
 Na fundu era papu
-di alguén feridu.
+di alguén firidu.
 Nta fla "Nka kre amor",
 ma korason nunka tinha dizistidu.
 
 Na verdadi, ami N kria
-un novu amor, só Nka admitia.
-Nha onti djan tinha rezolvidu,
+un novu amor, só ki Nka admitia.
+Nha onti djan tinha rizolvidu,
 nha prezenti foi bo, ki un dia Nka previa.
 
 [Hook: full kizomba groove]
-É bo, bo tchiga do nada,
+É bo, bu tchiga do nada,
 enkontra tudu partidu.
-Sen pergunta undi era ferida,
-bo toka lugar ki djan tinha skondidu.
+Sen pergunta undi era firida,
+bu toka lugar ki djan tinha skundidu.
 
-É bo, bo tchiga do nada
+É bo, bu tchiga do nada
 ku kel bistidu.
-Cê sabe nha pontu fraku,
+Bu konxi tudu nha pontu fraku,
 kurvas tudu definidu.
 
 Nka sei si foi distinu
 o distinu disfarsadu,
-pamodi bo tchiga sen kaminhu,
+pamodi bu tchiga sen kaminhu,
 ma leba-m pa un lugar ki Nka tinha imajinadu.
 
 [Verse 2]
-Bo ka promete eternidadi,
-i talvez é kel ki faze-m akredita.
+Bu ka promete eternidadi,
+i talvez é kel ki fazi-m akredita.
 Pamodi ken ki fala poku di futuru
 ta dexa prezenti fala na bida.
 
@@ -82,14 +82,14 @@ até tempo bira kontratempo.
 Oji Nka tenta ganha-l,
 N só kre vive kel momentu.
 
-Bo ten jeitu di pergunta
+Bu ten jeitu di pergunta
 sen nunka abri boka pa pergunta.
-Só ku odju bo ta le-m,
+Só ku odju bu ta le-m,
 i nha silensiu ta responde tudu na punta.
 
 Mi ki djan fitcha sintimentu
 pa ningen entra sen bate,
-bo ka bate, bo simplismenti entra.
+bu ka bate, bu simplismenti entra.
 Agora Nka sabe si N debia proteje o agradese.
 
 [Sound Drop: piano and voice only]
@@ -98,29 +98,29 @@ ka é enkontra alguén perfeitu,
 é enkontra alguén ki odja ruína
 i inda asi enxerga un projetu.
 
-Bo ka kura nha pasadu,
-nen N kre bo pa faze isu.
-Bo só prova ma pasadu
+Bu ka kura nha pasadu,
+nen N kre bo pa fazi isu.
+Bu só prova ma pasadu
 ka tinha diretu di manda na kel ki Nta sinti.
 
 [Hook: groove returns, warmer]
-É bo, bo tchiga do nada,
+É bo, bu tchiga do nada,
 enkontra tudu partidu.
-Sen pergunta undi era ferida,
-bo toka lugar ki djan tinha skondidu.
+Sen pergunta undi era firida,
+bu toka lugar ki djan tinha skundidu.
 
-É bo, bo tchiga do nada
+É bo, bu tchiga do nada
 ku kel bistidu.
-Cê sabe nha pontu fraku,
+Bu konxi tudu nha pontu fraku,
 kurvas tudu definidu.
 
 [Outro: fade to piano]
 N pensaba ma amor era sedu,
-bo mostra-m ma sedu é só relójiu.
+bu mostra-m ma sedu é só relójiu.
 Pamodi kuandu é pesoa serta,
 até medu ta perde negósiu.
 
-Nha pasadu djan tinha rezolvidu,
+Nha pasadu djan tinha rizolvidu,
 nha prezenti foi bo, sen avizu.
 Si futuru inda é sigredu,
 pelu menus oji N dja sabe pamodi N soriu.
