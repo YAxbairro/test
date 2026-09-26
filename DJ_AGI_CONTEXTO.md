@@ -126,3 +126,10 @@ PALAVRA
   Rede semântica sugerida
   Marcas: (a confirmar) quando houver dúvida no crioulo
 ```
+
+## 11. Lições (feedback do autor, 2026-09-26)
+- Clareza primeiro: cada linha tem de se entender à primeira escuta, como se fosse fala natural.
+- Frases completas e conversadas, não imagens soltas nem trocadilhos forçados que obriguem a "decifrar".
+- Um trocadilho forte por estrofe chega (ex.: "contra o tempo / contratempo"); o resto é emoção dita de forma direta.
+- Ideias profundas em frases do dia a dia: "Bo ka bate, bo simplesmente entra", "cedo é só relógio".
+- Evitar palavras raras ou grafias estranhas que tornam a letra difícil de ler.
