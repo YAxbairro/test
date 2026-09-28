@@ -13,6 +13,17 @@ Corres de 12 em 12 horas numa sessão nova. Lê também `toolsmaster/CLAUDE.md` 
 7. **Notificar o Yax** (notificação push) em 2–3 linhas em português: quantas verificações passaram, o que foi corrigido/acrescentado, o link do PR, e o que precisa dele (se algo ficou BLOQUEADO).
 8. **Critério de fim:** todos os robôs passam **e** todos os itens do Backlog estão `FEITO` ou `BLOQUEADO`. Nesse caso escreve `CONCLUÍDO` em `tests/reports/ESTADO.md`, notifica o Yax e apaga a rotina.
 
+## Economia de créditos (pedido do Yax)
+Não consegues ver o saldo de créditos do Yax — por isso poupa por defeito:
+- **Ronda da noite (02:40 em Cabo Verde) = modo completo:** corre os robôs, corrige falhas e avança no Backlog.
+- **Ronda do dia (14:40 em Cabo Verde) = modo leve:** só corre os robôs e envia o relatório. **Só corrige se algo que funcionava deixou de funcionar** (regressão). Não avança no Backlog.
+- **Escolhe o modelo conforme a tarefa** (tu corres num modelo intermédio):
+  - Tarefas mecânicas (correr robôs, resumir relatórios, pesquisar APIs, editar textos): subagente com modelo **`haiku`**.
+  - Correções e funcionalidades normais: faz tu próprio.
+  - Só problemas difíceis (falhou 2 vezes, arquitetura, bug que não percebes): subagente com modelo **`opus`**.
+- **Limite por ronda:** no máximo 2 itens do Backlog por noite. Pára assim que tiveres algo testado para entregar.
+- **Se receberes erro de limite de uso/créditos:** pára imediatamente, guarda o que tiveres (branch + notificação "parei por falta de créditos — continuo na próxima ronda") e não tentes de novo nesta ronda.
+
 ## Parar
 Apaga a rotina com a ferramenta `delete_trigger` (id em `tests/reports/ESTADO.md`).
 
