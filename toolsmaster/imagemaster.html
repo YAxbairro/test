@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Master — Tools Master</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060608;--surface:#0c0c10;--surface2:#121218;--surface3:#18181f;
+  --border:#18181f;--border2:#222230;--border3:#2e2e40;
+  --text:#ebebeb;--text2:#6060808;--text2:#606080;--text3:#383850;
+  --accent:#e11d48;--accent-dim:rgba(225,29,72,0.1);--accent-text:#fff;
+  --success:#4ade80;--error:#f87171;
+  --r:12px;--rs:7px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.app{display:flex;flex:1}
+
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#f97316);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;flex-shrink:0}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.brand-parent{font-size:10px;color:var(--text3);margin-top:1px}
+.nav-sec{padding:.65rem 1.1rem .2rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:.55rem 1.2rem;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+.nav-icon{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:.9rem 1.2rem;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.7}
+
+.main{flex:1;overflow-y:auto;padding:2rem;max-width:1000px}
+@media(max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.main{padding:1rem}}
+
+.page{display:none}.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text2)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:.75rem}
+
+.drop-zone{border:1.5px dashed var(--border3);border-radius:var(--r);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-dim)}
+.drop-zone.has-file{border-color:var(--success);border-style:solid;background:rgba(74,222,128,.05)}
+.drop-icon{font-size:36px;margin-bottom:12px}
+.drop-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.drop-sub{font-size:11px;color:var(--text2)}
+.drop-zone.has-file .drop-title{color:var(--success)}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+input[type=text],input[type=number],select,textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:8px 10px;width:100%;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--accent)}
+input::placeholder{color:var(--text3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:500px){.row2,.row3{grid-template-columns:1fr}}
+
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+.range-row{display:flex;align-items:center;gap:10px}
+
+.btn{height:40px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s,transform .1s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 18px}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-text)}
+.btn-outline{background:transparent;border:1px solid var(--border3);color:var(--text2)}
+.btn-outline:hover{color:var(--text)}
+.btn-full{width:100%;height:46px;font-size:14px;margin-top:.75rem}
+
+.status{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none;line-height:1.5}
+.status.ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.status.err{background:rgba(248,113,113,.1);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.status.loading{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+
+.progress-wrap{margin-top:.75rem;display:none}
+.progress-label{font-size:11px;color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.bar-bg{height:3px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;width:0%}
+
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .2s}
+.tool-card:hover{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-2px)}
+.tc-icon{font-size:26px;margin-bottom:8px}
+.tc-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.tc-desc{font-size:11px;color:var(--text2);line-height:1.4}
+
+/* PREVIEW */
+.preview-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem}
+@media(max-width:600px){.preview-split{grid-template-columns:1fr}}
+.preview-box{display:flex;flex-direction:column;gap:6px}
+.preview-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+.preview-canvas-wrap{background:repeating-conic-gradient(var(--surface3) 0% 25%,transparent 0% 50%) 0 0/14px 14px;border:1px solid var(--border2);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;min-height:180px;padding:10px;overflow:hidden}
+.preview-canvas-wrap img,.preview-canvas-wrap canvas{max-width:100%;max-height:280px;display:block;border-radius:2px}
+.preview-info{font-size:11px;color:var(--text2);text-align:center;padding:4px}
+
+/* FILTERS */
+.filter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:1rem}
+.filter-btn{border:2px solid var(--border2);border-radius:var(--rs);padding:4px;cursor:pointer;transition:all .15s;background:var(--surface2);text-align:center;font-size:10px;color:var(--text2);font-family:inherit}
+.filter-btn:hover{border-color:var(--border3)}
+.filter-btn.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.filter-canvas{width:80px;height:56px;border-radius:4px;display:block;margin:0 auto 4px}
+
+/* SLIDERS */
+.adj-grid{display:flex;flex-direction:column;gap:10px}
+.adj-row{display:flex;align-items:center;gap:10px}
+.adj-label{font-size:12px;color:var(--text2);width:100px;flex-shrink:0}
+.adj-val{font-size:11px;color:var(--text2);width:36px;text-align:right;flex-shrink:0}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">IM</div>
+    <div>
+      <div class="brand-name">Image Master</div>
+      <div class="brand-parent">Tools Master</div>
+    </div>
+  </div>
+
+  <div class="nav-sec">Início</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">⊞</span> Todas as ferramentas</div>
+
+  <div class="nav-sec">Remover</div>
+  <div class="nav-item" onclick="nav('rmbg',this)"><span class="nav-icon">✂</span> Remover fundo</div>
+  <div class="nav-item" onclick="nav('rmbg-batch',this)"><span class="nav-icon">⊞</span> Remover fundo (batch)</div>
+
+  <div class="nav-sec">Melhorar</div>
+  <div class="nav-item" onclick="nav('enhance',this)"><span class="nav-icon">⬆</span> Melhorar qualidade</div>
+  <div class="nav-item" onclick="nav('filters',this)"><span class="nav-icon">🎨</span> Filtros & efeitos</div>
+  <div class="nav-item" onclick="nav('adjust',this)"><span class="nav-icon">🎚</span> Ajustes manuais</div>
+  <div class="nav-item" onclick="nav('sharpen',this)"><span class="nav-icon">◈</span> Nitidez & desfoque</div>
+
+  <div class="nav-sec">Editar</div>
+  <div class="nav-item" onclick="nav('rotate-flip',this)"><span class="nav-icon">↻</span> Rodar & Espelhar</div>
+  <div class="nav-item" onclick="nav('watermark',this)"><span class="nav-icon">◎</span> Marca de água</div>
+  <div class="nav-item" onclick="nav('border',this)"><span class="nav-icon">⊡</span> Moldura & borda</div>
+  <div class="nav-item" onclick="nav('colorsplit',this)"><span class="nav-icon">◐</span> Preto & Branco</div>
+
+  <div class="nav-sec">Gerar</div>
+  <div class="nav-item" onclick="nav('palette',this)"><span class="nav-icon">🎨</span> Paleta de cores</div>
+  <div class="nav-item" onclick="nav('placeholder',this)"><span class="nav-icon">▣</span> Imagem placeholder</div>
+  <div class="nav-item" onclick="nav('ocr',this)"><span class="nav-icon">🔤</span> Extrair texto (OCR)</div>
+
+  <div class="sidebar-footer">Image Master v1.0<br>Tools Master · Eagle Marketing</div>
+</div>
+
+<div class="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="page-header"><div class="page-title">Image Master</div><div class="page-sub">Edita, melhora e transforma imagens com precisão</div></div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('rmbg',null)"><div class="tc-icon">✂</div><div class="tc-name">Remover fundo</div><div class="tc-desc">Remove o fundo automaticamente</div></div>
+    <div class="tool-card" onclick="nav('rmbg-batch',null)"><div class="tc-icon">⊞</div><div class="tc-name">Remover fundo batch</div><div class="tc-desc">Várias imagens de uma vez</div></div>
+    <div class="tool-card" onclick="nav('enhance',null)"><div class="tc-icon">⬆</div><div class="tc-name">Melhorar qualidade</div><div class="tc-desc">Aumenta resolução e nitidez</div></div>
+    <div class="tool-card" onclick="nav('filters',null)"><div class="tc-icon">🎨</div><div class="tc-name">Filtros & efeitos</div><div class="tc-desc">Vintage, cinema, matte e mais</div></div>
+    <div class="tool-card" onclick="nav('adjust',null)"><div class="tc-icon">🎚</div><div class="tc-name">Ajustes manuais</div><div class="tc-desc">Brilho, contraste, saturação...</div></div>
+    <div class="tool-card" onclick="nav('sharpen',null)"><div class="tc-icon">◈</div><div class="tc-name">Nitidez & desfoque</div><div class="tc-desc">Afiar ou desfocar áreas</div></div>
+    <div class="tool-card" onclick="nav('rotate-flip',null)"><div class="tc-icon">↻</div><div class="tc-name">Rodar & Espelhar</div><div class="tc-desc">Rotação livre e espelho</div></div>
+    <div class="tool-card" onclick="nav('watermark',null)"><div class="tc-icon">◎</div><div class="tc-name">Marca de água</div><div class="tc-desc">Texto ou logo em qualquer imagem</div></div>
+    <div class="tool-card" onclick="nav('border',null)"><div class="tc-icon">⊡</div><div class="tc-name">Moldura & borda</div><div class="tc-desc">Adiciona molduras elegantes</div></div>
+    <div class="tool-card" onclick="nav('colorsplit',null)"><div class="tc-icon">◐</div><div class="tc-name">Preto & Branco</div><div class="tc-desc">Converte com controlo total</div></div>
+    <div class="tool-card" onclick="nav('palette',null)"><div class="tc-icon">🎨</div><div class="tc-name">Paleta de cores</div><div class="tc-desc">Extrai as cores dominantes</div></div>
+    <div class="tool-card" onclick="nav('placeholder',null)"><div class="tc-icon">▣</div><div class="tc-name">Placeholder</div><div class="tc-desc">Cria imagens placeholder</div></div>
+    <div class="tool-card" onclick="nav('ocr',null)"><div class="tc-icon">🔤</div><div class="tc-name">Extrair texto (OCR)</div><div class="tc-desc">Lê o texto de fotos e digitalizações</div></div>
+  </div>
+</div>
+
+<!-- REMOVE BG -->
+<div class="page" id="page-rmbg">
+  <div class="page-header"><div class="page-title">✂ Remover fundo</div><div class="page-sub">Remove o fundo da imagem automaticamente</div></div>
+  <div class="card">
+    <div class="drop-zone" id="rmbg-drop" onclick="document.getElementById('rmbg-input').click()">
+      <div class="drop-icon">✂</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="rmbg-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadRMBG(this)">
+    </div>
+    <div id="rmbg-options" style="display:none;margin-top:1rem">
+      <div class="preview-split">
+        <div class="preview-box"><div class="preview-label">Original</div><div class="preview-canvas-wrap"><img id="rmbg-orig" style="max-width:100%;max-height:280px"></div></div>
+        <div class="preview-box"><div class="preview-label">Resultado</div><div class="preview-canvas-wrap"><canvas id="rmbg-result"></canvas><div id="rmbg-placeholder" style="color:var(--text3);font-size:12px;text-align:center">Resultado aqui</div></div></div>
+      </div>
+      <div class="field" style="margin-top:1rem"><label>Fundo de substituição</label>
+        <select id="rmbg-bg">
+          <option value="transparent">Transparente (PNG)</option>
+          <option value="white">Branco</option>
+          <option value="black">Preto</option>
+          <option value="custom">Cor personalizada</option>
+        </select>
+      </div>
+      <div id="rmbg-custom-color" style="display:none;margin-bottom:.75rem">
+        <input type="color" id="rmbg-color" value="#ffffff" style="width:100%;height:36px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRMBG()">✂ Remover fundo</button>
+    </div>
+    <div class="status" id="rmbg-status"></div>
+  </div>
+</div>
+
+<!-- REMOVE BG BATCH -->
+<div class="page" id="page-rmbg-batch">
+  <div class="page-header"><div class="page-title">⊞ Remover fundo — Batch</div><div class="page-sub">Remove o fundo de várias imagens de uma vez</div></div>
+  <div class="card">
+    <div class="drop-zone" id="rmbgb-drop" onclick="document.getElementById('rmbgb-input').click()">
+      <div class="drop-icon">⊞</div><div class="drop-title">Clica ou arrasta as imagens</div><div class="drop-sub">JPG · PNG · WEBP — múltiplos ficheiros</div>
+      <input type="file" id="rmbgb-input" accept="image/*,.heic,.heif" multiple style="display:none" onchange="addRMBGBFiles(this)">
+    </div>
+    <div class="file-list" id="rmbgb-list" style="margin-top:.75rem"></div>
+    <div id="rmbgb-has" style="display:none">
+      <div class="field"><label>Fundo</label>
+        <select id="rmbgb-bg"><option value="transparent">Transparente</option><option value="white">Branco</option><option value="black">Preto</option></select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRMBGBatch()">⊞ Processar tudo e Descarregar ZIP</button>
+    </div>
+    <div class="status" id="rmbgb-status"></div>
+    <div class="progress-wrap" id="rmbgb-progress"><div class="progress-label"><span id="rmbgb-prog-label">A processar...</span><span id="rmbgb-prog-pct">0%</span></div><div class="bar-bg"><div class="bar-fill" id="rmbgb-bar"></div></div></div>
+  </div>
+</div>
+
+<!-- ENHANCE -->
+<div class="page" id="page-enhance">
+  <div class="page-header"><div class="page-title">⬆ Melhorar qualidade</div><div class="page-sub">Aumenta a nitidez e qualidade da imagem</div></div>
+  <div class="card">
+    <div class="drop-zone" id="enh-drop" onclick="document.getElementById('enh-input').click()">
+      <div class="drop-icon">⬆</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="enh-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadAndProcess('enh',this,applyEnhance)">
+    </div>
+    <div id="enh-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Nível de melhoria</label>
+        <select id="enh-level"><option value="light">Suave</option><option value="medium" selected>Médio</option><option value="strong">Forte</option></select>
+      </div>
+      <div class="preview-split">
+        <div class="preview-box"><div class="preview-label">Original</div><div class="preview-canvas-wrap"><canvas id="enh-orig-canvas"></canvas></div></div>
+        <div class="preview-box"><div class="preview-label">Melhorado</div><div class="preview-canvas-wrap"><canvas id="enh-result-canvas"></canvas></div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:.75rem">
+        <button class="btn btn-primary" style="flex:1;height:44px" onclick="applyEnhance()">⬆ Aplicar</button>
+        <button class="btn btn-outline" style="height:44px" onclick="dlCanvas('enh-result-canvas','enhanced')">↓ Descarregar</button>
+      </div>
+    </div>
+    <div class="status" id="enh-status"></div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="page" id="page-filters">
+  <div class="page-header"><div class="page-title">🎨 Filtros & efeitos</div><div class="page-sub">Aplica filtros profissionais à tua imagem</div></div>
+  <div class="card">
+    <div class="drop-zone" id="flt-drop" onclick="document.getElementById('flt-input').click()">
+      <div class="drop-icon">🎨</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="flt-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadFilters(this)">
+    </div>
+    <div id="flt-options" style="display:none;margin-top:1rem">
+      <div class="filter-grid" id="filter-grid"></div>
+      <div class="preview-split">
+        <div class="preview-box"><div class="preview-label">Original</div><div class="preview-canvas-wrap"><canvas id="flt-orig"></canvas></div></div>
+        <div class="preview-box"><div class="preview-label">Com filtro</div><div class="preview-canvas-wrap"><canvas id="flt-result"></canvas></div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:.75rem">
+        <button class="btn btn-primary" style="flex:1;height:44px" onclick="applyFilter()">🎨 Aplicar filtro</button>
+        <button class="btn btn-outline" style="height:44px" onclick="dlCanvas('flt-result','filtro')">↓ Descarregar</button>
+      </div>
+    </div>
+    <div class="status" id="flt-status"></div>
+  </div>
+</div>
+
+<!-- ADJUST -->
+<div class="page" id="page-adjust">
+  <div class="page-header"><div class="page-title">🎚 Ajustes manuais</div><div class="page-sub">Controlo total sobre brilho, contraste e cor</div></div>
+  <div class="card">
+    <div class="drop-zone" id="adj-drop" onclick="document.getElementById('adj-input').click()">
+      <div class="drop-icon">🎚</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="adj-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadAdj(this)">
+    </div>
+    <div id="adj-options" style="display:none;margin-top:1rem">
+      <div class="preview-split">
+        <div class="preview-box"><div class="preview-label">Original</div><div class="preview-canvas-wrap"><canvas id="adj-orig"></canvas></div></div>
+        <div class="preview-box"><div class="preview-label">Resultado</div><div class="preview-canvas-wrap"><canvas id="adj-result"></canvas></div></div>
+      </div>
+      <div class="adj-grid" style="margin-top:1rem">
+        <div class="adj-row"><span class="adj-label">Brilho</span><input type="range" id="adj-brightness" min="-100" max="100" value="0" oninput="updateAdj();document.getElementById('adj-brightness-val').textContent=this.value"><span class="adj-val" id="adj-brightness-val">0</span></div>
+        <div class="adj-row"><span class="adj-label">Contraste</span><input type="range" id="adj-contrast" min="-100" max="100" value="0" oninput="updateAdj();document.getElementById('adj-contrast-val').textContent=this.value"><span class="adj-val" id="adj-contrast-val">0</span></div>
+        <div class="adj-row"><span class="adj-label">Saturação</span><input type="range" id="adj-saturation" min="-100" max="100" value="0" oninput="updateAdj();document.getElementById('adj-saturation-val').textContent=this.value"><span class="adj-val" id="adj-saturation-val">0</span></div>
+        <div class="adj-row"><span class="adj-label">Matiz</span><input type="range" id="adj-hue" min="-180" max="180" value="0" oninput="updateAdj();document.getElementById('adj-hue-val').textContent=this.value"><span class="adj-val" id="adj-hue-val">0</span></div>
+        <div class="adj-row"><span class="adj-label">Exposição</span><input type="range" id="adj-exposure" min="-100" max="100" value="0" oninput="updateAdj();document.getElementById('adj-exposure-val').textContent=this.value"><span class="adj-val" id="adj-exposure-val">0</span></div>
+        <div class="adj-row"><span class="adj-label">Temperatura</span><input type="range" id="adj-temp" min="-100" max="100" value="0" oninput="updateAdj();document.getElementById('adj-temp-val').textContent=this.value"><span class="adj-val" id="adj-temp-val">0</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:.75rem">
+        <button class="btn btn-outline" style="height:40px" onclick="resetAdj()">↺ Reset</button>
+        <button class="btn btn-primary" style="flex:1;height:40px" onclick="dlCanvas('adj-result','ajustes')">↓ Descarregar</button>
+      </div>
+    </div>
+    <div class="status" id="adj-status"></div>
+  </div>
+</div>
+
+<!-- SHARPEN -->
+<div class="page" id="page-sharpen">
+  <div class="page-header"><div class="page-title">◈ Nitidez & desfoque</div><div class="page-sub">Afina ou desfocar a imagem com precisão</div></div>
+  <div class="card">
+    <div class="drop-zone" id="shp-drop" onclick="document.getElementById('shp-input').click()">
+      <div class="drop-icon">◈</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="shp-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadAndProcess('shp',this,null)">
+    </div>
+    <div id="shp-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Modo</label><select id="shp-mode"><option value="sharpen">Aumentar nitidez</option><option value="blur">Desfocar (blur)</option><option value="edge">Realçar contornos</option></select></div>
+      <div class="field"><label>Intensidade — <span id="shp-val">3</span></label><div class="range-row"><input type="range" id="shp-intensity" min="1" max="10" value="3" oninput="document.getElementById('shp-val').textContent=this.value"></div></div>
+      <div class="preview-split">
+        <div class="preview-box"><div class="preview-label">Original</div><div class="preview-canvas-wrap"><canvas id="shp-orig"></canvas></div></div>
+        <div class="preview-box"><div class="preview-label">Resultado</div><div class="preview-canvas-wrap"><canvas id="shp-result"></canvas></div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:.75rem">
+        <button class="btn btn-primary" style="flex:1;height:44px" onclick="applySharpen()">◈ Aplicar</button>
+        <button class="btn btn-outline" style="height:44px" onclick="dlCanvas('shp-result','nitidez')">↓ Descarregar</button>
+      </div>
+    </div>
+    <div class="status" id="shp-status"></div>
+  </div>
+</div>
+
+<!-- ROTATE FLIP -->
+<div class="page" id="page-rotate-flip">
+  <div class="page-header"><div class="page-title">↻ Rodar & Espelhar</div><div class="page-sub">Rotação livre e espelho horizontal/vertical</div></div>
+  <div class="card">
+    <div class="drop-zone" id="rot-drop" onclick="document.getElementById('rot-input').click()">
+      <div class="drop-icon">↻</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="rot-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadRot(this)">
+    </div>
+    <div id="rot-options" style="display:none;margin-top:1rem">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem">
+        <button class="btn btn-outline" style="height:36px;font-size:12px" onclick="applyRot(-90)">↺ -90°</button>
+        <button class="btn btn-outline" style="height:36px;font-size:12px" onclick="applyRot(90)">↻ +90°</button>
+        <button class="btn btn-outline" style="height:36px;font-size:12px" onclick="applyRot(180)">↻ 180°</button>
+        <button class="btn btn-outline" style="height:36px;font-size:12px" onclick="applyFlip('h')">↔ Espelhar H</button>
+        <button class="btn btn-outline" style="height:36px;font-size:12px" onclick="applyFlip('v')">↕ Espelhar V</button>
+      </div>
+      <div class="preview-canvas-wrap"><canvas id="rot-canvas" style="max-width:100%;max-height:300px"></canvas></div>
+      <button class="btn btn-primary btn-full" onclick="dlCanvas('rot-canvas','rotada')">↓ Descarregar</button>
+    </div>
+    <div class="status" id="rot-status"></div>
+  </div>
+</div>
+
+<!-- WATERMARK -->
+<div class="page" id="page-watermark">
+  <div class="page-header"><div class="page-title">◎ Marca de água</div><div class="page-sub">Adiciona texto ou logo como marca de água</div></div>
+  <div class="card">
+    <div class="drop-zone" id="wm-drop" onclick="document.getElementById('wm-input').click()">
+      <div class="drop-icon">◎</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="wm-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadWM(this)">
+    </div>
+    <div id="wm-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Texto da marca de água</label><input type="text" id="wm-text" placeholder="© Eagle Marketing 2025" value="© Eagle Marketing"></div>
+      <div class="row3">
+        <div class="field"><label>Cor</label><input type="color" id="wm-color" value="#ffffff" style="height:36px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px;width:100%"></div>
+        <div class="field"><label>Opacidade — <span id="wm-op-val">50</span>%</label><div class="range-row"><input type="range" id="wm-opacity" min="10" max="100" value="50" oninput="document.getElementById('wm-op-val').textContent=this.value;applyWM()"></div></div>
+        <div class="field"><label>Posição</label><select id="wm-pos" onchange="applyWM()"><option value="bottomright">Canto inferior direito</option><option value="bottomleft">Canto inferior esquerdo</option><option value="topleft">Canto superior esquerdo</option><option value="topright">Canto superior direito</option><option value="center">Centro</option></select></div>
+      </div>
+      <div class="preview-canvas-wrap" style="margin-bottom:.75rem"><canvas id="wm-canvas" style="max-width:100%;max-height:300px"></canvas></div>
+      <button class="btn btn-primary btn-full" onclick="dlCanvas('wm-canvas','watermark')">↓ Descarregar</button>
+    </div>
+    <div class="status" id="wm-status"></div>
+  </div>
+</div>
+
+<!-- BORDER -->
+<div class="page" id="page-border">
+  <div class="page-header"><div class="page-title">⊡ Moldura & borda</div><div class="page-sub">Adiciona molduras e bordas elegantes</div></div>
+  <div class="card">
+    <div class="drop-zone" id="brd-drop" onclick="document.getElementById('brd-input').click()">
+      <div class="drop-icon">⊡</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="brd-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadBrd(this)">
+    </div>
+    <div id="brd-options" style="display:none;margin-top:1rem">
+      <div class="row3">
+        <div class="field"><label>Espessura (px) — <span id="brd-size-val">20</span></label><div class="range-row"><input type="range" id="brd-size" min="1" max="100" value="20" oninput="document.getElementById('brd-size-val').textContent=this.value;applyBrd()"></div></div>
+        <div class="field"><label>Cor</label><input type="color" id="brd-color" value="#ffffff" style="height:36px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px;width:100%" oninput="applyBrd()"></div>
+        <div class="field"><label>Estilo</label><select id="brd-style" onchange="applyBrd()"><option value="solid">Sólido</option><option value="shadow">Sombra</option><option value="double">Duplo</option></select></div>
+      </div>
+      <div class="preview-canvas-wrap" style="margin-bottom:.75rem"><canvas id="brd-canvas" style="max-width:100%;max-height:300px"></canvas></div>
+      <button class="btn btn-primary btn-full" onclick="dlCanvas('brd-canvas','moldura')">↓ Descarregar</button>
+    </div>
+    <div class="status" id="brd-status"></div>
+  </div>
+</div>
+
+<!-- BW -->
+<div class="page" id="page-colorsplit">
+  <div class="page-header"><div class="page-title">◐ Preto & Branco</div><div class="page-sub">Converte para P&B com controlo sobre o resultado</div></div>
+  <div class="card">
+    <div class="drop-zone" id="bw-drop" onclick="document.getElementById('bw-input').click()">
+      <div class="drop-icon">◐</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="bw-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadBW(this)">
+    </div>
+    <div id="bw-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Método</label><select id="bw-method" onchange="applyBW()"><option value="luminance">Luminância (natural)</option><option value="average">Média</option><option value="high-contrast">Alto contraste</option><option value="sepia">Sépia</option></select></div>
+      <div class="preview-split">
+        <div class="preview-box"><div class="preview-label">Original</div><div class="preview-canvas-wrap"><canvas id="bw-orig"></canvas></div></div>
+        <div class="preview-box"><div class="preview-label">P&B</div><div class="preview-canvas-wrap"><canvas id="bw-result"></canvas></div></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="dlCanvas('bw-result','pb')">↓ Descarregar</button>
+    </div>
+    <div class="status" id="bw-status"></div>
+  </div>
+</div>
+
+<!-- PALETTE -->
+<div class="page" id="page-palette">
+  <div class="page-header"><div class="page-title">🎨 Paleta de cores</div><div class="page-sub">Extrai as cores dominantes de qualquer imagem</div></div>
+  <div class="card">
+    <div class="drop-zone" id="pal-drop" onclick="document.getElementById('pal-input').click()">
+      <div class="drop-icon">🎨</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="pal-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadPalette(this)">
+    </div>
+    <div id="pal-result" style="display:none;margin-top:1rem"></div>
+    <div class="status" id="pal-status"></div>
+  </div>
+</div>
+
+<!-- PLACEHOLDER -->
+<div class="page" id="page-placeholder">
+  <div class="page-header"><div class="page-title">▣ Imagem placeholder</div><div class="page-sub">Cria imagens placeholder para design e desenvolvimento</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>Largura (px)</label><input type="number" id="ph-w" value="800" min="1" max="4000"></div>
+      <div class="field"><label>Altura (px)</label><input type="number" id="ph-h" value="600" min="1" max="4000"></div>
+    </div>
+    <div class="row3">
+      <div class="field"><label>Cor de fundo</label><input type="color" id="ph-bg" value="#1e1e2e" style="height:36px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px;width:100%"></div>
+      <div class="field"><label>Cor do texto</label><input type="color" id="ph-fg" value="#888888" style="height:36px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px;width:100%"></div>
+      <div class="field"><label>Texto</label><input type="text" id="ph-text" placeholder="Auto (dimensões)"></div>
+    </div>
+    <canvas id="ph-canvas" style="max-width:100%;border-radius:var(--rs);margin-bottom:.75rem;display:none"></canvas>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="generatePlaceholder()">▣ Gerar</button>
+      <button class="btn btn-outline" style="height:44px" onclick="dlCanvas('ph-canvas','placeholder')">↓ Descarregar</button>
+    </div>
+    <div class="status" id="ph-status"></div>
+  </div>
+</div>
+
+<div class="page" id="page-ocr">
+  <div class="page-header"><div class="page-title">🔤 Extrair texto (OCR)</div><div class="page-sub">Lê o texto de fotos, digitalizações e capturas de ecrã — no teu browser, sem enviar a imagem</div></div>
+  <div class="card">
+    <div class="drop-zone" id="ocr-drop" onclick="document.getElementById('ocr-input').click()">
+      <div class="drop-icon">🔤</div><div class="drop-title">Clica ou arrasta uma imagem</div><div class="drop-sub">JPG · PNG · WEBP · HEIC</div>
+      <input type="file" id="ocr-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadOCR(this)">
+    </div>
+    <div class="field" style="margin-top:.75rem"><label>Idioma do texto</label>
+      <select id="ocr-lang"><option value="por">Português</option><option value="eng">Inglês</option><option value="por+eng" selected>Português + Inglês</option><option value="fra">Francês</option><option value="spa">Espanhol</option></select>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doOCR()">🔤 Extrair texto</button>
+    <div class="status" id="ocr-status"></div>
+    <div class="field" id="ocr-out-wrap" style="display:none;margin-top:.75rem"><label>Texto extraído <span id="ocr-conf" style="text-transform:none;letter-spacing:0"></span></label>
+      <textarea id="ocr-out" rows="10"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-outline" style="flex:1" onclick="copyOCR(this)">⎘ Copiar</button><button class="btn btn-outline" style="flex:1" onclick="dlOCR()">↓ Descarregar .txt</button></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script src="vendor/jszip.min.js"></script>
+<script src="tm-core.js"></script>
+<script src="tm-rmbg.js"></script>
+<script src="tm-image.js"></script>
+<script>
+// NAV
+function nav(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');else document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active');});}
+
+// HELPERS
+function st(id,msg,type='loading'){const el=document.getElementById(id+'-status');if(!el)return;el.style.display='block';el.className='status '+type;el.textContent=msg;}
+function dlBlob(blob,name){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+function dlCanvas(id,name){const c=document.getElementById(id);if(!c)return;c.toBlob(b=>dlBlob(b,'imagemaster-'+name+'-'+Date.now()+'.png'),'image/png');}
+function readDU(file){return TMIMG.readDataURL(file);}
+async function imgFromSrc(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function drawToCanvas(canvasId,img,maxW=320,maxH=240){const c=document.getElementById(canvasId);if(!c)return c;const scale=Math.min(1,maxW/img.naturalWidth,maxH/img.naturalHeight);c.width=img.naturalWidth*scale;c.height=img.naturalHeight*scale;c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c;}
+
+// DROP EVENTS
+document.querySelectorAll('.drop-zone').forEach(dz=>{
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const input=dz.querySelector('input[type=file]');if(!input||!e.dataTransfer.files[0])return;const dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);input.files=dt.files;input.dispatchEvent(new Event('change'));});
+});
+
+// ====== REMOVE BG ======
+let rmbgImg=null,rmbgFile=null;
+async function loadRMBG(input){
+  const f=input.files[0];if(!f)return;rmbgFile=f;
+  const src=await readDU(f);rmbgImg=await imgFromSrc(src);
+  document.getElementById('rmbg-drop').classList.add('has-file');
+  document.getElementById('rmbg-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  document.getElementById('rmbg-options').style.display='block';
+  document.getElementById('rmbg-orig').src=src;
+  document.getElementById('rmbg-bg').onchange=()=>document.getElementById('rmbg-custom-color').style.display=document.getElementById('rmbg-bg').value==='custom'?'block':'none';
+}
+async function doRMBG(){
+  if(!rmbgImg||!rmbgFile)return;
+  const btn=document.querySelector('#page-rmbg button.btn-primary');if(btn)btn.disabled=true;
+  try{
+    const png=await TMRMBG.removeBackground(rmbgFile,{onStatus:m=>st('rmbg',m,'loading')});
+    const sel=document.getElementById('rmbg-bg').value;
+    const bg=sel==='custom'?document.getElementById('rmbg-color').value:sel;
+    const out=await TMRMBG.compose(png,bg);
+    const c=document.getElementById('rmbg-result');c.width=out.width;c.height=out.height;c.getContext('2d').drawImage(out,0,0);
+    document.getElementById('rmbg-placeholder').style.display='none';
+    const fmt=bg==='transparent'?'image/png':'image/jpeg';
+    c.toBlob(b=>{if(!b){st('rmbg','✗ Não foi possível gerar o ficheiro final.','err');return;}dlBlob(b,'sem-fundo-'+Date.now()+(fmt==='image/png'?'.png':'.jpg'));},fmt,0.95);
+    st('rmbg','✓ Fundo removido!','ok');
+  }catch(e){st('rmbg','✗ '+e.message,'err');}
+  finally{if(btn)btn.disabled=false;}
+}
+
+// ====== REMOVE BG BATCH ======
+let rmbgbFiles=[];
+function addRMBGBFiles(input){[...input.files].forEach(f=>rmbgbFiles.push(f));input.value='';renderRMBGBList();}
+function renderRMBGBList(){
+  const l=document.getElementById('rmbgb-list');
+  l.innerHTML=rmbgbFiles.map((f,i)=>`<div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:7px 10px;font-size:12px;margin-bottom:5px"><span style="flex:1">${f.name}</span><span style="color:var(--text2);font-size:11px">${(f.size/1024).toFixed(0)}KB</span><button onclick="rmbgbFiles.splice(${i},1);renderRMBGBList()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px">✕</button></div>`).join('');
+  document.getElementById('rmbgb-has').style.display=rmbgbFiles.length?'block':'none';
+}
+async function doRMBGBatch(){
+  if(!rmbgbFiles.length)return;st('rmbgb','A processar...','loading');
+  document.getElementById('rmbgb-progress').style.display='block';
+  const bg=document.getElementById('rmbgb-bg').value;
+  const zip=new JSZip();let done=0;const failed=[];
+  for(let i=0;i<rmbgbFiles.length;i++){
+    const f=rmbgbFiles[i];
+    document.getElementById('rmbgb-bar').style.width=Math.round((i/rmbgbFiles.length)*90)+'%';
+    document.getElementById('rmbgb-prog-pct').textContent=Math.round((i/rmbgbFiles.length)*90)+'%';
+    document.getElementById('rmbgb-prog-label').textContent='A processar '+f.name+'...';
+    try{
+      const png=await TMRMBG.removeBackground(f,{onStatus:m=>document.getElementById('rmbgb-prog-label').textContent=f.name+': '+m});
+      const c=await TMRMBG.compose(png,bg);
+      const blob=await new Promise(res=>c.toBlob(res,'image/png'));
+      zip.file(f.name.replace(/\.[^.]+$/,'')+'-sem-fundo.png',blob);done++;
+    }catch(e){failed.push(f.name+': '+e.message);}
+  }
+  document.getElementById('rmbgb-bar').style.width='100%';document.getElementById('rmbgb-prog-pct').textContent='100%';
+  if(done){const zblob=await zip.generateAsync({type:'blob'});dlBlob(zblob,'sem-fundo-batch-'+Date.now()+'.zip');}
+  if(!done){st('rmbgb','✗ Nenhuma imagem processada. '+failed.join(' | '),'err');return;}
+  st('rmbgb',failed.length?'⚠ '+done+' processadas, '+failed.length+' falharam: '+failed.join(' | '):'✓ '+done+' imagens processadas!',failed.length?'err':'ok');
+}
+
+// ====== ENHANCE ======
+let enhImg=null;
+async function loadAndProcess(prefix,input,cb){
+  const f=input.files[0];if(!f)return;
+  const src=await readDU(f);enhImg=await imgFromSrc(src);
+  document.getElementById(prefix+'-drop').classList.add('has-file');
+  document.getElementById(prefix+'-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  document.getElementById(prefix+'-options').style.display='block';
+  const oc=document.getElementById(prefix+'-orig-canvas');if(oc)drawToCanvas(prefix+'-orig-canvas',enhImg);
+  const rc=document.getElementById(prefix+'-result-canvas');if(rc)drawToCanvas(prefix+'-result-canvas',enhImg);
+  // Load specific previews
+  if(prefix==='shp'){shpImg=enhImg;const sc=document.getElementById('shp-orig');if(sc)drawToCanvas('shp-orig',shpImg);}
+}
+function applyEnhance(){
+  if(!enhImg)return;
+  const c=document.getElementById('enh-result-canvas');
+  const level=document.getElementById('enh-level').value;
+  const amount=level==='light'?0.5:level==='medium'?1:2;
+  c.width=enhImg.naturalWidth;c.height=enhImg.naturalHeight;
+  const ctx=c.getContext('2d');ctx.drawImage(enhImg,0,0);
+  const id=ctx.getImageData(0,0,c.width,c.height);
+  sharpenKernel(id,c.width,c.height,amount);
+  ctx.putImageData(id,0,0);
+  // Show scaled
+  drawToCanvas('enh-result-canvas',enhImg);
+  const c2=document.getElementById('enh-result-canvas');c2.width=enhImg.naturalWidth;c2.height=enhImg.naturalHeight;
+  c2.getContext('2d').drawImage(enhImg,0,0);
+  const id2=c2.getContext('2d').getImageData(0,0,c2.width,c2.height);sharpenKernel(id2,c2.width,c2.height,amount);c2.getContext('2d').putImageData(id2,0,0);
+  st('enh','✓ Qualidade melhorada!','ok');
+}
+
+function sharpenKernel(imageData,w,h,amount){
+  const d=imageData.data;const orig=new Uint8ClampedArray(d);
+  const k=[-1,-1,-1,-1,9,-1,-1,-1,-1];
+  for(let y=1;y<h-1;y++){for(let x=1;x<w-1;x++){const idx=(y*w+x)*4;for(let ch=0;ch<3;ch++){let v=0;for(let ky=-1;ky<=1;ky++){for(let kx=-1;kx<=1;kx++){const si=((y+ky)*w+(x+kx))*4;v+=orig[si+ch]*k[(ky+1)*3+(kx+1)];}}d[idx+ch]=Math.min(255,Math.max(0,orig[idx+ch]*(1-amount)+v*amount));}}}
+}
+
+// ====== FILTERS ======
+let fltImg=null,currentFilter='none';
+const FILTERS={
+  none:{name:'Original',fn:(d,w,h)=>{}},
+  vintage:{name:'Vintage',fn:(d)=>{for(let i=0;i<d.length;i+=4){d[i]=Math.min(255,d[i]*1.1+20);d[i+1]=Math.min(255,d[i+1]*0.9+10);d[i+2]=Math.min(255,d[i+2]*0.8);}}},
+  cinema:{name:'Cinema',fn:(d)=>{for(let i=0;i<d.length;i+=4){const avg=(d[i]+d[i+1]+d[i+2])/3;d[i]=Math.min(255,avg*0.9+d[i]*0.1+10);d[i+1]=Math.min(255,avg*0.9+d[i+1]*0.1);d[i+2]=Math.min(255,avg*0.7+d[i+2]*0.3+20);}}},
+  matte:{name:'Matte',fn:(d)=>{for(let i=0;i<d.length;i+=4){d[i]=Math.min(255,d[i]*0.9+20);d[i+1]=Math.min(255,d[i+1]*0.9+15);d[i+2]=Math.min(255,d[i+2]*0.9+10);}}},
+  warm:{name:'Quente',fn:(d)=>{for(let i=0;i<d.length;i+=4){d[i]=Math.min(255,d[i]+30);d[i+1]=Math.min(255,d[i+1]+10);d[i+2]=Math.max(0,d[i+2]-20);}}},
+  cold:{name:'Frio',fn:(d)=>{for(let i=0;i<d.length;i+=4){d[i]=Math.max(0,d[i]-20);d[i+1]=Math.min(255,d[i+1]+5);d[i+2]=Math.min(255,d[i+2]+30);}}},
+  dramatic:{name:'Dramático',fn:(d)=>{for(let i=0;i<d.length;i+=4){const avg=(d[i]+d[i+1]+d[i+2])/3;const c=avg>128?1.3:0.7;d[i]=Math.min(255,Math.max(0,d[i]*c));d[i+1]=Math.min(255,Math.max(0,d[i+1]*c));d[i+2]=Math.min(255,Math.max(0,d[i+2]*c));}}},
+  fade:{name:'Fade',fn:(d)=>{for(let i=0;i<d.length;i+=4){d[i]=Math.min(255,d[i]*0.8+50);d[i+1]=Math.min(255,d[i+1]*0.8+50);d[i+2]=Math.min(255,d[i+2]*0.8+50);}}},
+};
+async function loadFilters(input){
+  const f=input.files[0];if(!f)return;
+  const src=await readDU(f);fltImg=await imgFromSrc(src);
+  document.getElementById('flt-drop').classList.add('has-file');document.getElementById('flt-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  document.getElementById('flt-options').style.display='block';
+  drawToCanvas('flt-orig',fltImg);drawToCanvas('flt-result',fltImg);
+  const grid=document.getElementById('filter-grid');grid.innerHTML='';
+  Object.entries(FILTERS).forEach(([key,filter])=>{
+    const c=document.createElement('canvas');c.className='filter-canvas';c.width=80;c.height=56;
+    const ctx=c.getContext('2d');ctx.drawImage(fltImg,0,0,80,56);
+    if(key!=='none'){const id=ctx.getImageData(0,0,80,56);filter.fn(id.data,80,56);ctx.putImageData(id,0,0);}
+    const btn=document.createElement('button');btn.className='filter-btn'+(key==='none'?' active':'');btn.id='fltbtn-'+key;
+    btn.appendChild(c);btn.appendChild(document.createTextNode(filter.name));
+    btn.onclick=()=>{currentFilter=key;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');previewFilter();};
+    grid.appendChild(btn);
+  });
+}
+function previewFilter(){
+  if(!fltImg)return;const c=document.getElementById('flt-result');
+  const scale=Math.min(1,320/fltImg.naturalWidth,240/fltImg.naturalHeight);
+  c.width=fltImg.naturalWidth*scale;c.height=fltImg.naturalHeight*scale;
+  const ctx=c.getContext('2d');ctx.drawImage(fltImg,0,0,c.width,c.height);
+  if(currentFilter!=='none'){const id=ctx.getImageData(0,0,c.width,c.height);FILTERS[currentFilter].fn(id.data,c.width,c.height);ctx.putImageData(id,0,0);}
+}
+function applyFilter(){
+  if(!fltImg)return;const c=document.getElementById('flt-result');
+  c.width=fltImg.naturalWidth;c.height=fltImg.naturalHeight;
+  const ctx=c.getContext('2d');ctx.drawImage(fltImg,0,0);
+  if(currentFilter!=='none'){const id=ctx.getImageData(0,0,c.width,c.height);FILTERS[currentFilter].fn(id.data,c.width,c.height);ctx.putImageData(id,0,0);}
+  c.toBlob(b=>dlBlob(b,'filtro-'+currentFilter+'-'+Date.now()+'.jpg'),'image/jpeg',0.92);
+  st('flt','✓ Filtro "'+FILTERS[currentFilter].name+'" aplicado!','ok');
+}
+
+// ====== ADJUST ======
+let adjImg=null,adjOrigData=null;
+async function loadAdj(input){
+  const f=input.files[0];if(!f)return;
+  const src=await readDU(f);adjImg=await imgFromSrc(src);
+  document.getElementById('adj-drop').classList.add('has-file');document.getElementById('adj-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  document.getElementById('adj-options').style.display='block';
+  drawToCanvas('adj-orig',adjImg);
+  const c=document.getElementById('adj-result');
+  const s=Math.min(1,320/adjImg.naturalWidth,240/adjImg.naturalHeight);c.width=adjImg.naturalWidth*s;c.height=adjImg.naturalHeight*s;
+  c.getContext('2d').drawImage(adjImg,0,0,c.width,c.height);
+  adjOrigData=c.getContext('2d').getImageData(0,0,c.width,c.height);
+}
+function updateAdj(){
+  if(!adjOrigData)return;
+  const c=document.getElementById('adj-result');const ctx=c.getContext('2d');
+  const id=new ImageData(new Uint8ClampedArray(adjOrigData.data),c.width,c.height);
+  const d=id.data;
+  const brightness=parseInt(document.getElementById('adj-brightness').value);
+  const contrast=parseInt(document.getElementById('adj-contrast').value)/100;
+  const saturation=(parseInt(document.getElementById('adj-saturation').value)+100)/100;
+  const exposure=parseInt(document.getElementById('adj-exposure').value)/100;
+  const temp=parseInt(document.getElementById('adj-temp').value);
+  for(let i=0;i<d.length;i+=4){
+    let r=d[i],g=d[i+1],b=d[i+2];
+    // Brightness
+    r+=brightness;g+=brightness;b+=brightness;
+    // Exposure
+    r*=(1+exposure);g*=(1+exposure);b*=(1+exposure);
+    // Contrast
+    r=(r-128)*( 1+contrast)+128;g=(g-128)*(1+contrast)+128;b=(b-128)*(1+contrast)+128;
+    // Temperature
+    r+=temp;b-=temp;
+    // Saturation
+    const avg=(r+g+b)/3;r=avg+(r-avg)*saturation;g=avg+(g-avg)*saturation;b=avg+(b-avg)*saturation;
+    d[i]=Math.min(255,Math.max(0,r));d[i+1]=Math.min(255,Math.max(0,g));d[i+2]=Math.min(255,Math.max(0,b));
+  }
+  ctx.putImageData(id,0,0);
+}
+function resetAdj(){
+  ['adj-brightness','adj-contrast','adj-saturation','adj-hue','adj-exposure','adj-temp'].forEach(id=>{document.getElementById(id).value=0;});
+  ['adj-brightness-val','adj-contrast-val','adj-saturation-val','adj-hue-val','adj-exposure-val','adj-temp-val'].forEach(id=>{document.getElementById(id).textContent=0;});
+  updateAdj();
+}
+
+// ====== SHARPEN ======
+let shpImg=null;
+async function applySharpen(){
+  if(!shpImg){st('shp','Carrega uma imagem primeiro.','err');return;}
+  const c=document.getElementById('shp-result');const mode=document.getElementById('shp-mode').value;const intensity=parseInt(document.getElementById('shp-intensity').value);
+  c.width=shpImg.naturalWidth;c.height=shpImg.naturalHeight;const ctx=c.getContext('2d');ctx.drawImage(shpImg,0,0);
+  const id=ctx.getImageData(0,0,c.width,c.height);
+  if(mode==='sharpen')sharpenKernel(id,c.width,c.height,intensity/5);
+  else if(mode==='blur')blurKernel(id,c.width,c.height,intensity);
+  else edgeKernel(id,c.width,c.height);
+  ctx.putImageData(id,0,0);
+  const rc=document.getElementById('shp-result');const s=Math.min(1,320/rc.width,240/rc.height);
+  const tmp=document.createElement('canvas');tmp.width=rc.width;tmp.height=rc.height;tmp.getContext('2d').putImageData(id,0,0);
+  rc.width=tmp.width*s;rc.height=tmp.height*s;rc.getContext('2d').drawImage(tmp,0,0,rc.width,rc.height);
+  // Keep full res for download
+  const fc=document.createElement('canvas');fc.width=shpImg.naturalWidth;fc.height=shpImg.naturalHeight;fc.getContext('2d').drawImage(shpImg,0,0);
+  const fid=fc.getContext('2d').getImageData(0,0,fc.width,fc.height);
+  if(mode==='sharpen')sharpenKernel(fid,fc.width,fc.height,intensity/5);
+  fc.id='shp-full';fc.style.display='none';document.body.appendChild(fc);
+  st('shp','✓ Aplicado!','ok');
+}
+function blurKernel(id,w,h,r){const d=id.data;const orig=new Uint8ClampedArray(d);const sz=(2*r+1)*(2*r+1);for(let y=r;y<h-r;y++){for(let x=r;x<w-r;x++){let rs=0,gs=0,bs=0;for(let ky=-r;ky<=r;ky++){for(let kx=-r;kx<=r;kx++){const i=((y+ky)*w+(x+kx))*4;rs+=orig[i];gs+=orig[i+1];bs+=orig[i+2];}}const idx=(y*w+x)*4;d[idx]=rs/sz;d[idx+1]=gs/sz;d[idx+2]=bs/sz;}}}
+function edgeKernel(id,w,h){const d=id.data;const orig=new Uint8ClampedArray(d);const k=[-1,-1,-1,-1,8,-1,-1,-1,-1];for(let y=1;y<h-1;y++){for(let x=1;x<w-1;x++){const idx=(y*w+x)*4;for(let ch=0;ch<3;ch++){let v=0;for(let ky=-1;ky<=1;ky++){for(let kx=-1;kx<=1;kx++){v+=orig[((y+ky)*w+(x+kx))*4+ch]*k[(ky+1)*3+(kx+1)];}}d[idx+ch]=Math.min(255,Math.max(0,v));}}}}
+
+// ====== ROTATE ======
+let rotImg=null,rotAngle=0,rotFlipH=false,rotFlipV=false;
+async function loadRot(input){
+  const f=input.files[0];if(!f)return;const src=await readDU(f);rotImg=await imgFromSrc(src);rotAngle=0;rotFlipH=false;rotFlipV=false;
+  document.getElementById('rot-drop').classList.add('has-file');document.getElementById('rot-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  document.getElementById('rot-options').style.display='block';drawRot();
+}
+function applyRot(deg){rotAngle=(rotAngle+deg+360)%360;drawRot();}
+function applyFlip(dir){if(dir==='h')rotFlipH=!rotFlipH;else rotFlipV=!rotFlipV;drawRot();}
+function drawRot(){
+  if(!rotImg)return;const c=document.getElementById('rot-canvas');const rad=rotAngle*Math.PI/180;
+  const sw=rotImg.naturalWidth,sh=rotImg.naturalHeight;
+  const cos=Math.abs(Math.cos(rad)),sin=Math.abs(Math.sin(rad));
+  c.width=Math.round(sw*cos+sh*sin);c.height=Math.round(sw*sin+sh*cos);
+  const ctx=c.getContext('2d');ctx.translate(c.width/2,c.height/2);ctx.rotate(rad);
+  if(rotFlipH)ctx.scale(-1,1);if(rotFlipV)ctx.scale(1,-1);
+  ctx.drawImage(rotImg,-sw/2,-sh/2);ctx.setTransform(1,0,0,1,0,0);
+}
+
+// ====== WATERMARK ======
+let wmImg=null;
+async function loadWM(input){const f=input.files[0];if(!f)return;const src=await readDU(f);wmImg=await imgFromSrc(src);document.getElementById('wm-drop').classList.add('has-file');document.getElementById('wm-drop').querySelector('.drop-title').textContent='✓ '+f.name;document.getElementById('wm-options').style.display='block';applyWM();}
+function applyWM(){
+  if(!wmImg)return;const c=document.getElementById('wm-canvas');
+  const s=Math.min(1,500/wmImg.naturalWidth,400/wmImg.naturalHeight);c.width=wmImg.naturalWidth*s;c.height=wmImg.naturalHeight*s;
+  const ctx=c.getContext('2d');ctx.drawImage(wmImg,0,0,c.width,c.height);
+  const text=document.getElementById('wm-text').value||'© Marca';
+  const color=document.getElementById('wm-color').value;const op=parseInt(document.getElementById('wm-opacity').value)/100;
+  const pos=document.getElementById('wm-pos').value;
+  const fontSize=Math.max(16,Math.round(c.width*0.05));
+  ctx.font=`bold ${fontSize}px -apple-system,sans-serif`;ctx.globalAlpha=op;ctx.fillStyle=color;
+  const tm=ctx.measureText(text);const pad=20;
+  let x,y;
+  if(pos==='bottomright'){x=c.width-tm.width-pad;y=c.height-pad;}
+  else if(pos==='bottomleft'){x=pad;y=c.height-pad;}
+  else if(pos==='topleft'){x=pad;y=fontSize+pad;}
+  else if(pos==='topright'){x=c.width-tm.width-pad;y=fontSize+pad;}
+  else{x=(c.width-tm.width)/2;y=c.height/2;}
+  ctx.fillText(text,x,y);ctx.globalAlpha=1;
+}
+
+// ====== BORDER ======
+let brdImg=null;
+async function loadBrd(input){const f=input.files[0];if(!f)return;const src=await readDU(f);brdImg=await imgFromSrc(src);document.getElementById('brd-drop').classList.add('has-file');document.getElementById('brd-drop').querySelector('.drop-title').textContent='✓ '+f.name;document.getElementById('brd-options').style.display='block';applyBrd();}
+function applyBrd(){
+  if(!brdImg)return;const c=document.getElementById('brd-canvas');const size=parseInt(document.getElementById('brd-size').value);const color=document.getElementById('brd-color').value;const style=document.getElementById('brd-style').value;
+  const s=Math.min(1,500/brdImg.naturalWidth,400/brdImg.naturalHeight);
+  c.width=brdImg.naturalWidth*s+size*2;c.height=brdImg.naturalHeight*s+size*2;
+  const ctx=c.getContext('2d');ctx.fillStyle=color;ctx.fillRect(0,0,c.width,c.height);
+  if(style==='shadow'){ctx.shadowColor='rgba(0,0,0,0.4)';ctx.shadowBlur=size;ctx.shadowOffsetX=size/3;ctx.shadowOffsetY=size/3;}
+  ctx.drawImage(brdImg,size,size,brdImg.naturalWidth*s,brdImg.naturalHeight*s);
+  if(style==='double'){ctx.shadowColor='transparent';ctx.strokeStyle=color==='#ffffff'?'#cccccc':'#ffffff';ctx.lineWidth=size*0.3;ctx.strokeRect(size/2,size/2,c.width-size,c.height-size);}
+}
+
+// ====== B&W ======
+let bwImg=null;
+async function loadBW(input){const f=input.files[0];if(!f)return;const src=await readDU(f);bwImg=await imgFromSrc(src);document.getElementById('bw-drop').classList.add('has-file');document.getElementById('bw-drop').querySelector('.drop-title').textContent='✓ '+f.name;document.getElementById('bw-options').style.display='block';drawToCanvas('bw-orig',bwImg);applyBW();}
+function applyBW(){
+  if(!bwImg)return;const c=document.getElementById('bw-result');const method=document.getElementById('bw-method').value;
+  const s=Math.min(1,320/bwImg.naturalWidth,240/bwImg.naturalHeight);c.width=bwImg.naturalWidth*s;c.height=bwImg.naturalHeight*s;
+  const ctx=c.getContext('2d');ctx.drawImage(bwImg,0,0,c.width,c.height);
+  const id=ctx.getImageData(0,0,c.width,c.height);const d=id.data;
+  for(let i=0;i<d.length;i+=4){
+    let v;
+    if(method==='luminance')v=d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114;
+    else if(method==='average')v=(d[i]+d[i+1]+d[i+2])/3;
+    else if(method==='high-contrast')v=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)>128?255:0;
+    else{v=d[i]*0.393+d[i+1]*0.769+d[i+2]*0.189;d[i]=Math.min(255,v);v=d[i]*0.349+d[i+1]*0.686+d[i+2]*0.168;d[i+1]=Math.min(255,v);v=d[i]*0.272+d[i+1]*0.534+d[i+2]*0.131;d[i+2]=Math.min(255,v);continue;}
+    d[i]=d[i+1]=d[i+2]=Math.min(255,v);
+  }
+  ctx.putImageData(id,0,0);
+}
+
+// ====== PALETTE ======
+async function loadPalette(input){
+  const f=input.files[0];if(!f)return;st('pal','A extrair cores...','loading');
+  const src=await readDU(f);const img=await imgFromSrc(src);
+  document.getElementById('pal-drop').classList.add('has-file');document.getElementById('pal-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  const c=document.createElement('canvas');const s=Math.min(1,100/img.naturalWidth);c.width=img.naturalWidth*s;c.height=img.naturalHeight*s;
+  const ctx=c.getContext('2d');ctx.drawImage(img,0,0,c.width,c.height);
+  const id=ctx.getImageData(0,0,c.width,c.height);const d=id.data;
+  const colors={};
+  for(let i=0;i<d.length;i+=4){
+    const r=Math.round(d[i]/32)*32,g=Math.round(d[i+1]/32)*32,b=Math.round(d[i+2]/32)*32;
+    const key=`${r},${g},${b}`;colors[key]=(colors[key]||0)+1;
+  }
+  const sorted=Object.entries(colors).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const el=document.getElementById('pal-result');el.style.display='block';
+  el.innerHTML='<div class="card-title">Cores dominantes</div><div style="display:flex;flex-wrap:wrap;gap:10px">'
+    +sorted.map(([key,count])=>{
+      const [r,g,b]=key.split(',').map(Number);
+      const hex='#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+      return `<div onclick="navigator.clipboard.writeText('${hex}')" title="Clica para copiar" style="cursor:pointer;text-align:center"><div style="width:64px;height:64px;border-radius:8px;background:${hex};border:1px solid var(--border2);margin-bottom:5px"></div><div style="font-size:10px;font-family:monospace;color:var(--text2)">${hex}</div></div>`;
+    }).join('')+'</div>';
+  st('pal','✓ '+sorted.length+' cores extraídas — clica para copiar!','ok');
+}
+
+// ====== PLACEHOLDER ======
+function generatePlaceholder(){
+  const w=parseInt(document.getElementById('ph-w').value)||800;const h=parseInt(document.getElementById('ph-h').value)||600;
+  const bg=document.getElementById('ph-bg').value;const fg=document.getElementById('ph-fg').value;
+  const text=document.getElementById('ph-text').value||`${w} × ${h}`;
+  const c=document.getElementById('ph-canvas');c.style.display='block';c.width=Math.min(w,600);c.height=Math.round(Math.min(w,600)*h/w);
+  const ctx=c.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,c.width,c.height);
+  ctx.strokeStyle=fg;ctx.lineWidth=1;ctx.globalAlpha=0.3;
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(c.width,c.height);ctx.moveTo(c.width,0);ctx.lineTo(0,c.height);ctx.stroke();ctx.globalAlpha=1;
+  const fs=Math.max(14,Math.round(c.width*0.06));ctx.font=`600 ${fs}px -apple-system,sans-serif`;ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,c.width/2,c.height/2);
+  st('ph','✓ Placeholder '+w+'×'+h+'px gerado!','ok');
+}
+
+// ====== OCR (Tesseract.js, Apache-2.0 — motor e dicionários descarregados do jsDelivr na 1ª utilização) ======
+let ocrFile=null,ocrLib=null;
+function loadOCR(input){const f=input.files[0];if(!f)return;ocrFile=f;const d=document.getElementById('ocr-drop');d.classList.add('has-file');d.querySelector('.drop-title').textContent='✓ '+f.name;}
+async function doOCR(){
+  if(!ocrFile){st('ocr','Escolhe uma imagem primeiro.','err');return;}
+  const btn=document.querySelector('#page-ocr button.btn-primary');btn.disabled=true;
+  try{
+    if(!window.Tesseract){st('ocr','A carregar o motor de OCR...','loading');await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js';s.onload=res;s.onerror=()=>rej(new Error('não foi possível carregar o motor de OCR'));document.head.appendChild(s);});}
+    const file=await TMIMG.normalize(ocrFile);
+    const lang=document.getElementById('ocr-lang').value;
+    const worker=await Tesseract.createWorker(lang,1,{logger:m=>{if(m.status)st('ocr',({'loading tesseract core':'A carregar o motor','loading language traineddata':'A descarregar o dicionário','initializing api':'A preparar','recognizing text':'A ler o texto'}[m.status]||m.status)+(m.progress?' '+Math.round(m.progress*100)+'%':'')+'...','loading');}});
+    try{
+      const {data}=await worker.recognize(file);
+      const text=(data.text||'').trim();
+      document.getElementById('ocr-out-wrap').style.display='block';document.getElementById('ocr-out').value=text;
+      document.getElementById('ocr-conf').textContent='· confiança '+Math.round(data.confidence||0)+'%';
+      st('ocr',text?'✓ Texto extraído ('+text.split(/\s+/).length+' palavras).':'Não encontrei texto legível nesta imagem.',text?'ok':'err');
+    }finally{await worker.terminate();}
+  }catch(e){st('ocr','✗ '+(e.message||e),'err');}
+  finally{btn.disabled=false;}
+}
+async function copyOCR(btn){const t=document.getElementById('ocr-out');try{await navigator.clipboard.writeText(t.value);btn.textContent='✓ Copiado';}catch(e){t.select();btn.textContent='Selecionado — Ctrl+C';}setTimeout(()=>btn.textContent='⎘ Copiar',2000);}
+function dlOCR(){const b=new Blob([document.getElementById('ocr-out').value],{type:'text/plain;charset=utf-8'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=(ocrFile?.name||'texto').replace(/\.[^.]+$/,'')+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+</script>
+</body>
+</html>

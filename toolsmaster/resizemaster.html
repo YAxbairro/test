@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resize Master — Tools Master</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070709;--surface:#0e0e12;--surface2:#15151c;--surface3:#1d1d26;
+  --border:#1d1d26;--border2:#282832;--border3:#353542;
+  --text:#ededed;--text2:#707080;--text3:#404050;
+  --accent:#00d4aa;--accent2:#00b890;--accent-dim:rgba(0,212,170,0.1);--accent-text:#000;
+  --r:12px;--rs:7px;
+  --success:#4ade80;--error:#f87171;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.app{display:flex;flex:1}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#0088ff);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#000;flex-shrink:0;letter-spacing:-.5px}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.brand-parent{font-size:10px;color:var(--text3);margin-top:1px}
+
+.nav-sec{padding:.65rem 1.1rem .25rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:.5rem 1.2rem;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:2px solid transparent;border-radius:0}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+.nav-icon{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:.9rem 1.2rem;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.7}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:2rem;max-width:1100px}
+@media(max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.main{padding:1rem}}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text2)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:1rem}
+
+/* DROP */
+.drop-zone{border:1.5px dashed var(--border3);border-radius:var(--r);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-dim)}
+.drop-zone.has-file{border-color:var(--success);border-style:solid;background:rgba(74,222,128,.05)}
+.drop-icon{font-size:36px;margin-bottom:12px}
+.drop-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.drop-sub{font-size:11px;color:var(--text2)}
+.drop-zone.has-file .drop-title{color:var(--success)}
+
+.multi-drop{border:1.5px dashed var(--border3);border-radius:var(--r);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);margin-bottom:.75rem}
+.multi-drop:hover{border-color:var(--accent);background:var(--accent-dim)}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+input[type=text],input[type=number],select{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:8px 10px;width:100%;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--accent)}
+input::placeholder{color:var(--text3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:500px){.row2,.row3{grid-template-columns:1fr}}
+
+/* RANGE */
+.range-row{display:flex;align-items:center;gap:10px}
+input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer}
+
+/* BUTTONS */
+.btn{height:40px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s,transform .1s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 18px}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-text)}
+.btn-outline{background:transparent;border:1px solid var(--border3);color:var(--text2)}
+.btn-outline:hover{color:var(--text)}
+.btn-full{width:100%;height:46px;font-size:14px;margin-top:.75rem}
+
+/* STATUS */
+.status{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none;line-height:1.5}
+.status.ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.status.err{background:rgba(248,113,113,.1);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.status.loading{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+
+/* PROGRESS */
+.progress-wrap{margin-top:.75rem;display:none}
+.progress-label{font-size:11px;color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.bar-bg{height:3px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;width:0%}
+
+/* FILE LIST */
+.file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:.75rem}
+.file-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-size:12px}
+.file-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-size{color:var(--text2);font-size:11px;flex-shrink:0}
+.file-rm{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0 2px;transition:color .15s;font-family:inherit}
+.file-rm:hover{color:var(--error)}
+
+/* NETWORK GRID — home */
+.network-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:1.5rem}
+.network-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;cursor:pointer;transition:all .2s;text-align:center}
+.network-card:hover{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-2px)}
+.network-card.active{border-color:var(--accent);background:var(--accent-dim)}
+.nc-icon{font-size:28px;margin-bottom:8px}
+.nc-name{font-size:13px;font-weight:600;color:var(--text)}
+.nc-count{font-size:11px;color:var(--text2);margin-top:3px}
+
+/* PRESET GRID */
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.preset-card{background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--rs);padding:10px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px}
+.preset-card:hover{border-color:var(--border3)}
+.preset-card.selected{border-color:var(--accent);background:var(--accent-dim)}
+.preset-visual{flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.preset-visual svg{display:block}
+.preset-info{flex:1;min-width:0}
+.preset-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.preset-dims{font-size:11px;color:var(--text2)}
+.preset-check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border3);flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:9px}
+.preset-card.selected .preset-check{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+
+/* SELECTED BADGES */
+.selected-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem;min-height:28px}
+.sel-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-dim);border:1px solid rgba(0,212,170,.25);color:var(--accent);border-radius:99px;padding:3px 10px;font-size:11px;font-weight:500}
+.sel-badge-rm{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;padding:0;font-family:inherit;line-height:1;opacity:.7}
+.sel-badge-rm:hover{opacity:1}
+
+/* PREVIEW */
+.preview-section{margin-top:1.5rem}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.preview-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden}
+.preview-canvas-wrap{background:repeating-conic-gradient(var(--surface3) 0% 25%, transparent 0% 50%) 0 0/12px 12px;display:flex;align-items:center;justify-content:center;padding:8px;min-height:100px}
+.preview-canvas-wrap canvas{max-width:100%;max-height:130px;display:block;border-radius:2px}
+.preview-label{padding:8px 10px;border-top:1px solid var(--border)}
+.preview-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.preview-dims{font-size:10px;color:var(--text2)}
+.preview-dl{width:100%;height:28px;background:var(--accent);color:var(--accent-text);border:none;border-radius:0 0 var(--rs) var(--rs);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s}
+.preview-dl:hover{opacity:.85}
+
+/* TABS */
+.inner-tabs{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.inner-tab{padding:6px 14px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.inner-tab:hover{color:var(--text)}
+.inner-tab.active{background:var(--surface2);border-color:var(--border3);color:var(--text)}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.toggle{width:36px;height:20px;background:var(--surface3);border-radius:99px;position:relative;cursor:pointer;transition:background .2s;border:1px solid var(--border2);flex-shrink:0;display:inline-block}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:18px}
+
+/* QUALITY SELECTOR */
+.quality-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:.75rem}
+.q-btn{padding:8px;border-radius:var(--rs);border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:12px;text-align:center;transition:all .15s;font-family:inherit}
+.q-btn:hover{border-color:var(--border3);color:var(--text)}
+.q-btn.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.q-btn-title{font-weight:600;margin-bottom:2px}
+.q-btn-sub{font-size:10px;opacity:.7}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">RM</div>
+    <div>
+      <div class="brand-name">Resize Master</div>
+      <div class="brand-parent">Tools Master</div>
+    </div>
+  </div>
+
+  <div class="nav-sec">Redes Sociais</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">⊞</span> Todas as redes</div>
+  <div class="nav-item" onclick="nav('instagram',this)"><span class="nav-icon">📸</span> Instagram</div>
+  <div class="nav-item" onclick="nav('facebook',this)"><span class="nav-icon">👥</span> Facebook</div>
+  <div class="nav-item" onclick="nav('youtube',this)"><span class="nav-icon">▶</span> YouTube</div>
+  <div class="nav-item" onclick="nav('tiktok',this)"><span class="nav-icon">♪</span> TikTok</div>
+  <div class="nav-item" onclick="nav('twitter',this)"><span class="nav-icon">✦</span> Twitter / X</div>
+  <div class="nav-item" onclick="nav('linkedin',this)"><span class="nav-icon">💼</span> LinkedIn</div>
+  <div class="nav-item" onclick="nav('pinterest',this)"><span class="nav-icon">📌</span> Pinterest</div>
+  <div class="nav-item" onclick="nav('whatsapp',this)"><span class="nav-icon">💬</span> WhatsApp</div>
+
+  <div class="nav-sec">Ferramentas</div>
+  <div class="nav-item" onclick="nav('custom',this)"><span class="nav-icon">⚙</span> Dimensões personalizadas</div>
+  <div class="nav-item" onclick="nav('batch',this)"><span class="nav-icon">⊞</span> Batch — todas as redes</div>
+  <div class="nav-item" onclick="nav('compare',this)"><span class="nav-icon">◫</span> Comparar tamanhos</div>
+
+  <div class="sidebar-footer">Resize Master v1.0<br>Tools Master · Eagle Marketing</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="page-header">
+    <div class="page-title">Resize Master</div>
+    <div class="page-sub">Redimensiona imagens para qualquer rede social em segundos</div>
+  </div>
+  <div class="network-grid">
+    <div class="network-card" onclick="nav('instagram',null)"><div class="nc-icon">📸</div><div class="nc-name">Instagram</div><div class="nc-count">6 formatos</div></div>
+    <div class="network-card" onclick="nav('facebook',null)"><div class="nc-icon">👥</div><div class="nc-name">Facebook</div><div class="nc-count">5 formatos</div></div>
+    <div class="network-card" onclick="nav('youtube',null)"><div class="nc-icon">▶</div><div class="nc-name">YouTube</div><div class="nc-count">4 formatos</div></div>
+    <div class="network-card" onclick="nav('tiktok',null)"><div class="nc-icon">♪</div><div class="nc-name">TikTok</div><div class="nc-count">3 formatos</div></div>
+    <div class="network-card" onclick="nav('twitter',null)"><div class="nc-icon">✦</div><div class="nc-name">Twitter / X</div><div class="nc-count">4 formatos</div></div>
+    <div class="network-card" onclick="nav('linkedin',null)"><div class="nc-icon">💼</div><div class="nc-name">LinkedIn</div><div class="nc-count">4 formatos</div></div>
+    <div class="network-card" onclick="nav('pinterest',null)"><div class="nc-icon">📌</div><div class="nc-name">Pinterest</div><div class="nc-count">3 formatos</div></div>
+    <div class="network-card" onclick="nav('whatsapp',null)"><div class="nc-icon">💬</div><div class="nc-name">WhatsApp</div><div class="nc-count">2 formatos</div></div>
+    <div class="network-card" onclick="nav('batch',null)"><div class="nc-icon">⊞</div><div class="nc-name">Todas as redes</div><div class="nc-count">Batch completo</div></div>
+  </div>
+  <div class="card" style="border-color:rgba(0,212,170,.2);background:var(--accent-dim)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">⚡</div>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--accent);margin-bottom:3px">Batch — gera tudo de uma vez</div>
+        <div style="font-size:12px;color:var(--text2)">Carrega uma imagem e gera automaticamente os tamanhos correctos para todas as redes sociais — descarrega tudo num ZIP.</div>
+      </div>
+      <button class="btn btn-primary" style="flex-shrink:0" onclick="nav('batch',null)">Abrir →</button>
+    </div>
+  </div>
+</div>
+
+<!-- NETWORK PAGES — generated dynamically -->
+<div class="page" id="page-instagram"><div id="content-instagram"></div></div>
+<div class="page" id="page-facebook"><div id="content-facebook"></div></div>
+<div class="page" id="page-youtube"><div id="content-youtube"></div></div>
+<div class="page" id="page-tiktok"><div id="content-tiktok"></div></div>
+<div class="page" id="page-twitter"><div id="content-twitter"></div></div>
+<div class="page" id="page-linkedin"><div id="content-linkedin"></div></div>
+<div class="page" id="page-pinterest"><div id="content-pinterest"></div></div>
+<div class="page" id="page-whatsapp"><div id="content-whatsapp"></div></div>
+
+<!-- CUSTOM -->
+<div class="page" id="page-custom">
+  <div class="page-header"><div class="page-title">⚙ Dimensões personalizadas</div><div class="page-sub">Define exactamente o tamanho que precisas</div></div>
+  <div class="card">
+    <div class="drop-zone" id="cust-drop" onclick="document.getElementById('cust-input').click()">
+      <div class="drop-icon">📐</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP · GIF</div>
+      <input type="file" id="cust-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadCustFile(this)">
+    </div>
+    <div id="cust-options" style="display:none;margin-top:1rem">
+      <div id="cust-info" style="font-size:12px;color:var(--text2);margin-bottom:.75rem;background:var(--surface2);padding:8px 12px;border-radius:var(--rs)"></div>
+      <div class="row3">
+        <div class="field"><label>Largura (px)</label><input type="number" id="cust-w" min="1" placeholder="1080"></div>
+        <div class="field"><label>Altura (px)</label><input type="number" id="cust-h" min="1" placeholder="1080"></div>
+        <div class="field"><label>Formato</label><select id="cust-fmt"><option value="same">Original</option><option value="jpeg">JPG</option><option value="png">PNG</option><option value="webp">WEBP</option></select></div>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle on" id="cust-lock" onclick="custLock=!custLock;this.classList.toggle('on',custLock)"></div>
+        <span style="font-size:12px;color:var(--text2)">Manter proporção</span>
+      </div>
+      <div class="field"><label>Preenchimento de fundo (quando proporção difere)</label>
+        <select id="cust-fill">
+          <option value="cover">Preencher (corta os lados)</option>
+          <option value="contain">Conter (adiciona fundo)</option>
+          <option value="stretch">Esticar</option>
+        </select>
+      </div>
+      <div class="field"><label>Cor do fundo</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="cust-bg-color" value="#ffffff" style="width:36px;height:32px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px;flex-shrink:0">
+          <input type="text" id="cust-bg-hex" value="#ffffff" maxlength="7" style="flex:1;font-family:monospace;font-size:12px" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('cust-bg-color').value=this.value" placeholder="#ffffff">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doCustResize()">📐 Redimensionar</button>
+    </div>
+    <div class="status" id="cust-status"></div>
+    <div class="preview-section" id="cust-preview-section" style="display:none">
+      <div class="card-title">Resultado</div>
+      <div id="cust-preview-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BATCH -->
+<div class="page" id="page-batch">
+  <div class="page-header"><div class="page-title">⊞ Batch — todas as redes sociais</div><div class="page-sub">Uma imagem, todos os tamanhos, tudo num ZIP</div></div>
+  <div class="card">
+    <div class="drop-zone" id="batch-drop" onclick="document.getElementById('batch-input').click()">
+      <div class="drop-icon">⚡</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="batch-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadBatchFile(this)">
+    </div>
+    <div id="batch-options" style="display:none;margin-top:1rem">
+      <div id="batch-info" style="font-size:12px;color:var(--text2);margin-bottom:1rem;background:var(--surface2);padding:8px 12px;border-radius:var(--rs)"></div>
+      <div class="card-title">Selecciona as redes</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem">
+        <button class="btn btn-outline" style="height:32px;font-size:11px" onclick="batchSelectAll()">Seleccionar tudo</button>
+        <button class="btn btn-outline" style="height:32px;font-size:11px" onclick="batchDeselectAll()">Limpar selecção</button>
+      </div>
+      <div id="batch-networks" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:1rem"></div>
+      <div class="card-title" style="margin-top:.5rem">Opções</div>
+      <div class="row2">
+        <div class="field"><label>Formato de saída</label><select id="batch-fmt"><option value="jpeg">JPG</option><option value="png">PNG</option><option value="webp">WEBP</option><option value="same">Original</option></select></div>
+        <div class="field"><label>Qualidade — <span id="batch-q-val">90</span>%</label><div class="range-row"><input type="range" id="batch-quality" min="10" max="100" value="90" oninput="document.getElementById('batch-q-val').textContent=this.value"></div></div>
+      </div>
+      <div class="field"><label>Modo de preenchimento</label>
+        <select id="batch-fill"><option value="cover">Preencher (corta bordas)</option><option value="contain">Conter (fundo branco)</option></select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doBatchAll()">⚡ Gerar tudo e Descarregar ZIP</button>
+    </div>
+    <div class="status" id="batch-status"></div>
+    <div class="progress-wrap" id="batch-progress"><div class="progress-label"><span id="batch-prog-label">A processar...</span><span id="batch-prog-pct">0%</span></div><div class="bar-bg"><div class="bar-fill" id="batch-bar"></div></div></div>
+  </div>
+</div>
+
+<!-- COMPARE -->
+<div class="page" id="page-compare">
+  <div class="page-header"><div class="page-title">◫ Comparar tamanhos</div><div class="page-sub">Vê como a tua imagem fica em diferentes formatos</div></div>
+  <div class="card">
+    <div class="drop-zone" id="cmp-drop" onclick="document.getElementById('cmp-input').click()">
+      <div class="drop-icon">◫</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="cmp-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadCmpFile(this)">
+    </div>
+    <div id="cmp-results" style="margin-top:1rem"></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script src="vendor/jszip.min.js"></script>
+<script src="tm-image.js"></script>
+<script>
+
+// ========= DATA =========
+const NETWORKS = {
+  instagram: {
+    name:'Instagram', icon:'📸',
+    presets:[
+      {id:'ig-post-sq',name:'Post quadrado',w:1080,h:1080,ratio:'1:1'},
+      {id:'ig-post-port',name:'Post retrato',w:1080,h:1350,ratio:'4:5'},
+      {id:'ig-post-land',name:'Post paisagem',w:1080,h:566,ratio:'1.91:1'},
+      {id:'ig-story',name:'Story / Reels',w:1080,h:1920,ratio:'9:16'},
+      {id:'ig-profile',name:'Foto de perfil',w:320,h:320,ratio:'1:1'},
+      {id:'ig-cover',name:'Capa de destaque',w:1080,h:1080,ratio:'1:1'},
+    ]
+  },
+  facebook: {
+    name:'Facebook', icon:'👥',
+    presets:[
+      {id:'fb-post',name:'Post',w:1200,h:630,ratio:'1.91:1'},
+      {id:'fb-cover',name:'Capa da página',w:820,h:312,ratio:'2.63:1'},
+      {id:'fb-profile',name:'Foto de perfil',w:170,h:170,ratio:'1:1'},
+      {id:'fb-story',name:'Story',w:1080,h:1920,ratio:'9:16'},
+      {id:'fb-event',name:'Capa de evento',w:1920,h:1005,ratio:'1.91:1'},
+    ]
+  },
+  youtube: {
+    name:'YouTube', icon:'▶',
+    presets:[
+      {id:'yt-thumb',name:'Thumbnail',w:1280,h:720,ratio:'16:9'},
+      {id:'yt-banner',name:'Banner do canal',w:2560,h:1440,ratio:'16:9'},
+      {id:'yt-profile',name:'Foto de perfil',w:800,h:800,ratio:'1:1'},
+      {id:'yt-card',name:'End screen (card)',w:1280,h:720,ratio:'16:9'},
+    ]
+  },
+  tiktok: {
+    name:'TikTok', icon:'♪',
+    presets:[
+      {id:'tt-video',name:'Capa de vídeo',w:1080,h:1920,ratio:'9:16'},
+      {id:'tt-profile',name:'Foto de perfil',w:200,h:200,ratio:'1:1'},
+      {id:'tt-post',name:'Post quadrado',w:1080,h:1080,ratio:'1:1'},
+    ]
+  },
+  twitter: {
+    name:'Twitter / X', icon:'✦',
+    presets:[
+      {id:'tw-post',name:'Post',w:1600,h:900,ratio:'16:9'},
+      {id:'tw-cover',name:'Capa do perfil',w:1500,h:500,ratio:'3:1'},
+      {id:'tw-profile',name:'Foto de perfil',w:400,h:400,ratio:'1:1'},
+      {id:'tw-card',name:'Card summary',w:1200,h:628,ratio:'1.91:1'},
+    ]
+  },
+  linkedin: {
+    name:'LinkedIn', icon:'💼',
+    presets:[
+      {id:'li-post',name:'Post',w:1200,h:627,ratio:'1.91:1'},
+      {id:'li-cover',name:'Capa do perfil',w:1584,h:396,ratio:'4:1'},
+      {id:'li-profile',name:'Foto de perfil',w:400,h:400,ratio:'1:1'},
+      {id:'li-company',name:'Capa da empresa',w:1128,h:191,ratio:'5.9:1'},
+    ]
+  },
+  pinterest: {
+    name:'Pinterest', icon:'📌',
+    presets:[
+      {id:'pi-pin',name:'Pin padrão',w:1000,h:1500,ratio:'2:3'},
+      {id:'pi-square',name:'Pin quadrado',w:1000,h:1000,ratio:'1:1'},
+      {id:'pi-long',name:'Pin longo',w:1000,h:2100,ratio:'1:2.1'},
+    ]
+  },
+  whatsapp: {
+    name:'WhatsApp', icon:'💬',
+    presets:[
+      {id:'wa-profile',name:'Foto de perfil',w:500,h:500,ratio:'1:1'},
+      {id:'wa-status',name:'Status',w:1080,h:1920,ratio:'9:16'},
+    ]
+  }
+};
+
+// ========= NAV =========
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active');});
+  if(NETWORKS[id]) renderNetworkPage(id);
+  if(id==='batch') renderBatchNetworks();
+}
+
+// ========= RENDER NETWORK PAGE =========
+function renderNetworkPage(netId) {
+  const net = NETWORKS[netId];
+  const el = document.getElementById('content-'+netId);
+  if(!el || el.dataset.rendered) return;
+  el.dataset.rendered = '1';
+
+  el.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">${net.icon} ${net.name}</div>
+      <div class="page-sub">Redimensiona para os ${net.presets.length} formatos do ${net.name}</div>
+    </div>
+    <div class="card">
+      <div class="multi-drop" id="drop-${netId}" onclick="document.getElementById('input-${netId}').click()">
+        <div style="font-size:24px;margin-bottom:8px">${net.icon}</div>
+        <div style="font-size:13px;font-weight:500">Clica ou arrasta a imagem</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">JPG · PNG · WEBP · GIF</div>
+        <input type="file" id="input-${netId}" accept="image/*,.heic,.heif" style="display:none" onchange="loadNetFile('${netId}',this)">
+      </div>
+      <div id="info-${netId}" style="font-size:12px;color:var(--text2);margin-bottom:.75rem;background:var(--surface2);padding:8px 12px;border-radius:var(--rs);display:none"></div>
+
+      <div class="card-title" style="margin-top:.5rem">Selecciona os formatos</div>
+      <div style="display:flex;gap:7px;margin-bottom:.75rem;flex-wrap:wrap">
+        <button class="btn btn-outline" style="height:30px;font-size:11px" onclick="netSelectAll('${netId}')">Tudo</button>
+        <button class="btn btn-outline" style="height:30px;font-size:11px" onclick="netDeselectAll('${netId}')">Limpar</button>
+      </div>
+      <div class="preset-grid" id="presets-${netId}">
+        ${net.presets.map(p=>`
+          <div class="preset-card selected" id="pcard-${p.id}" onclick="togglePreset('${p.id}','${netId}')">
+            ${presetVisual(p.w, p.h)}
+            <div class="preset-info">
+              <div class="preset-name">${p.name}</div>
+              <div class="preset-dims">${p.w}×${p.h}px · ${p.ratio}</div>
+            </div>
+            <div class="preset-check" id="pcheck-${p.id}">✓</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="row2" style="margin-top:1rem">
+        <div class="field"><label>Formato</label><select id="fmt-${netId}"><option value="jpeg">JPG</option><option value="png">PNG</option><option value="webp">WEBP</option><option value="same">Original</option></select></div>
+        <div class="field"><label>Qualidade — <span id="q-val-${netId}">90</span>%</label><div class="range-row"><input type="range" id="q-${netId}" min="10" max="100" value="90" oninput="document.getElementById('q-val-${netId}').textContent=this.value"></div></div>
+      </div>
+      <div class="field"><label>Modo de preenchimento</label>
+        <select id="fill-${netId}"><option value="cover">Preencher (corta bordas)</option><option value="contain">Conter (adiciona fundo)</option><option value="stretch">Esticar</option></select>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="doNetResize('${netId}')">⤢ Redimensionar e Descarregar</button>
+      <div class="status" id="status-${netId}"></div>
+      <div class="progress-wrap" id="prog-${netId}"><div class="progress-label"><span id="prog-label-${netId}">A processar...</span><span id="prog-pct-${netId}">0%</span></div><div class="bar-bg"><div class="bar-fill" id="prog-bar-${netId}"></div></div></div>
+    </div>
+    <div class="preview-section" id="preview-${netId}" style="display:none">
+      <div class="card-title">Resultados</div>
+      <div class="preview-grid" id="preview-grid-${netId}"></div>
+    </div>
+  `;
+
+  // Drop events
+  const dz = document.getElementById('drop-'+netId);
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const input=document.getElementById('input-'+netId);if(e.dataTransfer.files[0]){const dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);input.files=dt.files;loadNetFile(netId,input);}});
+}
+
+function presetVisual(w, h) {
+  const maxS = 36;
+  const ratio = w/h;
+  let rw, rh;
+  if(ratio >= 1) { rw = maxS; rh = Math.round(maxS/ratio); }
+  else { rh = maxS; rw = Math.round(maxS*ratio); }
+  rw = Math.max(rw, 12); rh = Math.max(rh, 12);
+  return `<div class="preset-visual"><svg width="${maxS+4}" height="${maxS+4}" viewBox="0 0 ${maxS+4} ${maxS+4}"><rect x="${(maxS+4-rw)/2}" y="${(maxS+4-rh)/2}" width="${rw}" height="${rh}" rx="2" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/></svg></div>`;
+}
+
+// ========= HELPERS =========
+function st(id,msg,type='loading'){const el=document.getElementById(id);if(!el)return;el.style.display='block';el.className='status '+type;el.textContent=msg;}
+function setP(netId,pct,lbl){const b=document.getElementById('prog-bar-'+netId);if(b)b.style.width=pct+'%';const p=document.getElementById('prog-pct-'+netId);if(p)p.textContent=pct+'%';const l=document.getElementById('prog-label-'+netId);if(l)l.textContent=lbl;const w=document.getElementById('prog-'+netId);if(w)w.style.display='block';}
+function dlBlob(blob,name){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+function readDU(file){return TMIMG.readDataURL(file);}
+async function imgFromSrc(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function toBlob(canvas,fmt,q){return TMIMG.toBlob(canvas,fmt,q);}
+
+// ========= RESIZE ENGINE =========
+function resizeImg(img, tw, th, mode, bgColor='#ffffff') {
+  const c = document.createElement('canvas');
+  c.width = tw; c.height = th;
+  const ctx = c.getContext('2d');
+  const iw = img.naturalWidth, ih = img.naturalHeight;
+  const ir = iw/ih, tr = tw/th;
+
+  if(mode === 'stretch') {
+    ctx.drawImage(img, 0, 0, tw, th);
+  } else if(mode === 'cover') {
+    let sw, sh, sx=0, sy=0;
+    if(ir > tr) { sh=ih; sw=ih*tr; sx=(iw-sw)/2; }
+    else { sw=iw; sh=iw/tr; sy=(ih-sh)/2; }
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, tw, th);
+  } else { // contain
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, tw, th);
+    let dw, dh, dx=0, dy=0;
+    if(ir > tr) { dw=tw; dh=tw/ir; dy=(th-dh)/2; }
+    else { dh=th; dw=th*ir; dx=(tw-dw)/2; }
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+  return c;
+}
+
+// ========= NET FILES =========
+let netImgs = {};
+async function loadNetFile(netId, input) {
+  const f = input.files[0]; if(!f) return;
+  const src = await readDU(f);
+  const img = await imgFromSrc(src);
+  netImgs[netId] = {img, file:f};
+  const dropEl = document.getElementById('drop-'+netId);
+  if(dropEl) { dropEl.classList.add('has-file'); dropEl.querySelector('div').textContent='✓ '+f.name; }
+  const infoEl = document.getElementById('info-'+netId);
+  if(infoEl) { infoEl.style.display='block'; infoEl.textContent='Original: '+img.naturalWidth+'×'+img.naturalHeight+'px · '+(f.size/1024).toFixed(0)+' KB'; }
+}
+
+// ========= TOGGLE PRESET =========
+function togglePreset(presetId, netId) {
+  const card = document.getElementById('pcard-'+presetId);
+  const check = document.getElementById('pcheck-'+presetId);
+  if(!card) return;
+  card.classList.toggle('selected');
+  check.textContent = card.classList.contains('selected') ? '✓' : '';
+}
+function netSelectAll(netId) {
+  NETWORKS[netId]?.presets.forEach(p=>{document.getElementById('pcard-'+p.id)?.classList.add('selected');const c=document.getElementById('pcheck-'+p.id);if(c)c.textContent='✓';});
+}
+function netDeselectAll(netId) {
+  NETWORKS[netId]?.presets.forEach(p=>{document.getElementById('pcard-'+p.id)?.classList.remove('selected');const c=document.getElementById('pcheck-'+p.id);if(c)c.textContent='';});
+}
+
+// ========= DO NET RESIZE =========
+async function doNetResize(netId) {
+  const data = netImgs[netId];
+  if(!data) { st('status-'+netId, 'Carrega uma imagem primeiro.', 'err'); return; }
+  const net = NETWORKS[netId];
+  const selected = net.presets.filter(p => document.getElementById('pcard-'+p.id)?.classList.contains('selected'));
+  if(!selected.length) { st('status-'+netId, 'Selecciona pelo menos um formato.', 'err'); return; }
+  st('status-'+netId, 'A processar...', 'loading');
+  const fmt = document.getElementById('fmt-'+netId).value;
+  const q = parseInt(document.getElementById('q-'+netId).value);
+  const fill = document.getElementById('fill-'+netId).value;
+  const outFmt = fmt==='same' ? (data.file.type.includes('png')?'png':data.file.type.includes('webp')?'webp':'jpeg') : fmt;
+
+  const zip = new JSZip();
+  const folder = zip.folder(net.name.toLowerCase());
+  const previewGrid = document.getElementById('preview-grid-'+netId);
+  const previewSec = document.getElementById('preview-'+netId);
+  previewGrid.innerHTML = '';
+
+  for(let i=0; i<selected.length; i++) {
+    const p = selected[i];
+    setP(netId, Math.round((i/selected.length)*90), p.name+'...');
+    const canvas = resizeImg(data.img, p.w, p.h, fill);
+    const blob = await toBlob(canvas, outFmt, q);
+    const ext = outFmt==='jpeg'?'jpg':outFmt;
+    const fname = p.id+'-'+p.w+'x'+p.h+'.'+ext;
+    folder.file(fname, blob);
+
+    // Preview card
+    const previewCanvas = resizeImg(data.img, p.w, p.h, fill);
+    const url = URL.createObjectURL(blob);
+    const item = document.createElement('div');
+    item.className = 'preview-item';
+    const wrap = document.createElement('div');
+    wrap.className = 'preview-canvas-wrap';
+    const pc = resizeImg(data.img, Math.min(p.w, 280), Math.round(Math.min(p.w, 280)*p.h/p.w), fill);
+    wrap.appendChild(pc);
+    const lbl = document.createElement('div'); lbl.className = 'preview-label';
+    lbl.innerHTML = `<div class="preview-name">${p.name}</div><div class="preview-dims">${p.w}×${p.h}px · ${(blob.size/1024).toFixed(0)} KB</div>`;
+    const dl = document.createElement('button'); dl.className = 'preview-dl'; dl.textContent = '↓ Descarregar';
+    dl.onclick = () => { const a=document.createElement('a');a.href=url;a.download=fname;a.click(); };
+    item.appendChild(wrap); item.appendChild(lbl); item.appendChild(dl);
+    previewGrid.appendChild(item);
+  }
+
+  setP(netId, 100, 'Concluído!');
+  if(selected.length > 1) {
+    const zblob = await zip.generateAsync({type:'blob'});
+    dlBlob(zblob, net.name.toLowerCase()+'-'+Date.now()+'.zip');
+  }
+  previewSec.style.display = 'block';
+  st('status-'+netId, '✓ '+selected.length+' formato(s) gerado(s)!', 'ok');
+}
+
+// ========= BATCH =========
+let batchImg = null, batchFile = null;
+let batchSelected = new Set();
+
+function renderBatchNetworks() {
+  const el = document.getElementById('batch-networks');
+  if(!el || el.dataset.rendered) return;
+  el.dataset.rendered = '1';
+  Object.keys(NETWORKS).forEach(netId => {
+    const net = NETWORKS[netId];
+    batchSelected.add(netId);
+    const div = document.createElement('div');
+    div.className = 'preset-card selected';
+    div.id = 'bnet-'+netId;
+    div.innerHTML = `<div style="font-size:20px">${net.icon}</div><div class="preset-info"><div class="preset-name">${net.name}</div><div class="preset-dims">${net.presets.length} formatos</div></div><div class="preset-check" id="bcheck-${netId}">✓</div>`;
+    div.onclick = () => {
+      if(batchSelected.has(netId)) batchSelected.delete(netId);
+      else batchSelected.add(netId);
+      div.classList.toggle('selected', batchSelected.has(netId));
+      document.getElementById('bcheck-'+netId).textContent = batchSelected.has(netId)?'✓':'';
+    };
+    el.appendChild(div);
+  });
+}
+function batchSelectAll(){batchSelected=new Set(Object.keys(NETWORKS));document.querySelectorAll('[id^="bnet-"]').forEach(el=>{el.classList.add('selected');const id=el.id.replace('bnet-','');document.getElementById('bcheck-'+id).textContent='✓';});}
+function batchDeselectAll(){batchSelected.clear();document.querySelectorAll('[id^="bnet-"]').forEach(el=>{el.classList.remove('selected');const id=el.id.replace('bnet-','');document.getElementById('bcheck-'+id).textContent='';});}
+
+async function loadBatchFile(input) {
+  const f = input.files[0]; if(!f) return; batchFile = f;
+  const src = await readDU(f); batchImg = await imgFromSrc(src);
+  document.getElementById('batch-drop').classList.add('has-file');
+  document.getElementById('batch-drop').querySelector('div').textContent = '✓ '+f.name;
+  document.getElementById('batch-options').style.display = 'block';
+  document.getElementById('batch-info').textContent = 'Original: '+batchImg.naturalWidth+'×'+batchImg.naturalHeight+'px · '+(f.size/1024).toFixed(0)+' KB';
+}
+
+async function doBatchAll() {
+  if(!batchImg) { st('batch-status','Carrega uma imagem primeiro.','err'); return; }
+  if(!batchSelected.size) { st('batch-status','Selecciona pelo menos uma rede.','err'); return; }
+  st('batch-status','A gerar todos os tamanhos...','loading');
+  document.getElementById('batch-progress').style.display='block';
+
+  const fmt = document.getElementById('batch-fmt').value;
+  const q = parseInt(document.getElementById('batch-quality').value);
+  const fill = document.getElementById('batch-fill').value;
+  const outFmt = fmt==='same'?(batchFile.type.includes('png')?'png':batchFile.type.includes('webp')?'webp':'jpeg'):fmt;
+  const ext = outFmt==='jpeg'?'jpg':outFmt;
+
+  const zip = new JSZip();
+  const allPresets = [];
+  batchSelected.forEach(netId => {
+    NETWORKS[netId].presets.forEach(p => allPresets.push({...p, netId, netName:NETWORKS[netId].name}));
+  });
+
+  for(let i=0; i<allPresets.length; i++) {
+    const p = allPresets[i];
+    const pct = Math.round((i/allPresets.length)*100);
+    document.getElementById('batch-bar').style.width=pct+'%';
+    document.getElementById('batch-prog-pct').textContent=pct+'%';
+    document.getElementById('batch-prog-label').textContent='('+i+'/'+allPresets.length+') '+p.netName+' — '+p.name;
+    const canvas = resizeImg(batchImg, p.w, p.h, fill);
+    const blob = await toBlob(canvas, outFmt, q);
+    const folder = zip.folder(p.netName);
+    folder.file(p.id+'-'+p.w+'x'+p.h+'.'+ext, blob);
+  }
+
+  document.getElementById('batch-bar').style.width='100%';
+  document.getElementById('batch-prog-pct').textContent='100%';
+  const zblob = await zip.generateAsync({type:'blob'});
+  dlBlob(zblob,'resize-master-'+Date.now()+'.zip');
+  st('batch-status','✓ '+allPresets.length+' imagens geradas em '+batchSelected.size+' redes sociais!','ok');
+}
+
+// ========= CUSTOM =========
+let custImg=null, custFile=null, custLock=false;
+async function loadCustFile(input) {
+  const f=input.files[0];if(!f)return;custFile=f;
+  const src=await readDU(f);custImg=await imgFromSrc(src);
+  document.getElementById('cust-drop').classList.add('has-file');
+  document.getElementById('cust-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  document.getElementById('cust-options').style.display='block';
+  document.getElementById('cust-info').textContent='Original: '+custImg.naturalWidth+'×'+custImg.naturalHeight+'px · '+(f.size/1024).toFixed(0)+' KB';
+  document.getElementById('cust-w').value=custImg.naturalWidth;
+  document.getElementById('cust-h').value=custImg.naturalHeight;
+  document.getElementById('cust-w').oninput=()=>{if(custLock&&custImg){const w=parseInt(document.getElementById('cust-w').value)||1;document.getElementById('cust-h').value=Math.round(w*(custImg.naturalHeight/custImg.naturalWidth));}};
+}
+async function doCustResize() {
+  if(!custImg||!custFile)return;
+  const tw=parseInt(document.getElementById('cust-w').value)||custImg.naturalWidth;
+  const th=parseInt(document.getElementById('cust-h').value)||custImg.naturalHeight;
+  const fill=document.getElementById('cust-fill').value;
+  const bg=document.getElementById('cust-bg-hex').value||'#ffffff';
+  const fmt=document.getElementById('cust-fmt').value;
+  const outFmt=fmt==='same'?(custFile.type.includes('png')?'png':custFile.type.includes('webp')?'webp':'jpeg'):fmt;
+  st('cust-status','A redimensionar...','loading');
+  try{
+    const canvas=resizeImg(custImg,tw,th,fill,bg);
+    const blob=await toBlob(canvas,outFmt,92);
+    const ext=outFmt==='jpeg'?'jpg':outFmt;
+    // Preview
+    const sec=document.getElementById('cust-preview-section');
+    const wrap=document.getElementById('cust-preview-wrap');
+    sec.style.display='block';
+    const url=URL.createObjectURL(blob);
+    wrap.innerHTML=`<div class="preview-item" style="max-width:300px"><div class="preview-canvas-wrap"><img src="${url}" style="max-width:100%;max-height:200px;border-radius:2px"></div><div class="preview-label"><div class="preview-name">${tw}×${th}px</div><div class="preview-dims">${(blob.size/1024).toFixed(0)} KB · ${outFmt.toUpperCase()}</div></div><a class="preview-dl" href="${url}" download="custom-${tw}x${th}.${ext}" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">↓ Descarregar</a></div>`;
+    st('cust-status','✓ Imagem redimensionada para '+tw+'×'+th+'px!','ok');
+  }catch(e){st('cust-status','Erro: '+e.message,'err');}
+}
+
+// ========= COMPARE =========
+async function loadCmpFile(input) {
+  const f=input.files[0];if(!f)return;
+  const src=await readDU(f);const img=await imgFromSrc(src);
+  document.getElementById('cmp-drop').classList.add('has-file');
+  document.getElementById('cmp-drop').querySelector('.drop-title').textContent='✓ '+f.name;
+  const el=document.getElementById('cmp-results');
+  el.innerHTML='<div class="card-title">Como fica em cada rede</div><div class="preview-grid" id="cmp-grid"></div>';
+  const grid=document.getElementById('cmp-grid');
+  const samples=[
+    {name:'Instagram Post',w:1080,h:1080},{name:'Instagram Story',w:1080,h:1920},
+    {name:'Facebook Post',w:1200,h:630},{name:'YouTube Thumb',w:1280,h:720},
+    {name:'Twitter Post',w:1600,h:900},{name:'LinkedIn Post',w:1200,h:627},
+    {name:'Pinterest Pin',w:1000,h:1500},{name:'TikTok Cover',w:1080,h:1920}
+  ];
+  for(const s of samples){
+    const c=resizeImg(img,Math.min(s.w,280),Math.round(Math.min(s.w,280)*s.h/s.w),'cover');
+    const item=document.createElement('div');item.className='preview-item';
+    const wrap=document.createElement('div');wrap.className='preview-canvas-wrap';wrap.appendChild(c);
+    const lbl=document.createElement('div');lbl.className='preview-label';
+    lbl.innerHTML=`<div class="preview-name">${s.name}</div><div class="preview-dims">${s.w}×${s.h}px</div>`;
+    item.appendChild(wrap);item.appendChild(lbl);grid.appendChild(item);
+  }
+}
+
+// Drop events
+document.querySelectorAll('.drop-zone').forEach(dz=>{
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault();dz.classList.remove('drag');
+    const input=dz.querySelector('input[type=file]');if(!input||!e.dataTransfer.files[0])return;
+    const dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);input.files=dt.files;input.dispatchEvent(new Event('change'));
+  });
+});
+</script>
+</body>
+</html>

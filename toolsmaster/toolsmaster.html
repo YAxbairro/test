@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools Master — Eagle Marketing</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050507;--surface:#0b0b0f;--surface2:#101015;--surface3:#16161d;
+  --border:#16161d;--border2:#1e1e28;--border3:#2a2a38;
+  --text:#eeeeee;--text2:#58586e;--text3:#32323f;
+  --r:14px;--rs:8px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.25rem;gap:16px;flex-shrink:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#f59e0b,#ef4444);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#000;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.4px}
+.logo-sub{font-size:10px;color:var(--text3);margin-left:2px}
+.topbar-sep{width:1px;height:20px;background:var(--border2)}
+.breadcrumb{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.breadcrumb .current{color:var(--text)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.top-btn{height:30px;padding:0 12px;border-radius:var(--rs);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:5px}
+.top-btn:hover{color:var(--text);border-color:var(--border3)}
+.top-btn.active-tool{background:linear-gradient(135deg,#f59e0b20,#ef444420);border-color:#f59e0b60;color:#f59e0b}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-section{padding:.6rem 1rem .15rem;font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
+.tool-item{display:flex;align-items:center;gap:9px;padding:.5rem 1rem;cursor:pointer;transition:all .15s;border-left:2px solid transparent;position:relative}
+.tool-item:hover{background:var(--surface2)}
+.tool-item.active{background:var(--surface3);border-left-color:currentColor}
+.tool-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tool-label{font-size:12.5px;font-weight:500}
+.tool-badge{margin-left:auto;font-size:9px;padding:1px 6px;border-radius:99px;font-weight:600}
+.sidebar-footer{margin-top:auto;padding:.75rem 1rem;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.8}
+
+/* CONTENT AREA */
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* HUB HOME */
+.hub{flex:1;overflow-y:auto;padding:2rem}
+.hub-header{margin-bottom:2rem;text-align:center}
+.hub-title{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:6px}
+.hub-title span{background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hub-sub{font-size:13px;color:var(--text2)}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;max-width:1100px;margin:0 auto}
+.hub-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.hub-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .22s}
+.hub-card:hover{transform:translateY(-3px);border-color:var(--card-color,#f59e0b)}
+.hub-card:hover::before{opacity:.04;background:var(--card-color,#f59e0b)}
+.hub-card:hover .card-icon{transform:scale(1.1)}
+.card-icon{font-size:32px;margin-bottom:12px;transition:transform .2s;display:block}
+.card-num{position:absolute;top:12px;right:14px;font-size:10px;font-weight:700;color:var(--border3);font-family:monospace}
+.card-name{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.card-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.card-tag{font-size:9px;padding:2px 7px;border-radius:99px;background:var(--surface2);color:var(--text3);font-weight:500}
+
+/* IFRAME VIEW */
+.tool-frame-wrap{flex:1;display:none;flex-direction:column;overflow:hidden}
+.tool-frame-wrap.visible{display:flex}
+.tool-frame{width:100%;flex:1;border:none;background:var(--bg)}
+
+/* LOADING */
+.frame-loading{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:10;pointer-events:none;transition:opacity .3s}
+.frame-loading.done{opacity:0}
+.spinner{width:32px;height:32px;border:2.5px solid var(--border2);border-top-color:var(--load-color,#f59e0b);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-label{font-size:12px;color:var(--text2)}
+
+/* MOBILE */
+@media(max-width:700px){
+  .sidebar{display:none}
+  .hub{padding:1rem}
+  .tools-grid{grid-template-columns:1fr 1fr}
+}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* KEY MANAGER */
+.km-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:500;padding:16px}
+.km-overlay.open{display:flex}
+.km{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:1.4rem}
+.km h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.km p.sub{font-size:12px;color:var(--text2);margin-bottom:1rem;line-height:1.5}
+.km-row{margin-bottom:12px}
+.km-row label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:600;margin-bottom:5px}
+.km-row label a{color:#f59e0b;text-transform:none;letter-spacing:0;font-weight:500;text-decoration:none}
+.km-row input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:9px 11px;font-family:monospace;outline:none}
+.km-row input:focus{border-color:#f59e0b}
+.km-row .hint{font-size:11px;color:var(--text2);margin-top:4px}
+.km-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;background:#3a3a48}
+.km-dot.on{background:#4ade80}
+.km-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
+.km-btn{height:36px;padding:0 16px;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border3);background:transparent;color:var(--text);font-family:inherit}
+.km-btn.primary{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#000;border:none}
+.km-msg{font-size:12px;margin-top:8px;min-height:16px}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a class="logo" onclick="showHub()" style="cursor:pointer">
+    <div class="logo-mark">TM</div>
+    <div>
+      <div class="logo-name">Tools Master</div>
+    </div>
+  </a>
+  <div class="topbar-sep"></div>
+  <div class="breadcrumb"><span id="bc-tool" class="current">Hub</span></div>
+  <div class="topbar-right">
+    <button class="top-btn" id="back-btn" onclick="showHub()" style="display:none">← Hub</button>
+    <button class="top-btn" onclick="window.open('https://eaglemarketing.cv','_blank')" style="display:none">Eagle Marketing ↗</button>
+    <button class="top-btn" onclick="openKeys()" title="Chaves de API">⚙ Chaves de API <span id="km-count" style="color:#4ade80"></span></button>
+    <div style="font-size:10px;color:var(--text3)">v1.1</div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">Ferramentas</div>
+
+    <div class="tool-item" id="si-srt" style="color:#8b5cf6" onclick="openTool('srt')">
+      <div class="tool-dot" style="background:#8b5cf6"></div>
+      <span class="tool-label">SRT Sync</span>
+    </div>
+    <div class="tool-item" id="si-qr" style="color:#06b6d4" onclick="openTool('qr')">
+      <div class="tool-dot" style="background:#06b6d4"></div>
+      <span class="tool-label">QR Master</span>
+    </div>
+    <div class="tool-item" id="si-pdf" style="color:#ef4444" onclick="openTool('pdf')">
+      <div class="tool-dot" style="background:#ef4444"></div>
+      <span class="tool-label">PDF Master</span>
+    </div>
+    <div class="tool-item" id="si-converter" style="color:#f97316" onclick="openTool('converter')">
+      <div class="tool-dot" style="background:#f97316"></div>
+      <span class="tool-label">Converter Master</span>
+    </div>
+    <div class="tool-item" id="si-resize" style="color:#eab308" onclick="openTool('resize')">
+      <div class="tool-dot" style="background:#eab308"></div>
+      <span class="tool-label">Resize Master</span>
+    </div>
+    <div class="tool-item" id="si-text" style="color:#f59e0b" onclick="openTool('text')">
+      <div class="tool-dot" style="background:#f59e0b"></div>
+      <span class="tool-label">Text Master</span>
+    </div>
+    <div class="tool-item" id="si-image" style="color:#e11d48" onclick="openTool('image')">
+      <div class="tool-dot" style="background:#e11d48"></div>
+      <span class="tool-label">Image Master</span>
+    </div>
+    <div class="tool-item" id="si-sign" style="color:#0ea5e9" onclick="openTool('sign')">
+      <div class="tool-dot" style="background:#0ea5e9"></div>
+      <span class="tool-label">Sign Master</span>
+    </div>
+    <div class="tool-item" id="si-voice" style="color:#a855f7" onclick="openTool('voice')">
+      <div class="tool-dot" style="background:#a855f7"></div>
+      <span class="tool-label">Voice Master</span>
+    </div>
+    <div class="tool-item" id="si-cv" style="color:#10b981" onclick="openTool('cv')">
+      <div class="tool-dot" style="background:#10b981"></div>
+      <span class="tool-label">CV Master</span>
+    </div>
+    <div class="tool-item" id="si-currency" style="color:#22c55e" onclick="openTool('currency')">
+      <div class="tool-dot" style="background:#22c55e"></div>
+      <span class="tool-label">Currency Master</span>
+    </div>
+
+    <div class="sidebar-footer">
+      Tools Master v1.0<br>
+      Eagle Marketing<br>
+      Praia · Cabo Verde
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- HUB -->
+    <div class="hub" id="hub-view">
+      <div class="hub-header">
+        <div class="hub-title"><span>Tools Master</span></div>
+        <div class="hub-sub">11 ferramentas profissionais — clica para abrir</div>
+      </div>
+      <div class="tools-grid">
+        <div class="hub-card" style="--card-color:#8b5cf6" onclick="openTool('srt')">
+          <span class="card-icon">🎙</span><span class="card-num">01</span>
+          <div class="card-name">SRT Sync</div>
+          <div class="card-desc">Transcreve áudio e gera legendas .srt sincronizadas com timestamps reais</div>
+          <div class="card-tags"><span class="card-tag">Groq Whisper</span><span class="card-tag">MP3/WAV</span><span class="card-tag">PT EN FR ES</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#06b6d4" onclick="openTool('qr')">
+          <span class="card-icon">◈</span><span class="card-num">02</span>
+          <div class="card-name">QR Master</div>
+          <div class="card-desc">12 tipos de QR code, design avançado, logos, frames, batch até 50 — export PNG/SVG/ZIP</div>
+          <div class="card-tags"><span class="card-tag">12 tipos</span><span class="card-tag">Batch</span><span class="card-tag">PNG/SVG</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#ef4444" onclick="openTool('pdf')">
+          <span class="card-icon">📄</span><span class="card-num">03</span>
+          <div class="card-name">PDF Master</div>
+          <div class="card-desc">21 ferramentas PDF: juntar, separar, comprimir, proteger, marca de água, formulários</div>
+          <div class="card-tags"><span class="card-tag">21 ferramentas</span><span class="card-tag">pdf-lib</span><span class="card-tag">Offline</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#f97316" onclick="openTool('converter')">
+          <span class="card-icon">⇄</span><span class="card-num">04</span>
+          <div class="card-name">Converter Master</div>
+          <div class="card-desc">Converte imagens, áudio, vídeo e documentos — 18 ferramentas de conversão de formato</div>
+          <div class="card-tags"><span class="card-tag">Imagem</span><span class="card-tag">Áudio</span><span class="card-tag">Vídeo</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#eab308" onclick="openTool('resize')">
+          <span class="card-icon">⊡</span><span class="card-num">05</span>
+          <div class="card-name">Resize Master</div>
+          <div class="card-desc">Redimensiona imagens para 8 redes sociais com presets — batch e export ZIP</div>
+          <div class="card-tags"><span class="card-tag">Instagram</span><span class="card-tag">LinkedIn</span><span class="card-tag">TikTok</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#f59e0b" onclick="openTool('text')">
+          <span class="card-icon">✦</span><span class="card-num">06</span>
+          <div class="card-name">Text Master</div>
+          <div class="card-desc">14 ferramentas de texto com IA: reescrever, emails, posts, traduzir (inclui Crioulo CV)</div>
+          <div class="card-tags"><span class="card-tag">IA</span><span class="card-tag">14 ferramentas</span><span class="card-tag">Crioulo CV</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#e11d48" onclick="openTool('image')">
+          <span class="card-icon">🎨</span><span class="card-num">07</span>
+          <div class="card-name">Image Master</div>
+          <div class="card-desc">12 ferramentas de imagem offline: remover fundo, filtros, ajustes, marca de água, paleta</div>
+          <div class="card-tags"><span class="card-tag">Offline</span><span class="card-tag">Batch</span><span class="card-tag">Canvas API</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#0ea5e9" onclick="openTool('sign')">
+          <span class="card-icon">✍</span><span class="card-num">08</span>
+          <div class="card-name">Sign Master</div>
+          <div class="card-desc">Cria assinaturas digitais e assina PDFs e imagens — carimbo, iniciais, checklist</div>
+          <div class="card-tags"><span class="card-tag">PDF</span><span class="card-tag">Assinatura</span><span class="card-tag">Carimbo</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#a855f7" onclick="openTool('voice')">
+          <span class="card-icon">🎙</span><span class="card-num">09</span>
+          <div class="card-name">Voice Master</div>
+          <div class="card-desc">Texto para voz com 10 vozes (PT, CV, EN, FR, ES) — artigos, scripts, SSML, clonagem</div>
+          <div class="card-tags"><span class="card-tag">TTS</span><span class="card-tag">10 vozes</span><span class="card-tag">Crioulo CV</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#10b981" onclick="openTool('cv')">
+          <span class="card-icon">📋</span><span class="card-num">10</span>
+          <div class="card-name">CV Master</div>
+          <div class="card-desc">Construtor de CV com 6 templates, carta de apresentação, ATS checker, LinkedIn optimizer</div>
+          <div class="card-tags"><span class="card-tag">IA</span><span class="card-tag">6 templates</span><span class="card-tag">ATS</span></div>
+        </div>
+        <div class="hub-card" style="--card-color:#22c55e" onclick="openTool('currency')">
+          <span class="card-icon">💱</span><span class="card-num">11</span>
+          <div class="card-name">Currency Master</div>
+          <div class="card-desc">Conversor de moedas com o Escudo cabo-verdiano — 150+ moedas, taxas diárias, funciona offline</div>
+          <div class="card-tags"><span class="card-tag">CVE</span><span class="card-tag">Grátis</span><span class="card-tag">Offline</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IFRAME CONTAINER -->
+    <div class="tool-frame-wrap" id="frame-wrap">
+      <div class="frame-loading" id="frame-loading">
+        <div class="spinner" id="frame-spinner"></div>
+        <div class="load-label" id="frame-load-label">A carregar...</div>
+      </div>
+      <iframe class="tool-frame" id="tool-frame"></iframe>
+    </div>
+
+  </div>
+</div>
+
+<script src="tm-core.js"></script>
+
+<div class="km-overlay" id="km-overlay" onclick="if(event.target===this)closeKeys()">
+  <div class="km" role="dialog" aria-label="Chaves de API">
+    <h2>⚙ Chaves de API</h2>
+    <p class="sub">As chaves ficam guardadas só neste browser e são usadas por todas as ferramentas. Nunca são enviadas para outro sítio além do serviço respetivo.</p>
+    <div class="km-row"><label><span><span class="km-dot" id="dot-groq"></span>Groq — IA de texto e legendas (grátis)</span><a href="https://console.groq.com/keys" target="_blank" rel="noopener">obter ↗</a></label><input id="key-groq" type="password" placeholder="gsk_..." autocomplete="off"><div class="hint">Usada por SRT Sync, Text Master e CV Master.</div></div>
+    <div class="km-row"><label><span><span class="km-dot" id="dot-anthropic"></span>Anthropic (Claude) — opcional</span><a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">obter ↗</a></label><input id="key-anthropic" type="password" placeholder="sk-ant-..." autocomplete="off"><div class="hint">Alternativa à Groq no Text Master e CV Master. Precisa de saldo.</div></div>
+    <div class="km-row"><label><span><span class="km-dot" id="dot-removebg"></span>Remove.bg — opcional</span><a href="https://www.remove.bg/api" target="_blank" rel="noopener">obter ↗</a></label><input id="key-removebg" type="password" placeholder="chave remove.bg" autocomplete="off"><div class="hint">Remoção de fundo em alta qualidade (50/mês grátis).</div></div>
+    <div class="km-row"><label><span><span class="km-dot" id="dot-deepl"></span>DeepL — opcional</span><a href="https://www.deepl.com/pro-api" target="_blank" rel="noopener">obter ↗</a></label><input id="key-deepl" type="password" placeholder="...:fx" autocomplete="off"></div>
+    <div class="km-row"><label><span><span class="km-dot" id="dot-elevenlabs"></span>ElevenLabs — opcional</span><a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" rel="noopener">obter ↗</a></label><input id="key-elevenlabs" type="password" placeholder="chave ElevenLabs" autocomplete="off"></div>
+    <div class="km-row"><label><span><span class="km-dot" id="dot-cloudmersive"></span>Cloudmersive — Word/Excel/PowerPoint → PDF</span><a href="https://account.cloudmersive.com/signup" target="_blank" rel="noopener">obter ↗</a></label><input id="key-cloudmersive" type="password" placeholder="chave Cloudmersive" autocomplete="off"><div class="hint">Plano grátis disponível. Sem chave, Word e Excel usam conversão local.</div></div>
+    <div class="km-msg" id="km-msg"></div>
+    <div class="km-actions"><button class="km-btn" onclick="testGroq()">Testar Groq</button><button class="km-btn" onclick="closeKeys()">Fechar</button><button class="km-btn primary" onclick="saveKeys()">Guardar</button></div>
+  </div>
+</div>
+<script>
+const TOOLS = {
+  srt:      { name:'SRT Sync',          color:'#8b5cf6', file:'srt-sync-groq.html' },
+  qr:       { name:'QR Master',         color:'#06b6d4', file:'qrmaster.html' },
+  pdf:      { name:'PDF Master',        color:'#ef4444', file:'pdfmaster.html' },
+  converter:{ name:'Converter Master',  color:'#f97316', file:'convertermaster.html' },
+  resize:   { name:'Resize Master',     color:'#eab308', file:'resizemaster.html' },
+  text:     { name:'Text Master',       color:'#f59e0b', file:'textmaster.html' },
+  image:    { name:'Image Master',      color:'#e11d48', file:'imagemaster.html' },
+  sign:     { name:'Sign Master',       color:'#0ea5e9', file:'signmaster.html' },
+  voice:    { name:'Voice Master',      color:'#a855f7', file:'voicemaster.html' },
+  cv:       { name:'CV Master',         color:'#10b981', file:'cvmaster.html' },
+  currency: { name:'Currency Master',   color:'#22c55e', file:'currencymaster.html' },
+};
+
+let currentTool = null;
+
+function openTool(id) {
+  const tool = TOOLS[id];
+  if (!tool) return;
+  currentTool = id;
+
+  // Update sidebar
+  document.querySelectorAll('.tool-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('si-' + id)?.classList.add('active');
+
+  // Update breadcrumb
+  document.getElementById('bc-tool').textContent = tool.name;
+  document.getElementById('back-btn').style.display = 'flex';
+
+  // Show spinner with tool color
+  document.getElementById('frame-spinner').style.borderTopColor = tool.color;
+  document.getElementById('frame-load-label').textContent = 'A carregar ' + tool.name + '...';
+  document.getElementById('frame-loading').classList.remove('done');
+
+  // Hide hub, show frame
+  document.getElementById('hub-view').style.display = 'none';
+  document.getElementById('frame-wrap').classList.add('visible');
+
+  // Load tool
+  document.getElementById('tool-frame').src = tool.file;
+}
+
+
+const TOOL_ORDER = ['srt','qr','pdf','converter','resize','text','image','sign','voice','cv'];
+const KEY_NAMES = ['groq','anthropic','removebg','deepl','elevenlabs','cloudmersive'];
+
+document.getElementById('tool-frame').addEventListener('load', () => {
+  setTimeout(() => document.getElementById('frame-loading').classList.add('done'), 200);
+});
+
+function refreshKeyStatus() {
+  let n = 0;
+  KEY_NAMES.forEach(k => { const on = !!TM.getKey(k); if (on) n++; document.getElementById('dot-' + k).classList.toggle('on', on); });
+  document.getElementById('km-count').textContent = n ? '(' + n + ')' : '';
+}
+function openKeys() {
+  KEY_NAMES.forEach(k => { document.getElementById('key-' + k).value = TM.getKey(k); });
+  document.getElementById('km-msg').textContent = '';
+  refreshKeyStatus();
+  document.getElementById('km-overlay').classList.add('open');
+}
+function closeKeys() { document.getElementById('km-overlay').classList.remove('open'); }
+function saveKeys() {
+  const failed = KEY_NAMES.filter(k => !TM.setKey(k, document.getElementById('key-' + k).value));
+  const msg = document.getElementById('km-msg');
+  if (failed.length) { msg.style.color = '#f87171'; msg.textContent = '✗ Não foi possível guardar (' + failed.join(', ') + '). O browser pode estar a bloquear o armazenamento.'; return; }
+  msg.style.color = '#4ade80'; msg.textContent = '✓ Chaves guardadas.';
+  refreshKeyStatus();
+  if (currentTool) document.getElementById('tool-frame').contentWindow?.location.reload();
+}
+async function testGroq() {
+  const msg = document.getElementById('km-msg');
+  TM.setKey('groq', document.getElementById('key-groq').value);
+  msg.style.color = 'var(--text2)'; msg.textContent = 'A testar Groq...';
+  try { const t = await TM.aiText('Responde só: OK', { maxTokens: 5, temperature: 0 }); msg.style.color = '#4ade80'; msg.textContent = '✓ Groq funciona (resposta: ' + t.slice(0, 20) + ')'; }
+  catch (e) { msg.style.color = '#f87171'; msg.textContent = '✗ ' + e.message; }
+  refreshKeyStatus();
+}
+refreshKeyStatus();
+
+function showHub() {
+  currentTool = null;
+  document.querySelectorAll('.tool-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('bc-tool').textContent = 'Hub';
+  document.getElementById('back-btn').style.display = 'none';
+  document.getElementById('hub-view').style.display = 'block';
+  document.getElementById('frame-wrap').classList.remove('visible');
+  document.getElementById('tool-frame').src = 'about:blank';
+}
+
+// Keyboard shortcut: Escape → hub
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (document.getElementById('km-overlay').classList.contains('open')) closeKeys(); else if (currentTool) showHub(); return; }
+  if (e.target.closest('input,textarea,select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const i = '1234567890'.indexOf(e.key);
+  if (i >= 0) openTool(TOOL_ORDER[i]);
+});
+</script>
+</body>
+</html>

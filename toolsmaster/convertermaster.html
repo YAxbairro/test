@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Converter Master — Tools Master</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070a;--surface:#0f0f14;--surface2:#16161e;--surface3:#1e1e28;
+  --border:#1e1e28;--border2:#2a2a38;--border3:#383848;
+  --text:#eeeeee;--text2:#777;--text3:#444;
+  --accent:#7c3aed;--accent-dim:rgba(124,58,237,0.12);
+  --success:#4ade80;--error:#f87171;--warn:#fbbf24;
+  --r:12px;--rs:7px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.app{display:flex;flex:1}
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.main{flex:1;overflow-y:auto;padding:2rem;max-width:1000px}
+@media(max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.main{padding:1rem}}
+
+.brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;flex-shrink:0}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.brand-parent{font-size:10px;color:var(--text3);margin-top:1px}
+.nav-sec{padding:.65rem 1.1rem .2rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:.55rem 1.2rem;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+.nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:.9rem 1.2rem;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.7}
+
+.page{display:none}.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text2)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:1rem}
+
+.drop-zone{border:1.5px dashed var(--border3);border-radius:var(--r);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-dim)}
+.drop-zone.has-file{border-color:var(--success);border-style:solid;background:rgba(74,222,128,.05)}
+.drop-icon{font-size:36px;margin-bottom:12px}
+.drop-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.drop-sub{font-size:11px;color:var(--text2)}
+.drop-zone.has-file .drop-title{color:var(--success)}
+
+.multi-drop{border:1.5px dashed var(--border3);border-radius:var(--r);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);margin-bottom:.75rem}
+.multi-drop:hover{border-color:var(--accent);background:var(--accent-dim)}
+
+.file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:.75rem}
+.file-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-size:12px}
+.file-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-size{color:var(--text2);font-size:11px;flex-shrink:0}
+.file-rm{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0 2px;transition:color .15s;font-family:inherit}
+.file-rm:hover{color:var(--error)}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+input[type=text],input[type=number],select,textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:8px 10px;width:100%;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--accent)}
+input::placeholder{color:var(--text3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:500px){.row2,.row3{grid-template-columns:1fr}}
+
+.range-row{display:flex;align-items:center;gap:10px}
+input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer}
+.range-val{font-size:12px;color:var(--text2);min-width:40px;text-align:right}
+
+.btn{height:40px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s,transform .1s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 18px}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-full{width:100%;height:46px;font-size:14px;margin-top:.75rem}
+
+.format-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:7px;margin-bottom:1rem}
+.fmt-btn{padding:8px 4px;border-radius:var(--rs);border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:12px;font-weight:600;text-align:center;transition:all .15s;font-family:inherit}
+.fmt-btn:hover{border-color:var(--accent);color:var(--text)}
+.fmt-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:1rem}
+.result-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px;display:flex;flex-direction:column;gap:8px}
+.result-preview{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:4px;background:var(--surface3)}
+.result-name{font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-size{font-size:10px;color:var(--text3)}
+.result-dl{width:100%;height:28px;font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;font-family:inherit;transition:opacity .2s}
+.result-dl:hover{opacity:.85}
+
+.status{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none;line-height:1.5}
+.status.ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.status.err{background:rgba(248,113,113,.1);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.status.loading{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+
+.progress-wrap{margin-top:.75rem;display:none}
+.progress-label{font-size:11px;color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.bar-bg{height:3px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;width:0%}
+
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .2s}
+.tool-card:hover{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-2px)}
+.tc-icon{font-size:26px;margin-bottom:8px}
+.tc-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.tc-desc{font-size:11px;color:var(--text2);line-height:1.4}
+
+.inner-tabs{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.inner-tab{padding:6px 14px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.inner-tab:hover{color:var(--text)}
+.inner-tab.active{background:var(--surface2);border-color:var(--border3);color:var(--text)}
+
+/* TOGGLE */
+.toggle{width:36px;height:20px;background:var(--surface3);border-radius:99px;position:relative;cursor:pointer;transition:background .2s;border:1px solid var(--border2);flex-shrink:0;display:inline-block}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:18px}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">CM</div>
+    <div>
+      <div class="brand-name">Converter Master</div>
+      <div class="brand-parent">Tools Master</div>
+    </div>
+  </div>
+
+  <div class="nav-sec">Início</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">⊞</span> Todas as ferramentas</div>
+
+  <div class="nav-sec">Imagem</div>
+  <div class="nav-item" onclick="nav('img-convert',this)"><span class="nav-icon">🔄</span> Converter formato</div>
+  <div class="nav-item" onclick="nav('img-resize',this)"><span class="nav-icon">⤢</span> Redimensionar</div>
+  <div class="nav-item" onclick="nav('img-compress',this)"><span class="nav-icon">⬇</span> Comprimir</div>
+  <div class="nav-item" onclick="nav('img-crop',this)"><span class="nav-icon">✂</span> Recortar</div>
+  <div class="nav-item" onclick="nav('img-batch',this)"><span class="nav-icon">⊞</span> Batch</div>
+  <div class="nav-item" onclick="nav('img-base64',this)"><span class="nav-icon">⌥</span> Base64 ↔ Imagem</div>
+  <div class="nav-item" onclick="nav('img-svg',this)"><span class="nav-icon">◎</span> SVG → PNG/JPG</div>
+  <div class="nav-item" onclick="nav('img-pdf',this)"><span class="nav-icon">📄</span> Imagem → PDF</div>
+
+  <div class="nav-sec">Áudio</div>
+  <div class="nav-item" onclick="nav('audio-convert',this)"><span class="nav-icon">🎵</span> Converter áudio</div>
+  <div class="nav-item" onclick="nav('audio-extract',this)"><span class="nav-icon">🎙</span> Extrair de vídeo</div>
+
+  <div class="nav-sec">Vídeo</div>
+  <div class="nav-item" onclick="nav('video-convert',this)"><span class="nav-icon">🎬</span> Converter vídeo</div>
+  <div class="nav-item" onclick="nav('video-compress',this)"><span class="nav-icon">⬇</span> Comprimir vídeo</div>
+  <div class="nav-item" onclick="nav('video-gif',this)"><span class="nav-icon">🎞</span> Vídeo → GIF</div>
+  <div class="nav-item" onclick="nav('video-trim',this)"><span class="nav-icon">✂</span> Cortar vídeo</div>
+
+  <div class="nav-sec">Documento</div>
+  <div class="nav-item" onclick="nav('doc-word',this)"><span class="nav-icon">📝</span> Word → PDF</div>
+  <div class="nav-item" onclick="nav('doc-excel',this)"><span class="nav-icon">📊</span> Excel → PDF</div>
+  <div class="nav-item" onclick="nav('doc-ppt',this)"><span class="nav-icon">📽</span> PowerPoint → PDF</div>
+  <div class="nav-item" onclick="nav('doc-any',this)"><span class="nav-icon">📁</span> Qualquer → PDF</div>
+
+  <div class="sidebar-footer">Converter Master v1.0<br>Tools Master · Eagle Marketing</div>
+</div>
+
+<div class="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="page-header">
+    <div class="page-title">Converter Master</div>
+    <div class="page-sub">Converte imagens, áudio, vídeo e documentos — tudo num só lugar</div>
+  </div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('img-convert',null)"><div class="tc-icon">🔄</div><div class="tc-name">Converter imagem</div><div class="tc-desc">JPG, PNG, WEBP, BMP, GIF, ICO</div></div>
+    <div class="tool-card" onclick="nav('img-resize',null)"><div class="tc-icon">⤢</div><div class="tc-name">Redimensionar</div><div class="tc-desc">Pixels, percentagem, redes sociais</div></div>
+    <div class="tool-card" onclick="nav('img-compress',null)"><div class="tc-icon">⬇</div><div class="tc-name">Comprimir imagem</div><div class="tc-desc">Reduz tamanho sem perder qualidade</div></div>
+    <div class="tool-card" onclick="nav('img-crop',null)"><div class="tc-icon">✂</div><div class="tc-name">Recortar imagem</div><div class="tc-desc">Corta para dimensões exactas</div></div>
+    <div class="tool-card" onclick="nav('img-batch',null)"><div class="tc-icon">⊞</div><div class="tc-name">Batch imagens</div><div class="tc-desc">Converte dezenas de imagens de uma vez</div></div>
+    <div class="tool-card" onclick="nav('img-base64',null)"><div class="tc-icon">⌥</div><div class="tc-name">Base64 ↔ Imagem</div><div class="tc-desc">Encode/decode para web e email</div></div>
+    <div class="tool-card" onclick="nav('img-svg',null)"><div class="tc-icon">◎</div><div class="tc-name">SVG → PNG/JPG</div><div class="tc-desc">Converte vectores para imagem</div></div>
+    <div class="tool-card" onclick="nav('img-pdf',null)"><div class="tc-icon">📄</div><div class="tc-name">Imagem → PDF</div><div class="tc-desc">Cria PDF a partir de imagens</div></div>
+    <div class="tool-card" onclick="nav('audio-convert',null)"><div class="tc-icon">🎵</div><div class="tc-name">Converter áudio</div><div class="tc-desc">MP3, WAV, OGG, AAC, FLAC, M4A</div></div>
+    <div class="tool-card" onclick="nav('audio-extract',null)"><div class="tc-icon">🎙</div><div class="tc-name">Extrair áudio</div><div class="tc-desc">Extrai áudio de ficheiro de vídeo</div></div>
+    <div class="tool-card" onclick="nav('video-convert',null)"><div class="tc-icon">🎬</div><div class="tc-name">Converter vídeo</div><div class="tc-desc">MP4, MOV, AVI, MKV, WEBM...</div></div>
+    <div class="tool-card" onclick="nav('video-compress',null)"><div class="tc-icon">⬇</div><div class="tc-name">Comprimir vídeo</div><div class="tc-desc">Reduz tamanho mantendo qualidade</div></div>
+    <div class="tool-card" onclick="nav('video-gif',null)"><div class="tc-icon">🎞</div><div class="tc-name">Vídeo → GIF</div><div class="tc-desc">Cria GIF animado de qualidade</div></div>
+    <div class="tool-card" onclick="nav('video-trim',null)"><div class="tc-icon">✂</div><div class="tc-name">Cortar vídeo</div><div class="tc-desc">Define início e fim do clipe</div></div>
+    <div class="tool-card" onclick="nav('doc-word',null)"><div class="tc-icon">📝</div><div class="tc-name">Word → PDF</div><div class="tc-desc">Converte .docx para PDF</div></div>
+    <div class="tool-card" onclick="nav('doc-excel',null)"><div class="tc-icon">📊</div><div class="tc-name">Excel → PDF</div><div class="tc-desc">Converte .xlsx para PDF</div></div>
+    <div class="tool-card" onclick="nav('doc-ppt',null)"><div class="tc-icon">📽</div><div class="tc-name">PowerPoint → PDF</div><div class="tc-desc">Converte .pptx para PDF</div></div>
+    <div class="tool-card" onclick="nav('doc-any',null)"><div class="tc-icon">📁</div><div class="tc-name">Qualquer → PDF</div><div class="tc-desc">200+ formatos suportados</div></div>
+  </div>
+</div>
+
+<!-- IMG CONVERT -->
+<div class="page" id="page-img-convert">
+  <div class="page-header"><div class="page-title">🔄 Converter formato de imagem</div><div class="page-sub">Converte entre JPG, PNG, WEBP, BMP, GIF, ICO</div></div>
+  <div class="card">
+    <div class="multi-drop" onclick="document.getElementById('ic-input').click()">
+      <div style="font-size:24px;margin-bottom:8px">🖼</div>
+      <div style="font-size:13px;font-weight:500">Clica ou arrasta as imagens</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">JPG · PNG · WEBP · BMP · GIF · SVG — múltiplos ficheiros</div>
+      <input type="file" id="ic-input" multiple accept="image/*,.heic,.heif" style="display:none" onchange="addICFiles(this)">
+    </div>
+    <div class="file-list" id="ic-list"></div>
+    <div id="ic-has" style="display:none">
+      <div class="card-title">Formato de saída</div>
+      <div class="format-grid" id="ic-formats">
+        <button class="fmt-btn" onclick="setICFmt('jpeg',this)">JPG</button>
+        <button class="fmt-btn active" onclick="setICFmt('png',this)">PNG</button>
+        <button class="fmt-btn" onclick="setICFmt('webp',this)">WEBP</button>
+        <button class="fmt-btn" onclick="setICFmt('bmp',this)">BMP</button>
+        <button class="fmt-btn" onclick="setICFmt('gif',this)">GIF</button>
+        <button class="fmt-btn" onclick="setICFmt('ico',this)">ICO</button>
+      </div>
+      <div class="field"><label>Qualidade — <span id="ic-q-val">92</span>%</label>
+        <div class="range-row"><input type="range" id="ic-quality" min="10" max="100" value="92" oninput="document.getElementById('ic-q-val').textContent=this.value"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doImgConvert()">🔄 Converter</button>
+    </div>
+    <div class="status" id="ic-status"></div>
+    <div class="progress-wrap" id="ic-progress"><div class="progress-label"><span id="ic-prog-label">A converter...</span><span id="ic-prog-pct">0%</span></div><div class="bar-bg"><div class="bar-fill" id="ic-bar"></div></div></div>
+  </div>
+  <div class="results-grid" id="ic-results"></div>
+</div>
+
+<!-- IMG RESIZE -->
+<div class="page" id="page-img-resize">
+  <div class="page-header"><div class="page-title">⤢ Redimensionar imagem</div><div class="page-sub">Pixels, percentagem ou presets de redes sociais</div></div>
+  <div class="card">
+    <div class="drop-zone" id="ir-drop" onclick="document.getElementById('ir-input').click()">
+      <div class="drop-icon">⤢</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP · GIF</div>
+      <input type="file" id="ir-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadIRFile(this)">
+    </div>
+    <div id="ir-options" style="display:none;margin-top:1rem">
+      <div id="ir-info" style="font-size:12px;color:var(--text2);margin-bottom:.75rem;background:var(--surface2);padding:8px 12px;border-radius:var(--rs)"></div>
+      <div class="inner-tabs">
+        <button class="inner-tab active" onclick="setIRMode('px',this)">Pixels</button>
+        <button class="inner-tab" onclick="setIRMode('pct',this)">Percentagem</button>
+        <button class="inner-tab" onclick="setIRMode('social',this)">Redes Sociais</button>
+      </div>
+      <div id="ir-px">
+        <div class="row2">
+          <div class="field"><label>Largura (px)</label><input type="number" id="ir-w" min="1" oninput="if(irLock)updateIRHeight()"></div>
+          <div class="field"><label>Altura (px)</label><input type="number" id="ir-h" min="1"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">
+          <div class="toggle on" id="ir-lock-toggle" onclick="irLock=!irLock;this.classList.toggle('on',irLock)"></div>
+          <span style="font-size:12px;color:var(--text2)">Manter proporção</span>
+        </div>
+      </div>
+      <div id="ir-pct" style="display:none">
+        <div class="field"><label>Percentagem — <span id="ir-pct-val">50</span>%</label>
+          <div class="range-row"><input type="range" id="ir-pct-range" min="1" max="200" value="50" oninput="document.getElementById('ir-pct-val').textContent=this.value"></div>
+        </div>
+      </div>
+      <div id="ir-social" style="display:none">
+        <div class="field"><label>Preset</label>
+          <select id="ir-social-preset">
+            <optgroup label="Instagram"><option value="1080,1080">Post quadrado (1080×1080)</option><option value="1080,1350">Post retrato (1080×1350)</option><option value="1080,566">Post paisagem (1080×566)</option><option value="1080,1920">Story (1080×1920)</option></optgroup>
+            <optgroup label="Facebook"><option value="1200,630">Post (1200×630)</option><option value="820,312">Capa (820×312)</option></optgroup>
+            <optgroup label="YouTube"><option value="1280,720">Thumbnail (1280×720)</option><option value="2560,1440">Banner (2560×1440)</option></optgroup>
+            <optgroup label="Twitter / X"><option value="1600,900">Post (1600×900)</option><option value="1500,500">Capa (1500×500)</option></optgroup>
+            <optgroup label="LinkedIn"><option value="1200,627">Post (1200×627)</option><option value="1584,396">Capa (1584×396)</option></optgroup>
+            <optgroup label="TikTok"><option value="1080,1920">Vertical (1080×1920)</option></optgroup>
+            <optgroup label="Standard"><option value="1920,1080">Full HD (1920×1080)</option><option value="3840,2160">4K (3840×2160)</option></optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Formato de saída</label>
+        <select id="ir-fmt"><option value="same">Mesmo formato</option><option value="jpeg">JPG</option><option value="png">PNG</option><option value="webp">WEBP</option></select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doResize()">⤢ Redimensionar</button>
+    </div>
+    <div class="status" id="ir-status"></div>
+  </div>
+</div>
+
+<!-- IMG COMPRESS -->
+<div class="page" id="page-img-compress">
+  <div class="page-header"><div class="page-title">⬇ Comprimir imagem</div><div class="page-sub">Reduz o tamanho mantendo a qualidade visual</div></div>
+  <div class="card">
+    <div class="multi-drop" onclick="document.getElementById('icp-input').click()">
+      <div style="font-size:24px;margin-bottom:8px">⬇</div>
+      <div style="font-size:13px;font-weight:500">Clica ou arrasta as imagens</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">JPG · PNG · WEBP — múltiplos ficheiros</div>
+      <input type="file" id="icp-input" multiple accept="image/*,.heic,.heif" style="display:none" onchange="addICPFiles(this)">
+    </div>
+    <div class="file-list" id="icp-list"></div>
+    <div id="icp-has" style="display:none">
+      <div class="field"><label>Qualidade — <span id="icp-q-val">75</span>%</label>
+        <div class="range-row"><input type="range" id="icp-quality" min="10" max="99" value="75" oninput="document.getElementById('icp-q-val').textContent=this.value"></div>
+      </div>
+      <div class="field"><label>Formato de saída</label>
+        <select id="icp-fmt"><option value="same">Mesmo formato</option><option value="jpeg">JPG</option><option value="webp">WEBP (menor tamanho)</option></select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doImgCompress()">⬇ Comprimir</button>
+    </div>
+    <div class="status" id="icp-status"></div>
+    <div class="progress-wrap" id="icp-progress"><div class="progress-label"><span id="icp-prog-label">A comprimir...</span><span id="icp-prog-pct">0%</span></div><div class="bar-bg"><div class="bar-fill" id="icp-bar"></div></div></div>
+  </div>
+</div>
+
+<!-- IMG CROP -->
+<div class="page" id="page-img-crop">
+  <div class="page-header"><div class="page-title">✂ Recortar imagem</div><div class="page-sub">Define exactamente a área que quer manter</div></div>
+  <div class="card">
+    <div class="drop-zone" id="icr-drop" onclick="document.getElementById('icr-input').click()">
+      <div class="drop-icon">✂</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">JPG · PNG · WEBP</div>
+      <input type="file" id="icr-input" accept="image/*,.heic,.heif" style="display:none" onchange="loadICRFile(this)">
+    </div>
+    <div id="icr-options" style="display:none;margin-top:1rem">
+      <div id="icr-info" style="font-size:12px;color:var(--text2);margin-bottom:.75rem;background:var(--surface2);padding:8px 12px;border-radius:var(--rs)"></div>
+      <div class="row2"><div class="field"><label>X (px)</label><input type="number" id="icr-x" value="0" min="0"></div><div class="field"><label>Y (px)</label><input type="number" id="icr-y" value="0" min="0"></div></div>
+      <div class="row2"><div class="field"><label>Largura (px)</label><input type="number" id="icr-w" value="100" min="1"></div><div class="field"><label>Altura (px)</label><input type="number" id="icr-h" value="100" min="1"></div></div>
+      <button class="btn btn-primary btn-full" onclick="doCropImg()">✂ Recortar</button>
+    </div>
+    <div class="status" id="icr-status"></div>
+  </div>
+</div>
+
+<!-- IMG BATCH -->
+<div class="page" id="page-img-batch">
+  <div class="page-header"><div class="page-title">⊞ Batch — múltiplas imagens</div><div class="page-sub">Converte e redimensiona dezenas de imagens de uma vez</div></div>
+  <div class="card">
+    <div class="multi-drop" onclick="document.getElementById('ib-input').click()">
+      <div style="font-size:24px;margin-bottom:8px">⊞</div>
+      <div style="font-size:13px;font-weight:500">Clica ou arrasta as imagens</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">Sem limite de ficheiros</div>
+      <input type="file" id="ib-input" multiple accept="image/*,.heic,.heif" style="display:none" onchange="addIBFiles(this)">
+    </div>
+    <div class="file-list" id="ib-list"></div>
+    <div id="ib-has" style="display:none">
+      <div class="row3">
+        <div class="field"><label>Formato</label><select id="ib-fmt"><option value="jpeg">JPG</option><option value="png" selected>PNG</option><option value="webp">WEBP</option></select></div>
+        <div class="field"><label>Qualidade — <span id="ib-q-val">90</span>%</label><div class="range-row"><input type="range" id="ib-quality" min="10" max="100" value="90" oninput="document.getElementById('ib-q-val').textContent=this.value"></div></div>
+        <div class="field"><label>Redimensionar</label><select id="ib-resize" onchange="document.getElementById('ib-resize-opts').style.display=this.value!=='no'?'block':'none'"><option value="no">Não</option><option value="maxw">Largura máxima</option><option value="exact">Exacto</option></select></div>
+      </div>
+      <div id="ib-resize-opts" style="display:none">
+        <div class="row2"><div class="field"><label>Largura (px)</label><input type="number" id="ib-w" value="1920" min="1"></div><div class="field"><label>Altura (0 = auto)</label><input type="number" id="ib-h" value="0" min="0"></div></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doBatch()">⊞ Processar e Descarregar ZIP</button>
+    </div>
+    <div class="status" id="ib-status"></div>
+    <div class="progress-wrap" id="ib-progress"><div class="progress-label"><span id="ib-prog-label">A processar...</span><span id="ib-prog-pct">0%</span></div><div class="bar-bg"><div class="bar-fill" id="ib-bar"></div></div></div>
+  </div>
+</div>
+
+<!-- BASE64 -->
+<div class="page" id="page-img-base64">
+  <div class="page-header"><div class="page-title">⌥ Base64 ↔ Imagem</div><div class="page-sub">Converte imagens para Base64 e vice-versa</div></div>
+  <div class="card">
+    <div class="inner-tabs">
+      <button class="inner-tab active" onclick="setB64Tab('to',this)">Imagem → Base64</button>
+      <button class="inner-tab" onclick="setB64Tab('from',this)">Base64 → Imagem</button>
+    </div>
+    <div id="b64-to">
+      <div class="drop-zone" id="b64-drop" onclick="document.getElementById('b64-input').click()">
+        <div class="drop-icon">📎</div><div class="drop-title">Clica ou arrasta a imagem</div><div class="drop-sub">Qualquer formato</div>
+        <input type="file" id="b64-input" accept="image/*,.heic,.heif" style="display:none" onchange="imgToBase64(this)">
+      </div>
+      <div id="b64-output" style="display:none;margin-top:.75rem">
+        <div class="field"><label>Base64</label><textarea id="b64-text" style="min-height:100px;font-size:10px;font-family:monospace" readonly></textarea></div>
+        <div style="display:flex;gap:8px;margin-top:.5rem;align-items:center">
+          <button class="btn btn-primary" style="height:34px;font-size:12px" onclick="copyB64(this)">⎘ Copiar</button>
+          <span id="b64-size" style="font-size:11px;color:var(--text2)"></span>
+        </div>
+      </div>
+    </div>
+    <div id="b64-from" style="display:none">
+      <div class="field"><label>Cola o Base64 aqui</label><textarea id="b64-from-text" placeholder="data:image/png;base64,iVBOR..." style="min-height:100px;font-size:10px;font-family:monospace"></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="base64ToImg()" style="height:40px;margin-top:.5rem">⌥ Descarregar imagem</button>
+    </div>
+    <div class="status" id="b64-status"></div>
+  </div>
+</div>
+
+<!-- SVG -->
+<div class="page" id="page-img-svg">
+  <div class="page-header"><div class="page-title">◎ SVG → PNG / JPG</div><div class="page-sub">Converte ficheiros SVG vectoriais para imagem</div></div>
+  <div class="card">
+    <div class="drop-zone" id="svg-drop" onclick="document.getElementById('svg-input').click()">
+      <div class="drop-icon">◎</div><div class="drop-title">Clica ou arrasta o SVG</div><div class="drop-sub">Ficheiro .svg</div>
+      <input type="file" id="svg-input" accept=".svg,image/svg+xml" style="display:none" onchange="loadSVGFile(this)">
+    </div>
+    <div id="svg-options" style="display:none;margin-top:1rem">
+      <div class="row3">
+        <div class="field"><label>Formato</label><select id="svg-fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WEBP</option></select></div>
+        <div class="field"><label>Escala — <span id="svg-scale-val">2×</span></label><div class="range-row"><input type="range" id="svg-scale" min="1" max="8" value="2" oninput="document.getElementById('svg-scale-val').textContent=this.value+'×'"></div></div>
+        <div class="field"><label>Fundo</label><select id="svg-bg"><option value="transparent">Transparente</option><option value="white">Branco</option><option value="black">Preto</option></select></div>
+      </div>
+      <div id="svg-preview" style="background:var(--surface2);border-radius:var(--rs);padding:12px;margin-bottom:.75rem;text-align:center;display:none"><img id="svg-preview-img" style="max-width:100%;max-height:200px;border-radius:4px"></div>
+      <button class="btn btn-primary btn-full" onclick="doSVGConvert()">◎ Converter</button>
+    </div>
+    <div class="status" id="svg-status"></div>
+  </div>
+</div>
+
+<!-- IMG TO PDF -->
+<div class="page" id="page-img-pdf">
+  <div class="page-header"><div class="page-title">📄 Imagem → PDF</div><div class="page-sub">Combina imagens num PDF — uma imagem por página</div></div>
+  <div class="card">
+    <div class="multi-drop" onclick="document.getElementById('ip-input').click()">
+      <div style="font-size:24px;margin-bottom:8px">📄</div>
+      <div style="font-size:13px;font-weight:500">Clica ou arrasta as imagens</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">JPG · PNG · WEBP</div>
+      <input type="file" id="ip-input" multiple accept="image/*,.heic,.heif" style="display:none" onchange="addIPFiles(this)">
+    </div>
+    <div class="file-list" id="ip-list"></div>
+    <div id="ip-has" style="display:none">
+      <div class="row2">
+        <div class="field"><label>Tamanho</label><select id="ip-size"><option value="A4">A4</option><option value="A3">A3</option><option value="letter">Letter</option><option value="fit">Ajustar à imagem</option></select></div>
+        <div class="field"><label>Orientação</label><select id="ip-orient"><option value="portrait">Retrato</option><option value="landscape">Paisagem</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doImgToPDF()">📄 Criar PDF</button>
+    </div>
+    <div class="status" id="ip-status"></div>
+  </div>
+</div>
+
+<!-- AUDIO CONVERT -->
+<div class="page" id="page-audio-convert">
+  <div class="page-header"><div class="page-title">🎵 Converter áudio</div><div class="page-sub">MP3, WAV, OGG, AAC, FLAC, M4A</div></div>
+  <div class="card">
+    <div class="drop-zone" id="ac-drop" onclick="document.getElementById('ac-input').click()">
+      <div class="drop-icon">🎵</div><div class="drop-title">Clica ou arrasta o ficheiro de áudio</div><div class="drop-sub">MP3 · WAV · OGG · AAC · FLAC · M4A</div>
+      <input type="file" id="ac-input" accept="audio/*" style="display:none" onchange="loadAPIFile('ac',this)">
+    </div>
+    <div id="ac-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Formato de saída</label>
+        <div class="format-grid"><button class="fmt-btn active" onclick="setFmt('ac','mp3',this)">MP3</button><button class="fmt-btn" onclick="setFmt('ac','wav',this)">WAV</button><button class="fmt-btn" onclick="setFmt('ac','ogg',this)">OGG</button><button class="fmt-btn" onclick="setFmt('ac','aac',this)">AAC</button><button class="fmt-btn" onclick="setFmt('ac','flac',this)">FLAC</button><button class="fmt-btn" onclick="setFmt('ac','m4a',this)">M4A</button></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doAPIConvert('ac')">🎵 Converter</button>
+    </div>
+    <div class="status" id="ac-status"></div>
+  </div>
+</div>
+
+<!-- AUDIO EXTRACT -->
+<div class="page" id="page-audio-extract">
+  <div class="page-header"><div class="page-title">🎙 Extrair áudio de vídeo</div><div class="page-sub">Extrai a faixa de áudio de qualquer ficheiro de vídeo</div></div>
+  <div class="card">
+    <div class="drop-zone" id="ae-drop" onclick="document.getElementById('ae-input').click()">
+      <div class="drop-icon">🎙</div><div class="drop-title">Clica ou arrasta o vídeo</div><div class="drop-sub">MP4 · MOV · AVI · MKV · WEBM</div>
+      <input type="file" id="ae-input" accept="video/*" style="display:none" onchange="loadAPIFile('ae',this)">
+    </div>
+    <div id="ae-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Formato do áudio</label>
+        <div class="format-grid"><button class="fmt-btn active" onclick="setFmt('ae','mp3',this)">MP3</button><button class="fmt-btn" onclick="setFmt('ae','wav',this)">WAV</button><button class="fmt-btn" onclick="setFmt('ae','aac',this)">AAC</button><button class="fmt-btn" onclick="setFmt('ae','flac',this)">FLAC</button></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doAPIConvert('ae')">🎙 Extrair áudio</button>
+    </div>
+    <div class="status" id="ae-status"></div>
+  </div>
+</div>
+
+<!-- VIDEO CONVERT -->
+<div class="page" id="page-video-convert">
+  <div class="page-header"><div class="page-title">🎬 Converter vídeo</div><div class="page-sub">MP4, MOV, AVI, MKV, WEBM, FLV</div></div>
+  <div class="card">
+    <div class="drop-zone" id="vc-drop" onclick="document.getElementById('vc-input').click()">
+      <div class="drop-icon">🎬</div><div class="drop-title">Clica ou arrasta o vídeo</div><div class="drop-sub">MP4 · MOV · AVI · MKV · WEBM · FLV</div>
+      <input type="file" id="vc-input" accept="video/*" style="display:none" onchange="loadAPIFile('vc',this)">
+    </div>
+    <div id="vc-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Formato de saída</label>
+        <div class="format-grid"><button class="fmt-btn active" onclick="setFmt('vc','mp4',this)">MP4</button><button class="fmt-btn" onclick="setFmt('vc','mov',this)">MOV</button><button class="fmt-btn" onclick="setFmt('vc','avi',this)">AVI</button><button class="fmt-btn" onclick="setFmt('vc','mkv',this)">MKV</button><button class="fmt-btn" onclick="setFmt('vc','webm',this)">WEBM</button></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Qualidade</label><select id="vc-quality"><option value="high">Alta</option><option value="medium" selected>Média</option><option value="low">Baixa</option></select></div>
+        <div class="field"><label>Resolução</label><select id="vc-res"><option value="">Original</option><option value="1920x1080">1080p</option><option value="1280x720">720p</option><option value="854x480">480p</option></select></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doAPIConvert('vc')">🎬 Converter</button>
+    </div>
+    <div class="status" id="vc-status"></div>
+  </div>
+</div>
+
+<!-- VIDEO COMPRESS -->
+<div class="page" id="page-video-compress">
+  <div class="page-header"><div class="page-title">⬇ Comprimir vídeo</div><div class="page-sub">Reduz o tamanho mantendo a qualidade</div></div>
+  <div class="card">
+    <div class="drop-zone" id="vcmp-drop" onclick="document.getElementById('vcmp-input').click()">
+      <div class="drop-icon">⬇</div><div class="drop-title">Clica ou arrasta o vídeo</div><div class="drop-sub">MP4 · MOV · AVI · MKV</div>
+      <input type="file" id="vcmp-input" accept="video/*" style="display:none" onchange="loadAPIFile('vcmp',this)">
+    </div>
+    <div id="vcmp-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Nível de compressão</label><select id="vcmp-level"><option value="light">Leve — maior qualidade</option><option value="medium" selected>Médio</option><option value="heavy">Forte — menor tamanho</option></select></div>
+      <button class="btn btn-primary btn-full" onclick="doAPIConvert('vcmp')">⬇ Comprimir</button>
+    </div>
+    <div class="status" id="vcmp-status"></div>
+  </div>
+</div>
+
+<!-- VIDEO GIF -->
+<div class="page" id="page-video-gif">
+  <div class="page-header"><div class="page-title">🎞 Vídeo → GIF</div><div class="page-sub">Cria GIFs animados de alta qualidade</div></div>
+  <div class="card">
+    <div class="drop-zone" id="vg-drop" onclick="document.getElementById('vg-input').click()">
+      <div class="drop-icon">🎞</div><div class="drop-title">Clica ou arrasta o vídeo</div><div class="drop-sub">MP4 · MOV · AVI · WEBM</div>
+      <input type="file" id="vg-input" accept="video/*" style="display:none" onchange="loadAPIFile('vg',this)">
+    </div>
+    <div id="vg-options" style="display:none;margin-top:1rem">
+      <div class="row3">
+        <div class="field"><label>Início (seg)</label><input type="number" id="vg-start" value="0" min="0"></div>
+        <div class="field"><label>Duração (seg)</label><input type="number" id="vg-dur" value="5" min="1" max="30"></div>
+        <div class="field"><label>FPS — <span id="vg-fps-val">15</span></label><div class="range-row"><input type="range" id="vg-fps" min="5" max="30" value="15" oninput="document.getElementById('vg-fps-val').textContent=this.value"></div></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doAPIConvert('vg')">🎞 Gerar GIF</button>
+    </div>
+    <div class="status" id="vg-status"></div>
+  </div>
+</div>
+
+<!-- VIDEO TRIM -->
+<div class="page" id="page-video-trim">
+  <div class="page-header"><div class="page-title">✂ Cortar vídeo</div><div class="page-sub">Define o início e fim exactos do clipe</div></div>
+  <div class="card">
+    <div class="drop-zone" id="vt-drop" onclick="document.getElementById('vt-input').click()">
+      <div class="drop-icon">✂</div><div class="drop-title">Clica ou arrasta o vídeo</div><div class="drop-sub">MP4 · MOV · AVI · MKV · WEBM</div>
+      <input type="file" id="vt-input" accept="video/*" style="display:none" onchange="loadAPIFile('vt',this)">
+    </div>
+    <div id="vt-options" style="display:none;margin-top:1rem">
+      <div class="row2">
+        <div class="field"><label>Início (segundos)</label><input type="number" id="vt-start" value="0" min="0" step="0.1"></div>
+        <div class="field"><label>Fim (segundos)</label><input type="number" id="vt-end" value="30" min="1" step="0.1"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doAPIConvert('vt')">✂ Cortar</button>
+    </div>
+    <div class="status" id="vt-status"></div>
+  </div>
+</div>
+
+<!-- DOC PAGES -->
+<div class="page" id="page-doc-word"><div class="page-header"><div class="page-title">📝 Word → PDF</div></div><div class="card"><div class="drop-zone" id="dw-drop" onclick="document.getElementById('dw-input').click()"><div class="drop-icon">📝</div><div class="drop-title">Clica ou arrasta o ficheiro Word</div><div class="drop-sub">.docx · .doc</div><input type="file" id="dw-input" accept=".docx,.doc" style="display:none" onchange="loadAPIFile('dw',this)"></div><div id="dw-options" style="display:none;margin-top:1rem"><button class="btn btn-primary btn-full" onclick="doAPIConvert('dw')">📝 Converter para PDF</button></div><div class="status" id="dw-status"></div></div></div>
+<div class="page" id="page-doc-excel"><div class="page-header"><div class="page-title">📊 Excel → PDF</div></div><div class="card"><div class="drop-zone" id="de-drop" onclick="document.getElementById('de-input').click()"><div class="drop-icon">📊</div><div class="drop-title">Clica ou arrasta o ficheiro Excel</div><div class="drop-sub">.xlsx · .xls</div><input type="file" id="de-input" accept=".xlsx,.xls" style="display:none" onchange="loadAPIFile('de',this)"></div><div id="de-options" style="display:none;margin-top:1rem"><button class="btn btn-primary btn-full" onclick="doAPIConvert('de')">📊 Converter para PDF</button></div><div class="status" id="de-status"></div></div></div>
+<div class="page" id="page-doc-ppt"><div class="page-header"><div class="page-title">📽 PowerPoint → PDF</div></div><div class="card"><div class="drop-zone" id="dp-drop" onclick="document.getElementById('dp-input').click()"><div class="drop-icon">📽</div><div class="drop-title">Clica ou arrasta o PowerPoint</div><div class="drop-sub">.pptx · .ppt</div><input type="file" id="dp-input" accept=".pptx,.ppt" style="display:none" onchange="loadAPIFile('dp',this)"></div><div id="dp-options" style="display:none;margin-top:1rem"><button class="btn btn-primary btn-full" onclick="doAPIConvert('dp')">📽 Converter para PDF</button></div><div class="status" id="dp-status"></div></div></div>
+<div class="page" id="page-doc-any"><div class="page-header"><div class="page-title">📁 Qualquer → PDF</div><div class="page-sub">200+ formatos suportados</div></div><div class="card"><div class="drop-zone" id="da-drop" onclick="document.getElementById('da-input').click()"><div class="drop-icon">📁</div><div class="drop-title">Clica ou arrasta o ficheiro</div><div class="drop-sub">Word · Excel · PPT · ODT · HTML · TXT · CSV · e muito mais</div><input type="file" id="da-input" style="display:none" onchange="loadAPIFile('da',this)"></div><div id="da-options" style="display:none;margin-top:1rem"><button class="btn btn-primary btn-full" onclick="doAPIConvert('da')">📁 Converter para PDF</button></div><div class="status" id="da-status"></div></div></div>
+
+</div>
+</div>
+
+<script src="vendor/jszip.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="tm-core.js"></script>
+<script src="vendor/ffmpeg/ffmpeg.js"></script>
+<script src="tm-ffmpeg.js"></script>
+<script src="tm-image.js"></script>
+<script>
+// NAV
+function nav(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active');});
+}
+
+// HELPERS
+function st(id,msg,type='loading'){const el=document.getElementById(id+'-status');if(!el)return;el.style.display='block';el.className='status '+type;el.textContent=msg;}
+function setP(pfx,pct,lbl){const b=document.getElementById(pfx+'-bar');if(b)b.style.width=pct+'%';const p=document.getElementById(pfx+'-prog-pct');if(p)p.textContent=pct+'%';const l=document.getElementById(pfx+'-prog-label');if(l)l.textContent=lbl;document.getElementById(pfx+'-progress')?.style&&(document.getElementById(pfx+'-progress').style.display='block');}
+function dlBlob(blob,name){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+function readDU(file){return TMIMG.readDataURL(file);}
+function imgFromSrc(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function toBlob(canvas,fmt,q){return TMIMG.toBlob(canvas,fmt,q);}
+function setDrop(id,text){const el=document.getElementById(id+'-drop');if(!el)return;el.classList.add('has-file');const t=el.querySelector('.drop-title');if(t)t.textContent=text;}
+
+// IMG CONVERT
+let icFiles=[],icFmt='png';
+function addICFiles(i){[...i.files].forEach(f=>icFiles.push(f));i.value='';renderList('ic',icFiles,'ic-has');}
+function setICFmt(fmt,btn){icFmt=fmt;document.querySelectorAll('#ic-formats .fmt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+async function doImgConvert(){
+  const errs=[];
+  if(!icFiles.length)return;st('ic','A converter...','loading');
+  document.getElementById('ic-progress').style.display='block';document.getElementById('ic-results').innerHTML='';
+  const q=parseInt(document.getElementById('ic-quality').value);
+  const zip=new JSZip();let done=0;
+  for(let i=0;i<icFiles.length;i++){
+    const f=icFiles[i];setP('ic',Math.round((i/icFiles.length)*90),'A converter '+f.name+'...');
+    try{
+      const src=await readDU(f);const img=await imgFromSrc(src);
+      const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext('2d').drawImage(img,0,0);
+      const blob=await toBlob(c,icFmt==='jpeg'?'jpeg':icFmt,q);
+      const ext=icFmt==='jpeg'?'jpg':icFmt;const name=f.name.replace(/\.[^.]+$/,'')+'.'+ext;
+      zip.file(name,blob);
+      const url=URL.createObjectURL(blob);
+      const item=document.createElement('div');item.className='result-item';
+      item.innerHTML=`<img class="result-preview" src="${url}"><div class="result-name"></div><div class="result-size">${(blob.size/1024).toFixed(0)} KB</div><a class="result-dl" href="${url}" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">↓ Descarregar</a>`;
+      item.querySelector('.result-name').textContent=name; item.querySelector('.result-dl').download=name;
+      document.getElementById('ic-results').appendChild(item);done++;
+    }catch(e){errs.push(f.name+': '+e.message);}
+  }
+  setP('ic',100,'Concluído!');
+  if(icFiles.length>1){const zb=await zip.generateAsync({type:'blob'});dlBlob(zb,'convertidas-'+Date.now()+'.zip');}
+  st('ic','✓ '+done+' imagem(ns) convertida(s)!','ok');
+  if(errs.length)st('ic',(done?'⚠ '+done+' concluída(s); ':'✗ ')+errs.length+' falharam: '+errs.join(' | '),'err');
+}
+
+// RESIZE
+let irFile=null,irImg=null,irLock=true;
+async function loadIRFile(input){
+  const f=input.files[0];if(!f)return;irFile=f;
+  const src=await readDU(f);irImg=await imgFromSrc(src);
+  setDrop('ir',f.name+' ('+irImg.naturalWidth+'×'+irImg.naturalHeight+'px)');
+  document.getElementById('ir-options').style.display='block';
+  document.getElementById('ir-info').textContent='Original: '+irImg.naturalWidth+'×'+irImg.naturalHeight+'px · '+(f.size/1024).toFixed(0)+' KB';
+  document.getElementById('ir-w').value=irImg.naturalWidth;document.getElementById('ir-h').value=irImg.naturalHeight;
+}
+function setIRMode(mode,btn){document.querySelectorAll('#page-img-resize .inner-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['px','pct','social'].forEach(m=>document.getElementById('ir-'+m).style.display=m===mode?'block':'none');}
+function updateIRHeight(){if(!irImg)return;const w=parseInt(document.getElementById('ir-w').value)||1;document.getElementById('ir-h').value=Math.round(w*(irImg.naturalHeight/irImg.naturalWidth));}
+async function doResize(){
+  if(!irFile||!irImg)return;st('ir','A redimensionar...','loading');
+  try{
+    const activeTab=document.querySelector('#page-img-resize .inner-tab.active').textContent.trim();
+    let tw,th;
+    if(activeTab.includes('Pixel')){tw=parseInt(document.getElementById('ir-w').value)||irImg.naturalWidth;th=parseInt(document.getElementById('ir-h').value)||irImg.naturalHeight;}
+    else if(activeTab.includes('Percent')){const p=parseInt(document.getElementById('ir-pct-range').value)/100;tw=Math.round(irImg.naturalWidth*p);th=Math.round(irImg.naturalHeight*p);}
+    else{const v=document.getElementById('ir-social-preset').value.split(',');tw=parseInt(v[0]);th=parseInt(v[1]);}
+    const c=document.createElement('canvas');c.width=tw;c.height=th;c.getContext('2d').drawImage(irImg,0,0,tw,th);
+    const fmt=document.getElementById('ir-fmt').value;const outFmt=fmt==='same'?(irFile.type.includes('png')?'png':irFile.type.includes('webp')?'webp':'jpeg'):fmt;
+    const blob=await toBlob(c,outFmt,92);const ext=outFmt==='jpeg'?'jpg':outFmt;
+    dlBlob(blob,irFile.name.replace(/\.[^.]+$/,'')+'-'+tw+'x'+th+'.'+ext);
+    st('ir','✓ Redimensionado para '+tw+'×'+th+'px!','ok');
+  }catch(e){st('ir','Erro: '+e.message,'err');}
+}
+
+// COMPRESS
+let icpFiles=[];
+function addICPFiles(i){[...i.files].forEach(f=>icpFiles.push(f));i.value='';renderList('icp',icpFiles,'icp-has');}
+async function doImgCompress(){
+  const errs=[];
+  if(!icpFiles.length)return;st('icp','A comprimir...','loading');document.getElementById('icp-progress').style.display='block';
+  const q=parseInt(document.getElementById('icp-quality').value);const fmt=document.getElementById('icp-fmt').value;
+  const zip=new JSZip();let done=0,saved=0;
+  for(let i=0;i<icpFiles.length;i++){
+    const f=icpFiles[i];setP('icp',Math.round((i/icpFiles.length)*90),'A comprimir '+f.name+'...');
+    try{
+      const src=await readDU(f);const img=await imgFromSrc(src);
+      const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext('2d').drawImage(img,0,0);
+      const outFmt=fmt==='same'?(f.type.includes('png')?'png':f.type.includes('webp')?'webp':'jpeg'):fmt;
+      const blob=await toBlob(c,outFmt,q);const ext=outFmt==='jpeg'?'jpg':outFmt;
+      zip.file(f.name.replace(/\.[^.]+$/,'')+'-compressed.'+ext,blob);saved+=f.size-blob.size;done++;
+    }catch(e){errs.push(f.name+': '+e.message);}
+  }
+  setP('icp',100,'Concluído!');const zb=await zip.generateAsync({type:'blob'});dlBlob(zb,'comprimidas-'+Date.now()+'.zip');
+  st('icp','✓ '+done+' imagens. Poupança total: '+(saved/1024).toFixed(0)+' KB','ok');
+  if(errs.length)st('icp',(done?'⚠ '+done+' concluída(s); ':'✗ ')+errs.length+' falharam: '+errs.join(' | '),'err');
+}
+
+// CROP
+let icrFile=null,icrImg=null;
+async function loadICRFile(input){
+  const f=input.files[0];if(!f)return;icrFile=f;
+  const src=await readDU(f);icrImg=await imgFromSrc(src);
+  setDrop('icr',f.name);document.getElementById('icr-options').style.display='block';
+  document.getElementById('icr-info').textContent='Tamanho: '+icrImg.naturalWidth+'×'+icrImg.naturalHeight+'px';
+  document.getElementById('icr-w').value=icrImg.naturalWidth;document.getElementById('icr-h').value=icrImg.naturalHeight;
+}
+async function doCropImg(){
+  if(!icrFile||!icrImg)return;st('icr','A recortar...','loading');
+  try{
+    const x=parseInt(document.getElementById('icr-x').value)||0,y=parseInt(document.getElementById('icr-y').value)||0;
+    const w=parseInt(document.getElementById('icr-w').value)||icrImg.naturalWidth,h=parseInt(document.getElementById('icr-h').value)||icrImg.naturalHeight;
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(icrImg,x,y,w,h,0,0,w,h);
+    const blob=await toBlob(c,'png',95);dlBlob(blob,icrFile.name.replace(/\.[^.]+$/,'')+'-cropped.png');
+    st('icr','✓ Recortado para '+w+'×'+h+'px!','ok');
+  }catch(e){st('icr','Erro: '+e.message,'err');}
+}
+
+// BATCH
+let ibFiles=[];
+function addIBFiles(i){[...i.files].forEach(f=>ibFiles.push(f));i.value='';renderList('ib',ibFiles,'ib-has');}
+async function doBatch(){
+  const errs=[];
+  if(!ibFiles.length)return;st('ib','A processar...','loading');document.getElementById('ib-progress').style.display='block';
+  const fmt=document.getElementById('ib-fmt').value,q=parseInt(document.getElementById('ib-quality').value);
+  const rm=document.getElementById('ib-resize').value,mw=parseInt(document.getElementById('ib-w').value)||1920,mh=parseInt(document.getElementById('ib-h').value)||0;
+  const zip=new JSZip();let done=0;
+  for(let i=0;i<ibFiles.length;i++){
+    const f=ibFiles[i];setP('ib',Math.round((i/ibFiles.length)*90),'('+i+'/'+ibFiles.length+') '+f.name);
+    try{
+      const src=await readDU(f);const img=await imgFromSrc(src);
+      let tw=img.naturalWidth,th=img.naturalHeight;
+      if(rm==='maxw'&&tw>mw){th=Math.round(th*(mw/tw));tw=mw;}
+      else if(rm==='exact'){tw=mw;th=mh||Math.round(img.naturalHeight*(mw/img.naturalWidth));}
+      const c=document.createElement('canvas');c.width=tw;c.height=th;c.getContext('2d').drawImage(img,0,0,tw,th);
+      const blob=await toBlob(c,fmt,q);const ext=fmt==='jpeg'?'jpg':fmt;
+      zip.file(f.name.replace(/\.[^.]+$/,'')+'.'+ext,blob);done++;
+    }catch(e){errs.push(f.name+': '+e.message);}
+  }
+  setP('ib',100,'Concluído!');const zb=await zip.generateAsync({type:'blob'});dlBlob(zb,'batch-'+Date.now()+'.zip');
+  st('ib','✓ '+done+'/'+ibFiles.length+' imagens processadas!','ok');
+  if(errs.length)st('ib',(done?'⚠ '+done+' concluída(s); ':'✗ ')+errs.length+' falharam: '+errs.join(' | '),'err');
+}
+
+// BASE64
+async function copyB64(btn){
+  const ta=document.getElementById('b64-text');
+  try{await navigator.clipboard.writeText(ta.value);btn.textContent='✓ Copiado';}
+  catch(e){ta.focus();ta.select();btn.textContent='Selecionado — Ctrl+C';console.warn('Clipboard recusado:',e.message);}
+  setTimeout(()=>btn.textContent='⎘ Copiar',2000);
+}
+function setB64Tab(tab,btn){document.querySelectorAll('#page-img-base64 .inner-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('b64-to').style.display=tab==='to'?'block':'none';document.getElementById('b64-from').style.display=tab==='from'?'block':'none';}
+async function imgToBase64(input){
+  const f=input.files[0];if(!f)return;const src=await readDU(f);
+  document.getElementById('b64-output').style.display='block';document.getElementById('b64-text').value=src;
+  document.getElementById('b64-size').textContent='Tamanho: '+(src.length/1024).toFixed(1)+' KB';setDrop('b64',f.name);
+}
+function base64ToImg(){
+  let b64=document.getElementById('b64-from-text').value.trim();if(!b64){st('b64','Cola o Base64 primeiro.','err');return;}
+  if(!b64.startsWith('data:'))b64='data:image/png;base64,'+b64;
+  const a=document.createElement('a');a.href=b64;a.download='imagem-'+Date.now()+'.png';a.click();st('b64','✓ Imagem descarregada!','ok');
+}
+
+// SVG
+let svgFile=null;
+function loadSVGFile(input){const f=input.files[0];if(!f)return;svgFile=f;setDrop('svg',f.name);document.getElementById('svg-options').style.display='block';}
+async function doSVGConvert(){
+  if(!svgFile)return;st('svg','A converter SVG...','loading');
+  try{
+    let text=await svgFile.text();
+    const doc=new DOMParser().parseFromString(text,'image/svg+xml');const root=doc.documentElement;
+    if(!root||root.nodeName.toLowerCase()!=='svg'||doc.querySelector('parsererror'))throw new Error('o ficheiro não é um SVG válido');
+    let w=parseFloat(root.getAttribute('width')),h=parseFloat(root.getAttribute('height'));
+    const vb=(root.getAttribute('viewBox')||'').split(/[\s,]+/).map(Number);
+    if(!(w>0&&h>0)){if(vb.length===4&&vb[2]>0&&vb[3]>0){w=vb[2];h=vb[3];}else{w=512;h=512;}root.setAttribute('width',w);root.setAttribute('height',h);text=new XMLSerializer().serializeToString(root);}
+    const blob=new Blob([text],{type:'image/svg+xml'});const url=URL.createObjectURL(blob);
+    let img;try{img=await imgFromSrc(url);}catch(ev){throw new Error('o browser não conseguiu desenhar este SVG');}
+    const scale=parseInt(document.getElementById('svg-scale').value)||2;
+    const c=document.createElement('canvas');c.width=Math.round(w*scale);c.height=Math.round(h*scale);
+    const ctx=c.getContext('2d');let bg=document.getElementById('svg-bg').value;
+    if(bg==='transparent'&&document.getElementById('svg-fmt').value==='jpeg')bg='white';
+    if(bg!=='transparent'){ctx.fillStyle=bg;ctx.fillRect(0,0,c.width,c.height);}
+    ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+    const fmt=document.getElementById('svg-fmt').value;const ob=await toBlob(c,fmt,95);const ext=fmt==='jpeg'?'jpg':fmt;
+    document.getElementById('svg-preview').style.display='block';document.getElementById('svg-preview-img').src=URL.createObjectURL(ob);
+    dlBlob(ob,svgFile.name.replace('.svg','')+'.'+ext);st('svg','✓ SVG convertido ('+c.width+'×'+c.height+'px)!','ok');
+  }catch(e){st('svg','Erro: '+e.message,'err');}
+}
+
+// IMG TO PDF
+let ipFiles=[];
+function addIPFiles(i){[...i.files].forEach(f=>ipFiles.push(f));i.value='';renderList('ip',ipFiles,'ip-has');}
+async function doImgToPDF(){
+  if(!ipFiles.length)return;st('ip','A criar PDF...','loading');
+  try{
+    const doc=await PDFLib.PDFDocument.create();
+    const sizes={A4:[595,842],A3:[842,1191],letter:[612,792]};const sk=document.getElementById('ip-size').value;const or=document.getElementById('ip-orient').value;
+    for(const f of ipFiles){
+      const data=await readDU(f);let img;if(f.type==='image/png')img=await doc.embedPng(data);else img=await doc.embedJpg(data);
+      let pw=img.width,ph=img.height;
+      if(sk!=='fit'){let[sw,sh]=sizes[sk]||[595,842];if(or==='landscape')[sw,sh]=[sh,sw];pw=sw;ph=sh;}
+      const page=doc.addPage([pw,ph]);const scale=Math.min(pw/img.width,ph/img.height);
+      page.drawImage(img,{x:(pw-img.width*scale)/2,y:(ph-img.height*scale)/2,width:img.width*scale,height:img.height*scale});
+    }
+    const out=await doc.save();dlBlob(new Blob([out],{type:'application/pdf'}),'imagens-'+Date.now()+'.pdf');
+    st('ip','✓ PDF criado com '+ipFiles.length+' página(s)!','ok');
+  }catch(e){st('ip','Erro: '+e.message,'err');}
+}
+
+// RENDER FILE LIST
+function renderList(prefix,files,hasId){
+  const l=document.getElementById(prefix+'-list');
+  l.innerHTML=files.map((f,i)=>`<div class="file-item"><span class="file-name">📄 ${f.name}</span><span class="file-size">${(f.size/1024).toFixed(0)}KB</span><button class="file-rm" onclick="${prefix}Files.splice(${i},1);renderList('${prefix}',${prefix}Files,'${hasId}')">✕</button></div>`).join('');
+  document.getElementById(hasId).style.display=files.length?'block':'none';
+}
+
+// API TOOLS — frontend ready, backend to be connected
+let apiFmts={ac:'mp3',ae:'mp3',vc:'mp4',vcmp:'mp4',vg:'gif',vt:'mp4',dw:'pdf',de:'pdf',dp:'pdf',da:'pdf'};
+function setFmt(prefix,fmt,btn){apiFmts[prefix]=fmt;btn.closest('.format-grid').querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function loadAPIFile(prefix,input){const f=input.files[0];if(!f)return;setDrop(prefix,f.name+' ('+(f.size/1024/1024).toFixed(2)+' MB)');document.getElementById(prefix+'-options').style.display='block';}
+const AUDIO_CODEC={mp3:['-c:a','libmp3lame','-b:a','192k'],wav:['-c:a','pcm_s16le'],ogg:['-c:a','libvorbis','-q:a','5'],aac:['-c:a','aac','-b:a','192k'],m4a:['-c:a','aac','-b:a','192k'],flac:['-c:a','flac']};
+const MIME={mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg',aac:'audio/aac',m4a:'audio/mp4',flac:'audio/flac',mp4:'video/mp4',mov:'video/quicktime',avi:'video/x-msvideo',mkv:'video/x-matroska',webm:'video/webm',gif:'image/gif'};
+function num(id,def){const v=parseFloat(document.getElementById(id)?.value);return isFinite(v)?v:def;}
+function mediaJob(prefix){
+  const fmt=apiFmts[prefix];
+  if(prefix==='ac'||prefix==='ae')return{ext:fmt==='aac'?'m4a':fmt,args:(i,o)=>['-i',i,'-vn',...AUDIO_CODEC[fmt],o]};
+  if(prefix==='vc'){
+    const crf={high:20,medium:26,low:32}[document.getElementById('vc-quality').value]||26;
+    const res=document.getElementById('vc-res').value;const vf=res?['-vf','scale=-2:'+res.split('x')[1]]:[];
+    if(fmt==='webm')return{ext:'webm',args:(i,o)=>['-i',i,...vf,'-c:v','libvpx','-crf',String(crf+6),'-b:v','1M','-c:a','libvorbis',o]};
+    if(fmt==='avi')return{ext:'avi',args:(i,o)=>['-i',i,...vf,'-c:v','mpeg4','-q:v',String(Math.round(crf/6)),'-c:a','libmp3lame',o]};
+    return{ext:fmt,args:(i,o)=>['-i',i,...vf,'-c:v','libx264','-preset','veryfast','-crf',String(crf),'-pix_fmt','yuv420p','-c:a','aac','-b:a','128k',...(fmt==='mp4'||fmt==='mov'?['-movflags','+faststart']:[]),o]};
+  }
+  if(prefix==='vcmp'){
+    const lvl=document.getElementById('vcmp-level').value;const crf={light:24,medium:28,heavy:33}[lvl]||28;
+    const vf=lvl==='heavy'?['-vf','scale=-2:\'min(720,ih)\'']:[];
+    return{ext:'mp4',args:(i,o)=>['-i',i,...vf,'-c:v','libx264','-preset','veryfast','-crf',String(crf),'-pix_fmt','yuv420p','-c:a','aac','-b:a','96k','-movflags','+faststart',o]};
+  }
+  if(prefix==='vg'){
+    const ss=num('vg-start',0),t=Math.min(30,Math.max(1,num('vg-dur',5))),fps=num('vg-fps',15);
+    return{ext:'gif',args:(i,o)=>['-ss',String(ss),'-t',String(t),'-i',i,'-vf',`fps=${fps},scale=480:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse`,'-loop','0',o]};
+  }
+  if(prefix==='vt'){
+    const ss=num('vt-start',0),to=num('vt-end',30);
+    if(!(to>ss))throw new Error('o fim tem de ser maior que o início');
+    return{ext:null,args:(i,o)=>['-ss',String(ss),'-to',String(to),'-i',i,'-c','copy','-avoid_negative_ts','make_zero',o]};
+  }
+  return null;
+}
+async function doAPIConvert(prefix){
+  const file=document.getElementById(prefix+'-input')?.files[0];
+  if(!file){st(prefix,'Escolhe um ficheiro primeiro.','err');return;}
+  if(['dw','de','dp','da'].includes(prefix)){await doDocConvert(prefix,file);return;}
+  let job;try{job=mediaJob(prefix);}catch(e){st(prefix,'✗ '+e.message,'err');return;}
+  if(!job){st(prefix,'✗ Operação desconhecida: '+prefix,'err');return;}
+  const ext=job.ext||(file.name.split('.').pop()||'mp4').toLowerCase();
+  try{
+    const blob=await TMFF.run(file,ext,job.args,{mime:MIME[ext],onStatus:m=>st(prefix,m,'loading'),onProgress:v=>st(prefix,'A processar... '+Math.round(v*100)+'%','loading')});
+    const base=file.name.replace(/\.[^.]+$/,'');
+    dlBlob(blob,base+(prefix==='vt'?'-cortado':prefix==='vcmp'?'-comprimido':'')+'.'+ext);
+    st(prefix,'✓ Pronto! '+(file.size/1048576).toFixed(2)+' MB → '+(blob.size/1048576).toFixed(2)+' MB','ok');
+  }catch(e){st(prefix,'✗ '+e.message,'err');}
+}
+async function doDocConvert(prefix,file){
+  const base=file.name.replace(/\.[^.]+$/,'');const ext=(file.name.split('.').pop()||'').toLowerCase();
+  const key=TM.getKey('cloudmersive');
+  if(key){
+    st(prefix,'A converter com Cloudmersive...','loading');
+    try{
+      const fd=new FormData();fd.append('inputFile',file,file.name);
+      const r=await fetch('https://api.cloudmersive.com/convert/autodetect/to/pdf',{method:'POST',headers:{Apikey:key},body:fd});
+      if(!r.ok)throw new Error('Cloudmersive: '+await TM.readError(r));
+      const pdf=await r.blob();if(!pdf.size)throw new Error('Cloudmersive devolveu um ficheiro vazio');
+      dlBlob(new Blob([pdf],{type:'application/pdf'}),base+'.pdf');st(prefix,'✓ PDF criado ('+(pdf.size/1024).toFixed(0)+' KB).','ok');return;
+    }catch(e){st(prefix,'✗ '+e.message+(ext==='docx'||ext.startsWith('xls')?' — a tentar conversão local...':''),'err');if(!(ext==='docx'||ext.startsWith('xls')||ext==='csv'))return;}
+  }
+  if(!(ext==='docx'||ext==='xlsx'||ext==='xls'||ext==='csv')){
+    st(prefix,'✗ Para converter .'+ext+' é preciso a chave Cloudmersive (hub → ⚙ Chaves de API, plano grátis). Sem chave só converto .docx, .xlsx, .xls e .csv.','err');return;
+  }
+  // Conversão local: gera uma página pronta a imprimir e abre "Guardar como PDF".
+  const w=window.open('','_blank');
+  if(!w){st(prefix,'✗ O browser bloqueou a nova janela. Permite pop-ups para este site e tenta outra vez.','err');return;}
+  w.document.write('<p style="font-family:sans-serif;padding:2rem">A preparar '+file.name.replace(/</g,'&lt;')+'…</p>');
+  try{
+    st(prefix,'A converter localmente...','loading');
+    let body='';
+    if(ext==='docx'){
+      await loadScript('vendor/mammoth.browser.min.js');
+      const res=await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()});body=res.value;
+      if(!body.trim())throw new Error('o documento parece estar vazio');
+    }else{
+      await loadScript('vendor/xlsx.full.min.js');
+      const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});
+      body=wb.SheetNames.map(n=>'<h2>'+n.replace(/</g,'&lt;')+'</h2>'+XLSX.utils.sheet_to_html(wb.Sheets[n],{header:'',footer:''})).join('<div style="page-break-after:always"></div>');
+    }
+    const title=base.replace(/</g,'&lt;');
+    w.document.open();
+    w.document.write(`<!doctype html><html lang="pt"><head><meta charset="utf-8"><title>${title}</title><style>
+      @page{size:A4;margin:18mm}body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.45;color:#111;max-width:180mm;margin:0 auto}
+      img{max-width:100%}table{border-collapse:collapse;width:100%;font-size:9.5pt;margin-bottom:1rem}td,th{border:1px solid #bbb;padding:4px 6px;vertical-align:top}
+      h1,h2,h3{line-height:1.2}.tm-bar{position:sticky;top:0;background:#111;color:#fff;padding:10px 14px;font-family:sans-serif;font-size:13px;display:flex;gap:10px;align-items:center}
+      .tm-bar button{background:#f59e0b;border:0;border-radius:6px;padding:6px 12px;font-weight:600;cursor:pointer}@media print{.tm-bar{display:none}}</style></head>
+      <body><div class="tm-bar">Escolhe <b>«Guardar como PDF»</b> na janela de impressão. <button onclick="print()">Imprimir / Guardar PDF</button></div>${body}</body></html>`);
+    w.document.close();
+    setTimeout(()=>{try{w.focus();w.print();}catch(e){console.warn('print automático falhou',e);}},400);
+    st(prefix,'✓ Documento aberto numa nova janela. Escolhe «Guardar como PDF» para gravar. (Conversão local: formatação simplificada — para fidelidade total usa a chave Cloudmersive.)','ok');
+  }catch(e){w.close();st(prefix,'✗ '+e.message,'err');}
+}
+function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector('script[src="'+src+'"]'))return res();const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('não foi possível carregar '+src));document.head.appendChild(s);});}
+
+// DROP EVENTS
+document.querySelectorAll('.drop-zone').forEach(dz=>{
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault();dz.classList.remove('drag');
+    const input=dz.querySelector('input[type=file]');if(!input||!e.dataTransfer.files.length)return;
+    const dt=new DataTransfer();[...e.dataTransfer.files].forEach(f=>dt.items.add(f));input.files=dt.files;input.dispatchEvent(new Event('change'));
+  });
+});
+</script>
+</body>
+</html>

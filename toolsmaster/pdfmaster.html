@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Master — Editor Profissional</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--surface:#111;--surface2:#181818;--surface3:#222;
+  --border:#252525;--border2:#303030;--border3:#3d3d3d;
+  --text:#f0f0f0;--text2:#777;--text3:#444;
+  --accent:#ff6b35;--accent2:#e55a25;--accent-dim:rgba(255,107,53,0.1);--accent-text:#fff;
+  --success:#4ade80;--error:#f87171;--warn:#fbbf24;--info:#60a5fa;
+  --r:10px;--rs:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;font-size:14px}
+
+/* LAYOUT */
+.app{display:flex;flex:1}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.main{flex:1;overflow-y:auto;padding:1.75rem 2rem;max-width:1100px}
+@media(max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.main{padding:1rem}}
+
+/* SIDEBAR */
+.brand{padding:1.1rem 1.1rem .9rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.brand-mark{width:32px;height:32px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;flex-shrink:0}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.brand-tag{font-size:10px;color:var(--text3);margin-top:1px}
+.nav-sec{padding:.6rem 1rem .2rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:.55rem 1.1rem;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+.nav-icon{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:.9rem 1.1rem;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.6}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:20px;font-weight:700;letter-spacing:-.4px;margin-bottom:3px}
+.page-sub{font-size:12px;color:var(--text2)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:1rem}
+
+/* DROP ZONE */
+.drop-zone{border:1.5px dashed var(--border3);border-radius:var(--r);padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-dim)}
+.drop-zone.has-file{border-color:var(--success);border-style:solid;background:rgba(74,222,128,.05)}
+.drop-icon{font-size:32px;margin-bottom:10px}
+.drop-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.drop-sub{font-size:11px;color:var(--text2)}
+.drop-zone.has-file .drop-title{color:var(--success)}
+
+/* MULTI DROP */
+.multi-drop{border:1.5px dashed var(--border3);border-radius:var(--r);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);margin-bottom:.75rem}
+.multi-drop:hover{border-color:var(--accent);background:var(--accent-dim)}
+.file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:.75rem}
+.file-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-size:12px}
+.file-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.file-item-size{color:var(--text2);font-size:11px;flex-shrink:0}
+.file-item-rm{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;flex-shrink:0;padding:0 2px;transition:color .15s}
+.file-item-rm:hover{color:var(--error)}
+.drag-handle{color:var(--text3);cursor:grab;font-size:14px;flex-shrink:0}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+input[type=text],input[type=number],input[type=password],select,textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:8px 10px;width:100%;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:500px){.row2,.row3{grid-template-columns:1fr}}
+
+/* COLOR */
+.color-row{display:flex;align-items:center;gap:8px}
+input[type=color]{width:34px;height:32px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px;flex-shrink:0}
+.hex-in{flex:1;font-family:monospace;font-size:12px}
+
+/* RANGE */
+.range-row{display:flex;align-items:center;gap:10px}
+input[type=range]{flex:1;accent-color:var(--accent);cursor:pointer}
+.range-val{font-size:12px;color:var(--text2);min-width:40px;text-align:right}
+
+/* BUTTONS */
+.btn{height:38px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s,transform .1s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 18px}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border3);color:var(--text2)}
+.btn-outline:hover{color:var(--text);border-color:var(--border3)}
+.btn-danger{background:rgba(248,113,113,.15);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.btn-full{width:100%;height:44px;font-size:14px;margin-top:.75rem}
+
+/* STATUS */
+.status{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none}
+.status.ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.status.err{background:rgba(248,113,113,.1);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.status.loading{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+
+/* PAGE THUMBNAILS */
+.pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;margin-top:.75rem}
+.page-thumb{background:var(--surface2);border:2px solid var(--border);border-radius:var(--rs);overflow:hidden;cursor:pointer;transition:all .15s;position:relative}
+.page-thumb:hover{border-color:var(--border3)}
+.page-thumb.selected{border-color:var(--accent)}
+.page-thumb canvas{width:100%;display:block}
+.page-thumb-label{font-size:10px;color:var(--text2);text-align:center;padding:4px;background:var(--surface)}
+.page-thumb-sel{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700}
+.page-thumb.selected .page-thumb-sel{display:flex}
+.page-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:.75rem}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.toggle{width:36px;height:20px;background:var(--surface3);border-radius:99px;position:relative;cursor:pointer;transition:background .2s;border:1px solid var(--border2);flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:18px}
+
+/* PROGRESS */
+.progress-wrap{margin-top:.75rem;display:none}
+.progress-label{font-size:11px;color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.bar-bg{height:3px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;width:0%}
+
+/* BADGE */
+.badge{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:500;display:inline-flex;align-items:center;gap:3px}
+.badge-ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.badge-accent{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(255,107,53,.2)}
+.badge-info{background:rgba(96,165,250,.1);color:var(--info);border:1px solid rgba(96,165,250,.2)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:1rem;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:.75rem}
+.tab{padding:5px 14px;border-radius:99px;border:1px solid transparent;background:transparent;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--surface2);border-color:var(--border2);color:var(--text)}
+
+/* TOOL GRID (home) */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:6px}
+.tool-card:hover{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-1px)}
+.tool-card-icon{font-size:24px}
+.tool-card-name{font-size:13px;font-weight:600;color:var(--text)}
+.tool-card-desc{font-size:11px;color:var(--text2);line-height:1.4}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">PDF</div>
+    <div>
+      <div class="brand-name">PDF Master</div>
+      <div class="brand-tag">Editor Profissional</div>
+    </div>
+  </div>
+
+  <div class="nav-sec">Início</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">⊞</span> Todas as ferramentas</div>
+
+  <div class="nav-sec">Organizar</div>
+  <div class="nav-item" onclick="nav('merge',this)"><span class="nav-icon">⊕</span> Juntar PDFs</div>
+  <div class="nav-item" onclick="nav('split',this)"><span class="nav-icon">✂</span> Separar PDF</div>
+  <div class="nav-item" onclick="nav('organize',this)"><span class="nav-icon">⊞</span> Organizar páginas</div>
+  <div class="nav-item" onclick="nav('extract',this)"><span class="nav-icon">↗</span> Extrair páginas</div>
+
+  <div class="nav-sec">Editar</div>
+  <div class="nav-item" onclick="nav('watermark',this)"><span class="nav-icon">◈</span> Marca de água</div>
+  <div class="nav-item" onclick="nav('addtext',this)"><span class="nav-icon">T</span> Adicionar texto</div>
+  <div class="nav-item" onclick="nav('addimage',this)"><span class="nav-icon">🖼</span> Adicionar imagem</div>
+  <div class="nav-item" onclick="nav('pagenumbers',this)"><span class="nav-icon">#</span> Números de página</div>
+  <div class="nav-item" onclick="nav('headerfooter',this)"><span class="nav-icon">≡</span> Cabeçalho/Rodapé</div>
+
+  <div class="nav-sec">Converter</div>
+  <div class="nav-item" onclick="nav('img2pdf',this)"><span class="nav-icon">📷</span> Imagens → PDF</div>
+  <div class="nav-item" onclick="nav('pdf2img',this)"><span class="nav-icon">🖼</span> PDF → Imagens</div>
+
+  <div class="nav-sec">Optimizar</div>
+  <div class="nav-item" onclick="nav('compress',this)"><span class="nav-icon">⬇</span> Comprimir PDF</div>
+  <div class="nav-item" onclick="nav('rotate',this)"><span class="nav-icon">↻</span> Rodar páginas</div>
+  <div class="nav-item" onclick="nav('crop',this)"><span class="nav-icon">⊡</span> Recortar página</div>
+  <div class="nav-item" onclick="nav('scale',this)"><span class="nav-icon">⤢</span> Escalar páginas</div>
+
+  <div class="nav-sec">Segurança</div>
+  <div class="nav-item" onclick="nav('protect',this)"><span class="nav-icon">🔒</span> Proteger com senha</div>
+  <div class="nav-item" onclick="nav('unlock',this)"><span class="nav-icon">🔓</span> Remover senha</div>
+  <div class="nav-item" onclick="nav('permissions',this)"><span class="nav-icon">🛡</span> Permissões</div>
+
+  <div class="nav-sec">Avançado</div>
+  <div class="nav-item" onclick="nav('metadata',this)"><span class="nav-icon">ℹ</span> Metadados</div>
+  <div class="nav-item" onclick="nav('forms',this)"><span class="nav-icon">☑</span> Preencher formulário</div>
+  <div class="nav-item" onclick="nav('blank',this)"><span class="nav-icon">+</span> Criar PDF em branco</div>
+
+  <div class="sidebar-footer">PDF Master v1.0<br>Eagle Marketing<br>Afro-Berdiano Image</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="page-header">
+    <div class="page-title">PDF Master</div>
+    <div class="page-sub">Editor profissional de PDF · 100% offline · sem limites · sem subscrição</div>
+  </div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('merge',null)"><div class="tool-card-icon">⊕</div><div class="tool-card-name">Juntar PDFs</div><div class="tool-card-desc">Combina vários PDFs num só ficheiro</div></div>
+    <div class="tool-card" onclick="nav('split',null)"><div class="tool-card-icon">✂</div><div class="tool-card-name">Separar PDF</div><div class="tool-card-desc">Divide um PDF em ficheiros separados</div></div>
+    <div class="tool-card" onclick="nav('organize',null)"><div class="tool-card-icon">⊞</div><div class="tool-card-name">Organizar páginas</div><div class="tool-card-desc">Reordena, roda e apaga páginas</div></div>
+    <div class="tool-card" onclick="nav('extract',null)"><div class="tool-card-icon">↗</div><div class="tool-card-name">Extrair páginas</div><div class="tool-card-desc">Extrai páginas específicas para novo PDF</div></div>
+    <div class="tool-card" onclick="nav('watermark',null)"><div class="tool-card-icon">◈</div><div class="tool-card-name">Marca de água</div><div class="tool-card-desc">Adiciona texto ou imagem em todas as páginas</div></div>
+    <div class="tool-card" onclick="nav('addtext',null)"><div class="tool-card-icon">T</div><div class="tool-card-name">Adicionar texto</div><div class="tool-card-desc">Insere texto em qualquer posição</div></div>
+    <div class="tool-card" onclick="nav('addimage',null)"><div class="tool-card-icon">🖼</div><div class="tool-card-name">Adicionar imagem</div><div class="tool-card-desc">Insere imagem em qualquer página</div></div>
+    <div class="tool-card" onclick="nav('pagenumbers',null)"><div class="tool-card-icon">#</div><div class="tool-card-name">Números de página</div><div class="tool-card-desc">Adiciona numeração automática</div></div>
+    <div class="tool-card" onclick="nav('headerfooter',null)"><div class="tool-card-icon">≡</div><div class="tool-card-name">Cabeçalho/Rodapé</div><div class="tool-card-desc">Adiciona texto no topo e base de cada página</div></div>
+    <div class="tool-card" onclick="nav('img2pdf',null)"><div class="tool-card-icon">📷</div><div class="tool-card-name">Imagens → PDF</div><div class="tool-card-desc">Converte JPG/PNG em PDF</div></div>
+    <div class="tool-card" onclick="nav('pdf2img',null)"><div class="tool-card-icon">🖼</div><div class="tool-card-name">PDF → Imagens</div><div class="tool-card-desc">Cada página vira uma imagem PNG</div></div>
+    <div class="tool-card" onclick="nav('compress',null)"><div class="tool-card-icon">⬇</div><div class="tool-card-name">Comprimir PDF</div><div class="tool-card-desc">Reduz o tamanho do ficheiro</div></div>
+    <div class="tool-card" onclick="nav('rotate',null)"><div class="tool-card-icon">↻</div><div class="tool-card-name">Rodar páginas</div><div class="tool-card-desc">Roda páginas 90°, 180° ou 270°</div></div>
+    <div class="tool-card" onclick="nav('crop',null)"><div class="tool-card-icon">⊡</div><div class="tool-card-name">Recortar página</div><div class="tool-card-desc">Ajusta as margens e área visível</div></div>
+    <div class="tool-card" onclick="nav('scale',null)"><div class="tool-card-icon">⤢</div><div class="tool-card-name">Escalar páginas</div><div class="tool-card-desc">Muda o tamanho das páginas (A4, A3...)</div></div>
+    <div class="tool-card" onclick="nav('protect',null)"><div class="tool-card-icon">🔒</div><div class="tool-card-name">Proteger com senha</div><div class="tool-card-desc">Encripta o PDF com password</div></div>
+    <div class="tool-card" onclick="nav('unlock',null)"><div class="tool-card-icon">🔓</div><div class="tool-card-name">Remover senha</div><div class="tool-card-desc">Remove a protecção do PDF</div></div>
+    <div class="tool-card" onclick="nav('permissions',null)"><div class="tool-card-icon">🛡</div><div class="tool-card-name">Permissões</div><div class="tool-card-desc">Bloqueia impressão, cópia, edição</div></div>
+    <div class="tool-card" onclick="nav('metadata',null)"><div class="tool-card-icon">ℹ</div><div class="tool-card-name">Metadados</div><div class="tool-card-desc">Edita título, autor, keywords</div></div>
+    <div class="tool-card" onclick="nav('forms',null)"><div class="tool-card-icon">☑</div><div class="tool-card-name">Preencher formulário</div><div class="tool-card-desc">Preenche campos de formulários PDF</div></div>
+    <div class="tool-card" onclick="nav('blank',null)"><div class="tool-card-icon">+</div><div class="tool-card-name">Criar PDF em branco</div><div class="tool-card-desc">Cria um novo PDF do zero</div></div>
+  </div>
+</div>
+
+<!-- MERGE -->
+<div class="page" id="page-merge">
+  <div class="page-header"><div class="page-title">⊕ Juntar PDFs</div><div class="page-sub">Combina vários ficheiros PDF numa ordem definida</div></div>
+  <div class="card">
+    <div class="multi-drop" onclick="document.getElementById('merge-input').click()">
+      <div style="font-size:24px;margin-bottom:8px">⊕</div>
+      <div style="font-size:13px;font-weight:500">Clica para adicionar PDFs</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">Podes adicionar vários — arrasta para reordenar</div>
+      <input type="file" id="merge-input" multiple accept=".pdf" style="display:none" onchange="addMergeFiles(this)">
+    </div>
+    <div class="file-list" id="merge-list"></div>
+    <button class="btn btn-primary btn-full" onclick="doMerge()">⊕ Juntar e Descarregar</button>
+    <div class="status" id="merge-status"></div>
+  </div>
+</div>
+
+<!-- SPLIT -->
+<div class="page" id="page-split">
+  <div class="page-header"><div class="page-title">✂ Separar PDF</div><div class="page-sub">Divide um PDF em ficheiros individuais por página ou intervalo</div></div>
+  <div class="card">
+    <div class="drop-zone" id="split-drop" onclick="document.getElementById('split-input').click()">
+      <div class="drop-icon">✂</div><div class="drop-title">Clica ou arrasta o PDF</div>
+      <div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="split-input" accept=".pdf" style="display:none" onchange="loadSplitFile(this)">
+    </div>
+    <div id="split-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Modo de separação</label>
+        <select id="split-mode" onchange="updateSplitMode()">
+          <option value="all">Cada página → ficheiro separado</option>
+          <option value="range">Intervalo personalizado</option>
+          <option value="every">A cada N páginas</option>
+        </select>
+      </div>
+      <div id="split-range-field" style="display:none">
+        <div class="field"><label>Intervalos (ex: 1-3, 5, 7-9)</label><input type="text" id="split-ranges" placeholder="1-3, 5, 7-9"></div>
+      </div>
+      <div id="split-every-field" style="display:none">
+        <div class="field"><label>A cada N páginas</label><input type="number" id="split-every-n" value="1" min="1"></div>
+      </div>
+      <div id="split-info" style="font-size:12px;color:var(--text2);margin-bottom:.75rem"></div>
+      <button class="btn btn-primary btn-full" onclick="doSplit()">✂ Separar e Descarregar (ZIP)</button>
+    </div>
+    <div class="status" id="split-status"></div>
+  </div>
+</div>
+
+<!-- ORGANIZE -->
+<div class="page" id="page-organize">
+  <div class="page-header"><div class="page-title">⊞ Organizar páginas</div><div class="page-sub">Reordena, roda e apaga páginas visualmente</div></div>
+  <div class="card">
+    <div class="drop-zone" id="org-drop" onclick="document.getElementById('org-input').click()">
+      <div class="drop-icon">⊞</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="org-input" accept=".pdf" style="display:none" onchange="loadOrgFile(this)">
+    </div>
+    <div id="org-area" style="display:none;margin-top:1rem">
+      <div style="font-size:11px;color:var(--text2);margin-bottom:.5rem">Clica para seleccionar · Arrasta para reordenar</div>
+      <div class="pages-grid" id="org-grid"></div>
+      <div class="page-actions">
+        <button class="btn btn-outline" onclick="orgRotateSel(90)">↻ Rodar 90°</button>
+        <button class="btn btn-outline" onclick="orgRotateSel(180)">↻ Rodar 180°</button>
+        <button class="btn btn-outline" onclick="orgRotateSel(270)">↻ Rodar 270°</button>
+        <button class="btn btn-danger" onclick="orgDeleteSel()">✕ Apagar seleccionadas</button>
+        <button class="btn btn-outline" onclick="orgSelectAll()">Seleccionar tudo</button>
+        <button class="btn btn-outline" onclick="orgDeselectAll()">Desseleccionar</button>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doOrganize()">⊞ Guardar PDF organizado</button>
+    </div>
+    <div class="status" id="org-status"></div>
+  </div>
+</div>
+
+<!-- EXTRACT -->
+<div class="page" id="page-extract">
+  <div class="page-header"><div class="page-title">↗ Extrair páginas</div><div class="page-sub">Extrai páginas específicas para um novo PDF</div></div>
+  <div class="card">
+    <div class="drop-zone" id="ext-drop" onclick="document.getElementById('ext-input').click()">
+      <div class="drop-icon">↗</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="ext-input" accept=".pdf" style="display:none" onchange="loadExtFile(this)">
+    </div>
+    <div id="ext-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Páginas a extrair (ex: 1, 3-5, 8)</label><input type="text" id="ext-pages" placeholder="1, 3-5, 8"></div>
+      <div id="ext-info" style="font-size:12px;color:var(--text2);margin-bottom:.75rem"></div>
+      <button class="btn btn-primary btn-full" onclick="doExtract()">↗ Extrair e Descarregar</button>
+    </div>
+    <div class="status" id="ext-status"></div>
+  </div>
+</div>
+
+<!-- WATERMARK -->
+<div class="page" id="page-watermark">
+  <div class="page-header"><div class="page-title">◈ Marca de água</div><div class="page-sub">Adiciona texto ou imagem em todas as páginas</div></div>
+  <div class="card">
+    <div class="drop-zone" id="wm-drop" onclick="document.getElementById('wm-input').click()">
+      <div class="drop-icon">◈</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="wm-input" accept=".pdf" style="display:none" onchange="loadWMFile(this)">
+    </div>
+    <div id="wm-options" style="display:none;margin-top:1rem">
+      <div class="tabs">
+        <button class="tab active" onclick="setWMTab('text',this)">Texto</button>
+        <button class="tab" onclick="setWMTab('image',this)">Imagem</button>
+      </div>
+      <div id="wm-text-tab">
+        <div class="field"><label>Texto da marca de água</label><input type="text" id="wm-text" placeholder="CONFIDENCIAL, DRAFT, © Empresa..."></div>
+        <div class="row3">
+          <div class="field"><label>Cor</label>
+            <div class="color-row"><input type="color" id="wm-color" value="#ff0000"><input type="text" class="hex-in" id="wm-hex" value="#ff0000" maxlength="7"></div>
+          </div>
+          <div class="field"><label>Tamanho — <span id="wm-size-val">48</span>px</label>
+            <div class="range-row"><input type="range" id="wm-size" min="12" max="120" value="48" oninput="document.getElementById('wm-size-val').textContent=this.value"></div>
+          </div>
+          <div class="field"><label>Opacidade — <span id="wm-op-val">30</span>%</label>
+            <div class="range-row"><input type="range" id="wm-opacity" min="5" max="100" value="30" oninput="document.getElementById('wm-op-val').textContent=this.value"></div>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Posição</label>
+            <select id="wm-pos">
+              <option value="center">Centro</option>
+              <option value="topleft">Canto superior esquerdo</option>
+              <option value="topright">Canto superior direito</option>
+              <option value="bottomleft">Canto inferior esquerdo</option>
+              <option value="bottomright">Canto inferior direito</option>
+            </select>
+          </div>
+          <div class="field"><label>Rotação</label>
+            <select id="wm-rot">
+              <option value="0">0° (horizontal)</option>
+              <option value="45" selected>45° (diagonal)</option>
+              <option value="-45">-45°</option>
+              <option value="90">90° (vertical)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="wm-image-tab" style="display:none">
+        <div class="drop-zone" id="wm-img-drop" onclick="document.getElementById('wm-img-input').click()" style="padding:1rem">
+          <div id="wm-img-text">📎 Upload da imagem (logo, carimbo...)</div>
+          <input type="file" id="wm-img-input" accept="image/*" style="display:none" onchange="handleWMImage(this)">
+        </div>
+        <div class="row2" style="margin-top:.75rem">
+          <div class="field"><label>Opacidade — <span id="wm-img-op-val">30</span>%</label>
+            <div class="range-row"><input type="range" id="wm-img-opacity" min="5" max="100" value="30" oninput="document.getElementById('wm-img-op-val').textContent=this.value"></div>
+          </div>
+          <div class="field"><label>Tamanho — <span id="wm-img-size-val">30</span>%</label>
+            <div class="range-row"><input type="range" id="wm-img-size" min="10" max="80" value="30" oninput="document.getElementById('wm-img-size-val').textContent=this.value"></div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doWatermark()">◈ Aplicar marca de água</button>
+    </div>
+    <div class="status" id="wm-status"></div>
+  </div>
+</div>
+
+<!-- ADD TEXT -->
+<div class="page" id="page-addtext">
+  <div class="page-header"><div class="page-title">T Adicionar texto</div><div class="page-sub">Insere texto em qualquer posição e página</div></div>
+  <div class="card">
+    <div class="drop-zone" id="at-drop" onclick="document.getElementById('at-input').click()">
+      <div class="drop-icon">T</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="at-input" accept=".pdf" style="display:none" onchange="loadATFile(this)">
+    </div>
+    <div id="at-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Texto a inserir</label><textarea id="at-text" placeholder="Texto a adicionar ao PDF..."></textarea></div>
+      <div class="row3">
+        <div class="field"><label>Cor</label>
+          <div class="color-row"><input type="color" id="at-color" value="#000000"><input type="text" class="hex-in" value="#000000" maxlength="7"></div>
+        </div>
+        <div class="field"><label>Tamanho — <span id="at-size-val">14</span>px</label>
+          <div class="range-row"><input type="range" id="at-size" min="8" max="72" value="14" oninput="document.getElementById('at-size-val').textContent=this.value"></div>
+        </div>
+        <div class="field"><label>Páginas</label>
+          <select id="at-pages">
+            <option value="all">Todas as páginas</option>
+            <option value="first">Só a primeira</option>
+            <option value="last">Só a última</option>
+            <option value="custom">Páginas específicas</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Posição X (pt)</label><input type="number" id="at-x" value="50" min="0"></div>
+        <div class="field"><label>Posição Y (pt)</label><input type="number" id="at-y" value="50" min="0"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doAddText()">T Adicionar texto e Descarregar</button>
+    </div>
+    <div class="status" id="at-status"></div>
+  </div>
+</div>
+
+<!-- ADD IMAGE -->
+<div class="page" id="page-addimage">
+  <div class="page-header"><div class="page-title">🖼 Adicionar imagem</div><div class="page-sub">Insere uma imagem (logo, assinatura, carimbo) em qualquer página</div></div>
+  <div class="card">
+    <div class="drop-zone" id="ai2-drop" onclick="document.getElementById('ai2-pdf-input').click()">
+      <div class="drop-icon">📄</div><div class="drop-title">Passo 1 — Clica para carregar o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="ai2-pdf-input" accept=".pdf" style="display:none" onchange="loadAI2File(this)">
+    </div>
+    <div id="ai2-options" style="display:none;margin-top:1rem">
+      <div class="drop-zone" id="ai2-img-drop" onclick="document.getElementById('ai2-img-input').click()" style="padding:1rem;margin-bottom:.75rem">
+        <div id="ai2-img-text">📎 Passo 2 — Upload da imagem (PNG, JPG)</div>
+        <input type="file" id="ai2-img-input" accept="image/*" style="display:none" onchange="handleAI2Img(this)">
+      </div>
+      <div class="row3">
+        <div class="field"><label>Largura (pt)</label><input type="number" id="ai2-w" value="150" min="10"></div>
+        <div class="field"><label>Altura (pt)</label><input type="number" id="ai2-h" value="100" min="10"></div>
+        <div class="field"><label>Páginas</label>
+          <select id="ai2-pages">
+            <option value="all">Todas</option>
+            <option value="first">Primeira</option>
+            <option value="last">Última</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Posição X (pt)</label><input type="number" id="ai2-x" value="50" min="0"></div>
+        <div class="field"><label>Posição Y (pt)</label><input type="number" id="ai2-y" value="50" min="0"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doAddImage()">🖼 Adicionar imagem e Descarregar</button>
+    </div>
+    <div class="status" id="ai2-status"></div>
+  </div>
+</div>
+
+<!-- PAGE NUMBERS -->
+<div class="page" id="page-pagenumbers">
+  <div class="page-header"><div class="page-title"># Números de página</div><div class="page-sub">Adiciona numeração automática ao PDF</div></div>
+  <div class="card">
+    <div class="drop-zone" id="pn-drop" onclick="document.getElementById('pn-input').click()">
+      <div class="drop-icon">#</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="pn-input" accept=".pdf" style="display:none" onchange="loadPNFile(this)">
+    </div>
+    <div id="pn-options" style="display:none;margin-top:1rem">
+      <div class="row3">
+        <div class="field"><label>Posição</label>
+          <select id="pn-pos">
+            <option value="bottom-center">Baixo — Centro</option>
+            <option value="bottom-right">Baixo — Direita</option>
+            <option value="bottom-left">Baixo — Esquerda</option>
+            <option value="top-center">Cima — Centro</option>
+            <option value="top-right">Cima — Direita</option>
+          </select>
+        </div>
+        <div class="field"><label>Tamanho — <span id="pn-size-val">12</span>px</label>
+          <div class="range-row"><input type="range" id="pn-size" min="8" max="24" value="12" oninput="document.getElementById('pn-size-val').textContent=this.value"></div>
+        </div>
+        <div class="field"><label>Começar em</label><input type="number" id="pn-start" value="1" min="1"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Formato</label>
+          <select id="pn-format">
+            <option value="n">1, 2, 3...</option>
+            <option value="page-n">Página 1, Página 2...</option>
+            <option value="n-of-total">1 / 10, 2 / 10...</option>
+          </select>
+        </div>
+        <div class="field"><label>Cor</label>
+          <div class="color-row"><input type="color" id="pn-color" value="#000000"><input type="text" class="hex-in" value="#000000" maxlength="7"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doPageNumbers()">## Adicionar números e Descarregar</button>
+    </div>
+    <div class="status" id="pn-status"></div>
+  </div>
+</div>
+
+<!-- HEADER FOOTER -->
+<div class="page" id="page-headerfooter">
+  <div class="page-header"><div class="page-title">≡ Cabeçalho e Rodapé</div><div class="page-sub">Adiciona texto personalizado no topo e base de cada página</div></div>
+  <div class="card">
+    <div class="drop-zone" id="hf-drop" onclick="document.getElementById('hf-input').click()">
+      <div class="drop-icon">≡</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="hf-input" accept=".pdf" style="display:none" onchange="loadHFFile(this)">
+    </div>
+    <div id="hf-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Cabeçalho (topo)</label><input type="text" id="hf-header" placeholder="Título do documento, nome da empresa..."></div>
+      <div class="field"><label>Rodapé (base)</label><input type="text" id="hf-footer" placeholder="Confidencial · www.empresa.com · 2025"></div>
+      <div class="row2">
+        <div class="field"><label>Tamanho — <span id="hf-size-val">10</span>px</label>
+          <div class="range-row"><input type="range" id="hf-size" min="7" max="18" value="10" oninput="document.getElementById('hf-size-val').textContent=this.value"></div>
+        </div>
+        <div class="field"><label>Cor</label>
+          <div class="color-row"><input type="color" id="hf-color" value="#555555"><input type="text" class="hex-in" value="#555555" maxlength="7"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doHeaderFooter()">≡ Aplicar e Descarregar</button>
+    </div>
+    <div class="status" id="hf-status"></div>
+  </div>
+</div>
+
+<!-- IMG TO PDF -->
+<div class="page" id="page-img2pdf">
+  <div class="page-header"><div class="page-title">📷 Imagens → PDF</div><div class="page-sub">Converte JPG/PNG em PDF — uma imagem por página</div></div>
+  <div class="card">
+    <div class="multi-drop" onclick="document.getElementById('i2p-input').click()">
+      <div style="font-size:24px;margin-bottom:8px">📷</div>
+      <div style="font-size:13px;font-weight:500">Clica para adicionar imagens</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">JPG, PNG, WEBP — arrasta para reordenar</div>
+      <input type="file" id="i2p-input" multiple accept="image/*" style="display:none" onchange="addI2PFiles(this)">
+    </div>
+    <div class="file-list" id="i2p-list"></div>
+    <div id="i2p-has-files" style="display:none">
+      <div class="row2">
+        <div class="field"><label>Tamanho da página</label>
+          <select id="i2p-size">
+            <option value="A4">A4 (210×297mm)</option>
+            <option value="A3">A3 (297×420mm)</option>
+            <option value="letter">Letter (216×279mm)</option>
+            <option value="fit">Ajustar à imagem</option>
+          </select>
+        </div>
+        <div class="field"><label>Orientação</label>
+          <select id="i2p-orient">
+            <option value="portrait">Retrato</option>
+            <option value="landscape">Paisagem</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doImg2PDF()">📷 Converter para PDF</button>
+    </div>
+    <div class="status" id="i2p-status"></div>
+  </div>
+</div>
+
+<!-- PDF TO IMG -->
+<div class="page" id="page-pdf2img">
+  <div class="page-header"><div class="page-title">🖼 PDF → Imagens</div><div class="page-sub">Converte cada página do PDF numa imagem PNG</div></div>
+  <div class="card">
+    <div class="drop-zone" id="p2i-drop" onclick="document.getElementById('p2i-input').click()">
+      <div class="drop-icon">🖼</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="p2i-input" accept=".pdf" style="display:none" onchange="loadP2IFile(this)">
+    </div>
+    <div id="p2i-options" style="display:none;margin-top:1rem">
+      <div class="row2">
+        <div class="field"><label>Resolução (DPI)</label>
+          <select id="p2i-dpi">
+            <option value="1">72 DPI (web)</option>
+            <option value="2" selected>144 DPI (normal)</option>
+            <option value="3">216 DPI (alta)</option>
+          </select>
+        </div>
+        <div class="field"><label>Páginas</label>
+          <select id="p2i-pages">
+            <option value="all">Todas</option>
+            <option value="custom">Específicas (ex: 1-3)</option>
+          </select>
+        </div>
+      </div>
+      <div id="p2i-custom-pages" style="display:none">
+        <div class="field"><label>Páginas (ex: 1, 3-5)</label><input type="text" id="p2i-pages-input" placeholder="1, 3-5"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doP2I()">🖼 Converter para imagens (ZIP)</button>
+    </div>
+    <div class="status" id="p2i-status"></div>
+    <div class="progress-wrap" id="p2i-progress">
+      <div class="progress-label"><span id="p2i-prog-label">A converter...</span><span id="p2i-prog-pct">0%</span></div>
+      <div class="bar-bg"><div class="bar-fill" id="p2i-bar"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPRESS -->
+<div class="page" id="page-compress">
+  <div class="page-header"><div class="page-title">⬇ Comprimir PDF</div><div class="page-sub">Reduz o tamanho do ficheiro mantendo a qualidade</div></div>
+  <div class="card">
+    <div class="drop-zone" id="cmp-drop" onclick="document.getElementById('cmp-input').click()">
+      <div class="drop-icon">⬇</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="cmp-input" accept=".pdf" style="display:none" onchange="loadCMPFile(this)">
+    </div>
+    <div id="cmp-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Nível de compressão</label>
+        <select id="cmp-level">
+          <option value="low">Leve — sem perda (otimiza estrutura)</option>
+          <option value="medium" selected>Média — páginas em imagem (qualidade boa)</option>
+          <option value="high">Forte — páginas em imagem (ficheiro mínimo)</option>
+        </select>
+      </div>
+      <div id="cmp-info" style="font-size:12px;color:var(--text2);margin-bottom:.5rem">Média e Forte convertem cada página em imagem: reduzem muito PDFs com fotos, mas o texto deixa de ser selecionável.</div>
+      <button class="btn btn-primary btn-full" onclick="doCompress()">⬇ Comprimir e Descarregar</button>
+    </div>
+    <div class="status" id="cmp-status"></div>
+  </div>
+</div>
+
+<!-- ROTATE -->
+<div class="page" id="page-rotate">
+  <div class="page-header"><div class="page-title">↻ Rodar páginas</div><div class="page-sub">Roda todas as páginas ou páginas específicas</div></div>
+  <div class="card">
+    <div class="drop-zone" id="rot-drop" onclick="document.getElementById('rot-input').click()">
+      <div class="drop-icon">↻</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="rot-input" accept=".pdf" style="display:none" onchange="loadROTFile(this)">
+    </div>
+    <div id="rot-options" style="display:none;margin-top:1rem">
+      <div class="row2">
+        <div class="field"><label>Ângulo de rotação</label>
+          <select id="rot-angle">
+            <option value="90">90° (sentido horário)</option>
+            <option value="180">180°</option>
+            <option value="270">270° (sentido anti-horário)</option>
+          </select>
+        </div>
+        <div class="field"><label>Páginas</label>
+          <select id="rot-pages">
+            <option value="all">Todas</option>
+            <option value="odd">Ímpares</option>
+            <option value="even">Pares</option>
+            <option value="custom">Específicas</option>
+          </select>
+        </div>
+      </div>
+      <div id="rot-custom" style="display:none">
+        <div class="field"><label>Páginas (ex: 1, 3-5)</label><input type="text" id="rot-pages-input" placeholder="1, 3-5"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRotate()">↻ Rodar e Descarregar</button>
+    </div>
+    <div class="status" id="rot-status"></div>
+  </div>
+</div>
+
+<!-- CROP -->
+<div class="page" id="page-crop">
+  <div class="page-header"><div class="page-title">⊡ Recortar página</div><div class="page-sub">Ajusta as margens e área visível das páginas</div></div>
+  <div class="card">
+    <div class="drop-zone" id="crp-drop" onclick="document.getElementById('crp-input').click()">
+      <div class="drop-icon">⊡</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="crp-input" accept=".pdf" style="display:none" onchange="loadCRPFile(this)">
+    </div>
+    <div id="crp-options" style="display:none;margin-top:1rem">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:.75rem">Margens a remover (em pontos PDF — 72pt = 1 polegada ≈ 2.54cm)</div>
+      <div class="row2">
+        <div class="field"><label>Margem topo (pt)</label><input type="number" id="crp-top" value="0" min="0"></div>
+        <div class="field"><label>Margem baixo (pt)</label><input type="number" id="crp-bottom" value="0" min="0"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Margem esquerda (pt)</label><input type="number" id="crp-left" value="0" min="0"></div>
+        <div class="field"><label>Margem direita (pt)</label><input type="number" id="crp-right" value="0" min="0"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doCrop()">⊡ Recortar e Descarregar</button>
+    </div>
+    <div class="status" id="crp-status"></div>
+  </div>
+</div>
+
+<!-- SCALE -->
+<div class="page" id="page-scale">
+  <div class="page-header"><div class="page-title">⤢ Escalar páginas</div><div class="page-sub">Converte o tamanho das páginas para formatos standard</div></div>
+  <div class="card">
+    <div class="drop-zone" id="scl-drop" onclick="document.getElementById('scl-input').click()">
+      <div class="drop-icon">⤢</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="scl-input" accept=".pdf" style="display:none" onchange="loadSCLFile(this)">
+    </div>
+    <div id="scl-options" style="display:none;margin-top:1rem">
+      <div class="row2">
+        <div class="field"><label>Tamanho destino</label>
+          <select id="scl-size">
+            <option value="A4">A4 (595×842pt)</option>
+            <option value="A3">A3 (842×1191pt)</option>
+            <option value="A5">A5 (420×595pt)</option>
+            <option value="letter">Letter (612×792pt)</option>
+            <option value="legal">Legal (612×1008pt)</option>
+            <option value="custom">Personalizado</option>
+          </select>
+        </div>
+        <div class="field"><label>Orientação</label>
+          <select id="scl-orient"><option value="portrait">Retrato</option><option value="landscape">Paisagem</option></select>
+        </div>
+      </div>
+      <div id="scl-custom" style="display:none">
+        <div class="row2">
+          <div class="field"><label>Largura (pt)</label><input type="number" id="scl-w" value="595" min="1"></div>
+          <div class="field"><label>Altura (pt)</label><input type="number" id="scl-h" value="842" min="1"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doScale()">⤢ Escalar e Descarregar</button>
+    </div>
+    <div class="status" id="scl-status"></div>
+  </div>
+</div>
+
+<!-- PROTECT -->
+<div class="page" id="page-protect">
+  <div class="page-header"><div class="page-title">🔒 Proteger com senha</div><div class="page-sub">Encripta o PDF com palavra-passe</div></div>
+  <div class="card">
+    <div class="drop-zone" id="prt-drop" onclick="document.getElementById('prt-input').click()">
+      <div class="drop-icon">🔒</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="prt-input" accept=".pdf" style="display:none" onchange="loadPRTFile(this)">
+    </div>
+    <div id="prt-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Senha de abertura (utilizador)</label><input type="password" id="prt-user-pw" placeholder="Senha para abrir o PDF"></div>
+      <div class="field"><label>Senha de proprietário (permissões)</label><input type="password" id="prt-owner-pw" placeholder="Senha para alterar permissões (opcional)"></div>
+      <button class="btn btn-primary btn-full" onclick="doProtect()">🔒 Proteger e Descarregar</button>
+    </div>
+    <div class="status" id="prt-status"></div>
+  </div>
+</div>
+
+<!-- UNLOCK -->
+<div class="page" id="page-unlock">
+  <div class="page-header"><div class="page-title">🔓 Remover senha</div><div class="page-sub">Remove a protecção do PDF (requer a senha actual)</div></div>
+  <div class="card">
+    <div class="drop-zone" id="ulk-drop" onclick="document.getElementById('ulk-input').click()">
+      <div class="drop-icon">🔓</div><div class="drop-title">Clica ou arrasta o PDF protegido</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="ulk-input" accept=".pdf" style="display:none" onchange="loadULKFile(this)">
+    </div>
+    <div id="ulk-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Senha actual do PDF</label><input type="password" id="ulk-pw" placeholder="Senha para desbloquear"></div>
+      <button class="btn btn-primary btn-full" onclick="doUnlock()">🔓 Remover senha e Descarregar</button>
+    </div>
+    <div class="status" id="ulk-status"></div>
+  </div>
+</div>
+
+<!-- PERMISSIONS -->
+<div class="page" id="page-permissions">
+  <div class="page-header"><div class="page-title">🛡 Permissões</div><div class="page-sub">Define o que os utilizadores podem fazer com o PDF</div></div>
+  <div class="card">
+    <div class="drop-zone" id="prm-drop" onclick="document.getElementById('prm-input').click()">
+      <div class="drop-icon">🛡</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="prm-input" accept=".pdf" style="display:none" onchange="loadPRMFile(this)">
+    </div>
+    <div id="prm-options" style="display:none;margin-top:1rem">
+      <div class="field"><label>Senha de proprietário (obrigatória para definir permissões)</label><input type="password" id="prm-pw" placeholder="Senha de proprietário"></div>
+      <div style="display:flex;flex-direction:column;gap:2px;margin:.75rem 0">
+        <div class="toggle-row"><div><div style="font-size:13px">Permitir impressão</div></div><div class="toggle on" id="prm-print" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div><div style="font-size:13px">Permitir cópia de texto</div></div><div class="toggle on" id="prm-copy" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div><div style="font-size:13px">Permitir modificação</div></div><div class="toggle" id="prm-modify" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><div><div style="font-size:13px">Permitir anotações</div></div><div class="toggle on" id="prm-annot" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doPermissions()">🛡 Aplicar permissões e Descarregar</button>
+    </div>
+    <div class="status" id="prm-status"></div>
+  </div>
+</div>
+
+<!-- METADATA -->
+<div class="page" id="page-metadata">
+  <div class="page-header"><div class="page-title">ℹ Metadados</div><div class="page-sub">Edita as informações do documento PDF</div></div>
+  <div class="card">
+    <div class="drop-zone" id="meta-drop" onclick="document.getElementById('meta-input').click()">
+      <div class="drop-icon">ℹ</div><div class="drop-title">Clica ou arrasta o PDF</div><div class="drop-sub">Ficheiro .pdf</div>
+      <input type="file" id="meta-input" accept=".pdf" style="display:none" onchange="loadMETAFile(this)">
+    </div>
+    <div id="meta-options" style="display:none;margin-top:1rem">
+      <div id="meta-current" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;font-size:11px;color:var(--text2);margin-bottom:.75rem;line-height:1.8"></div>
+      <div class="row2">
+        <div class="field"><label>Título</label><input type="text" id="meta-title" placeholder="Título do documento"></div>
+        <div class="field"><label>Autor</label><input type="text" id="meta-author" placeholder="Nome do autor"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Assunto</label><input type="text" id="meta-subject" placeholder="Assunto"></div>
+        <div class="field"><label>Keywords</label><input type="text" id="meta-keywords" placeholder="palavra1, palavra2..."></div>
+      </div>
+      <div class="field"><label>Criador / Software</label><input type="text" id="meta-creator" placeholder="Eagle Marketing — PDF Master"></div>
+      <button class="btn btn-primary btn-full" onclick="doMetadata()">ℹ Guardar metadados e Descarregar</button>
+    </div>
+    <div class="status" id="meta-status"></div>
+  </div>
+</div>
+
+<!-- FORMS -->
+<div class="page" id="page-forms">
+  <div class="page-header"><div class="page-title">☑ Preencher formulário</div><div class="page-sub">Preenche campos de texto, checkboxes e dropdowns em formulários PDF</div></div>
+  <div class="card">
+    <div class="drop-zone" id="frm-drop" onclick="document.getElementById('frm-input').click()">
+      <div class="drop-icon">☑</div><div class="drop-title">Clica ou arrasta o PDF com formulário</div><div class="drop-sub">Ficheiro .pdf com campos AcroForm</div>
+      <input type="file" id="frm-input" accept=".pdf" style="display:none" onchange="loadFRMFile(this)">
+    </div>
+    <div id="frm-fields" style="display:none;margin-top:1rem">
+      <div id="frm-fields-list"></div>
+      <button class="btn btn-primary btn-full" onclick="doFillForm()">☑ Preencher e Descarregar</button>
+    </div>
+    <div id="frm-no-fields" style="display:none;margin-top:1rem;font-size:13px;color:var(--text2);text-align:center;padding:1.5rem 0">Este PDF não tem campos de formulário detectados.</div>
+    <div class="status" id="frm-status"></div>
+  </div>
+</div>
+
+<!-- BLANK PDF -->
+<div class="page" id="page-blank">
+  <div class="page-header"><div class="page-title">+ Criar PDF em branco</div><div class="page-sub">Cria um novo PDF vazio com as dimensões que quiseres</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>Tamanho da página</label>
+        <select id="blk-size" onchange="updateBlankCustom()">
+          <option value="A4">A4 (595×842pt)</option>
+          <option value="A3">A3 (842×1191pt)</option>
+          <option value="A5">A5 (420×595pt)</option>
+          <option value="letter">Letter (612×792pt)</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div class="field"><label>Orientação</label>
+        <select id="blk-orient"><option value="portrait">Retrato</option><option value="landscape">Paisagem</option></select>
+      </div>
+    </div>
+    <div id="blk-custom" style="display:none">
+      <div class="row2">
+        <div class="field"><label>Largura (pt)</label><input type="number" id="blk-w" value="595" min="1"></div>
+        <div class="field"><label>Altura (pt)</label><input type="number" id="blk-h" value="842" min="1"></div>
+      </div>
+    </div>
+    <div class="field"><label>Número de páginas</label><input type="number" id="blk-pages" value="1" min="1" max="100"></div>
+    <div class="field"><label>Nome do ficheiro</label><input type="text" id="blk-name" placeholder="documento-em-branco"></div>
+    <button class="btn btn-primary btn-full" onclick="doBlank()">+ Criar e Descarregar</button>
+    <div class="status" id="blk-status"></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script src="vendor/cantoo-pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script>
+const {PDFDocument,rgb,degrees,StandardFonts,PageSizes,EncryptionAlgorithm} = PDFLib;
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
+
+// NAV
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+    });
+  }
+}
+
+// HELPERS
+function status(id, msg, type='loading') {
+  const el = document.getElementById(id+'-status');
+  if (!el) return;
+  el.style.display = 'block';
+  el.className = 'status ' + type;
+  el.textContent = msg;
+}
+function dl(bytes, name) {
+  const blob = new Blob([bytes], {type:'application/pdf'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function dlBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function readFile(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsArrayBuffer(file);
+  });
+}
+function readFileAsDataURL(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+function parsePageRanges(str, total) {
+  const pages = new Set();
+  str.split(',').forEach(part => {
+    part = part.trim();
+    if (part.includes('-')) {
+      const [a,b] = part.split('-').map(n=>parseInt(n.trim()));
+      for(let i=a;i<=Math.min(b,total);i++) pages.add(i);
+    } else {
+      const n = parseInt(part);
+      if (!isNaN(n) && n>=1 && n<=total) pages.add(n);
+    }
+  });
+  return [...pages].sort((a,b)=>a-b);
+}
+function setDrop(id, text) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('has-file');
+  el.querySelector('.drop-title').textContent = text;
+}
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16)/255;
+  const g = parseInt(hex.slice(3,5),16)/255;
+  const b = parseInt(hex.slice(5,7),16)/255;
+  return rgb(r,g,b);
+}
+function pageSizePts(key, orient) {
+  const sizes = {A4:[595,842],A3:[842,1191],A5:[420,595],letter:[612,792],legal:[612,1008]};
+  let [w,h] = sizes[key] || [595,842];
+  if (orient === 'landscape') [w,h] = [h,w];
+  return [w,h];
+}
+
+// ---- MERGE ----
+let mergeFiles = [];
+function addMergeFiles(input) {
+  [...input.files].forEach(f => mergeFiles.push(f));
+  input.value = '';
+  renderMergeList();
+}
+function renderMergeList() {
+  const list = document.getElementById('merge-list');
+  list.innerHTML = mergeFiles.map((f,i) => `
+    <div class="file-item">
+      <span class="drag-handle">⠿</span>
+      <span class="file-item-name">📄 ${f.name}</span>
+      <span class="file-item-size">${(f.size/1024).toFixed(0)} KB</span>
+      <button class="file-item-rm" onclick="mergeFiles.splice(${i},1);renderMergeList()">✕</button>
+    </div>`).join('');
+}
+async function doMerge() {
+  if (mergeFiles.length < 2) { status('merge','Adiciona pelo menos 2 PDFs.','err'); return; }
+  status('merge','A juntar PDFs...','loading');
+  try {
+    const merged = await PDFDocument.create();
+    for (const f of mergeFiles) {
+      const bytes = await readFile(f);
+      const doc = await PDFDocument.load(bytes, {ignoreEncryption:true});
+      const pages = await merged.copyPages(doc, doc.getPageIndices());
+      pages.forEach(p => merged.addPage(p));
+    }
+    const out = await merged.save();
+    dl(out, 'merged-' + Date.now() + '.pdf');
+    status('merge', '✓ ' + mergeFiles.length + ' PDFs juntos com sucesso!', 'ok');
+  } catch(e) { status('merge','Erro: ' + e.message,'err'); }
+}
+
+// ---- SPLIT ----
+let splitDoc = null, splitFile = null;
+async function loadSplitFile(input) {
+  const f = input.files[0]; if(!f) return;
+  splitFile = f;
+  const bytes = await readFile(f);
+  splitDoc = await PDFDocument.load(bytes, {ignoreEncryption:true});
+  setDrop('split-drop', f.name + ' (' + splitDoc.getPageCount() + ' páginas)');
+  document.getElementById('split-options').style.display = 'block';
+  document.getElementById('split-info').textContent = 'Total: ' + splitDoc.getPageCount() + ' páginas';
+}
+function updateSplitMode() {
+  const mode = document.getElementById('split-mode').value;
+  document.getElementById('split-range-field').style.display = mode==='range'?'block':'none';
+  document.getElementById('split-every-field').style.display = mode==='every'?'block':'none';
+}
+async function doSplit() {
+  if (!splitDoc) return;
+  status('split','A separar PDF...','loading');
+  try {
+    const mode = document.getElementById('split-mode').value;
+    const total = splitDoc.getPageCount();
+    const zip = new JSZip();
+    let groups = [];
+    if (mode==='all') { for(let i=0;i<total;i++) groups.push([i]); }
+    else if (mode==='range') {
+      const ranges = parsePageRanges(document.getElementById('split-ranges').value, total);
+      groups = ranges.map(n => [n-1]);
+    } else {
+      const n = parseInt(document.getElementById('split-every-n').value) || 1;
+      for(let i=0;i<total;i+=n) { const g=[]; for(let j=i;j<Math.min(i+n,total);j++) g.push(j); groups.push(g); }
+    }
+    const bytes = await readFile(splitFile);
+    for (let i=0; i<groups.length; i++) {
+      const src = await PDFDocument.load(bytes, {ignoreEncryption:true});
+      const newDoc = await PDFDocument.create();
+      const pages = await newDoc.copyPages(src, groups[i]);
+      pages.forEach(p => newDoc.addPage(p));
+      const out = await newDoc.save();
+      zip.file('parte-' + String(i+1).padStart(3,'0') + '.pdf', out);
+    }
+    const blob = await zip.generateAsync({type:'blob'});
+    dlBlob(blob, 'split-' + Date.now() + '.zip');
+    status('split', '✓ ' + groups.length + ' ficheiros gerados!', 'ok');
+  } catch(e) { status('split','Erro: '+e.message,'err'); }
+}
+
+// ---- ORGANIZE ----
+let orgDoc = null, orgFile = null, orgPages = [];
+async function loadOrgFile(input) {
+  const f = input.files[0]; if(!f) return;
+  orgFile = f;
+  const bytes = await readFile(f);
+  orgDoc = await PDFDocument.load(bytes, {ignoreEncryption:true});
+  orgPages = orgDoc.getPageIndices().map(i => ({idx:i, rotation:0, deleted:false}));
+  setDrop('org-drop', f.name + ' (' + orgDoc.getPageCount() + ' páginas)');
+  document.getElementById('org-area').style.display = 'block';
+  renderOrgGrid();
+}
+async function renderOrgGrid() {
+  const grid = document.getElementById('org-grid');
+  grid.innerHTML = '<div style="color:var(--text2);font-size:12px;padding:1rem">A renderizar pré-visualizações...</div>';
+  const bytes = await readFile(orgFile);
+  const pdfjs = await pdfjsLib.getDocument({data: bytes}).promise;
+  grid.innerHTML = '';
+  for (let i=0; i<orgPages.length; i++) {
+    if (orgPages[i].deleted) continue;
+    const div = document.createElement('div');
+    div.className = 'page-thumb'; div.dataset.idx = i;
+    div.onclick = () => { div.classList.toggle('selected'); };
+    const canvas = document.createElement('canvas');
+    const label = document.createElement('div');
+    label.className = 'page-thumb-label';
+    label.textContent = 'Pág. ' + (i+1);
+    const sel = document.createElement('div');
+    sel.className = 'page-thumb-sel'; sel.textContent = '✓';
+    div.appendChild(canvas); div.appendChild(label); div.appendChild(sel);
+    grid.appendChild(div);
+    try {
+      const page = await pdfjs.getPage(orgPages[i].idx+1);
+      const vp = page.getViewport({scale:0.3});
+      canvas.width = vp.width; canvas.height = vp.height;
+      await page.render({canvasContext:canvas.getContext('2d'), viewport:vp}).promise;
+    } catch(e) { canvas.style.cssText='width:100%;height:80px;background:var(--surface3)'; }
+  }
+}
+function getSelOrgIdxs() {
+  return [...document.querySelectorAll('.page-thumb.selected')].map(el => parseInt(el.dataset.idx));
+}
+function orgRotateSel(deg) {
+  getSelOrgIdxs().forEach(i => orgPages[i].rotation = (orgPages[i].rotation + deg) % 360);
+  status('org', 'Rotação aplicada. Clica em "Guardar" para aplicar.', 'loading');
+}
+function orgDeleteSel() {
+  const sel = getSelOrgIdxs();
+  if (sel.length === 0) return;
+  if (!confirm('Apagar ' + sel.length + ' página(s)?')) return;
+  sel.forEach(i => orgPages[i].deleted = true);
+  renderOrgGrid();
+}
+function orgSelectAll() { document.querySelectorAll('.page-thumb').forEach(el => el.classList.add('selected')); }
+function orgDeselectAll() { document.querySelectorAll('.page-thumb').forEach(el => el.classList.remove('selected')); }
+async function doOrganize() {
+  if (!orgDoc) return;
+  status('org','A organizar...','loading');
+  try {
+    const bytes = await readFile(orgFile);
+    const src = await PDFDocument.load(bytes, {ignoreEncryption:true});
+    const newDoc = await PDFDocument.create();
+    const active = orgPages.filter(p => !p.deleted);
+    const idxs = active.map(p => p.idx);
+    const copied = await newDoc.copyPages(src, idxs);
+    copied.forEach((page, i) => {
+      if (active[i].rotation) page.setRotation(degrees(active[i].rotation));
+      newDoc.addPage(page);
+    });
+    const out = await newDoc.save();
+    dl(out, 'organizado-' + Date.now() + '.pdf');
+    status('org', '✓ PDF organizado guardado!', 'ok');
+  } catch(e) { status('org','Erro: '+e.message,'err'); }
+}
+
+// ---- EXTRACT ----
+let extDoc = null, extFile = null;
+async function loadExtFile(input) {
+  const f = input.files[0]; if(!f) return;
+  extFile = f;
+  const bytes = await readFile(f);
+  extDoc = await PDFDocument.load(bytes, {ignoreEncryption:true});
+  setDrop('ext-drop', f.name + ' (' + extDoc.getPageCount() + ' páginas)');
+  document.getElementById('ext-options').style.display = 'block';
+  document.getElementById('ext-info').textContent = 'Total: ' + extDoc.getPageCount() + ' páginas';
+}
+async function doExtract() {
+  if (!extDoc) return;
+  const pages = parsePageRanges(document.getElementById('ext-pages').value, extDoc.getPageCount());
+  if (pages.length === 0) { status('ext','Nenhuma página válida.','err'); return; }
+  status('ext','A extrair...','loading');
+  try {
+    const bytes = await readFile(extFile);
+    const src = await PDFDocument.load(bytes, {ignoreEncryption:true});
+    const newDoc = await PDFDocument.create();
+    const copied = await newDoc.copyPages(src, pages.map(n=>n-1));
+    copied.forEach(p => newDoc.addPage(p));
+    const out = await newDoc.save();
+    dl(out, 'extraido-' + Date.now() + '.pdf');
+    status('ext', '✓ ' + pages.length + ' páginas extraídas!', 'ok');
+  } catch(e) { status('ext','Erro: '+e.message,'err'); }
+}
+
+// ---- WATERMARK ----
+let wmDoc = null, wmFile = null, wmImgData = null;
+async function loadWMFile(input) {
+  const f = input.files[0]; if(!f) return;
+  wmFile = f;
+  const bytes = await readFile(f);
+  wmDoc = await PDFDocument.load(bytes, {ignoreEncryption:true});
+  setDrop('wm-drop', f.name + ' (' + wmDoc.getPageCount() + ' páginas)');
+  document.getElementById('wm-options').style.display = 'block';
+}
+function setWMTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('wm-text-tab').style.display = tab==='text'?'block':'none';
+  document.getElementById('wm-image-tab').style.display = tab==='image'?'block':'none';
+}
+function handleWMImage(input) {
+  const f = input.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload=e=>{wmImgData=e.target.result;document.getElementById('wm-img-text').textContent='✓ '+f.name;}; r.readAsDataURL(f);
+}
+async function doWatermark() {
+  if (!wmDoc) return;
+  status('wm','A adicionar marca de água...','loading');
+  try {
+    const bytes = await readFile(wmFile);
+    const doc = await PDFDocument.load(bytes, {ignoreEncryption:true});
+    const font = await doc.embedFont(StandardFonts.HelveticaBold);
+    const isImg = document.getElementById('wm-image-tab').style.display !== 'none' && wmImgData;
+    let embeddedImg = null;
+    if (isImg && wmImgData) {
+      if (wmImgData.includes('data:image/png')) embeddedImg = await doc.embedPng(wmImgData);
+      else embeddedImg = await doc.embedJpg(wmImgData);
+    }
+    const pages = doc.getPages();
+    for (const page of pages) {
+      const {width,height} = page.getSize();
+      if (isImg && embeddedImg) {
+        const scale = parseInt(document.getElementById('wm-img-size').value)/100;
+        const op = parseInt(document.getElementById('wm-img-opacity').value)/100;
+        const imgW = width*scale, imgH = imgW*(embeddedImg.height/embeddedImg.width);
+        page.drawImage(embeddedImg, {x:(width-imgW)/2, y:(height-imgH)/2, width:imgW, height:imgH, opacity:op});
+      } else {
+        const text = document.getElementById('wm-text').value || 'WATERMARK';
+        const size = parseInt(document.getElementById('wm-size').value);
+        const op = parseInt(document.getElementById('wm-opacity').value)/100;
+        const col = hexToRgb(document.getElementById('wm-color').value);
+        const rot = parseInt(document.getElementById('wm-rot').value);
+        const pos = document.getElementById('wm-pos').value;
+        let x = width/2, y = height/2;
+        if (pos==='topleft') {x=50;y=height-50;}
+        else if (pos==='topright') {x=width-50;y=height-50;}
+        else if (pos==='bottomleft') {x=50;y=50;}
+        else if (pos==='bottomright') {x=width-50;y=50;}
+        page.drawText(text, {x,y,size,font,color:col,opacity:op,rotate:degrees(rot)});
+      }
+    }
+    const out = await doc.save();
+    dl(out, 'watermark-' + Date.now() + '.pdf');
+    status('wm','✓ Marca de água adicionada!','ok');
+  } catch(e) { status('wm','Erro: '+e.message,'err'); }
+}
+
+// ---- ADD TEXT ----
+let atDoc=null, atFile=null;
+async function loadATFile(input) {
+  const f=input.files[0]; if(!f) return; atFile=f;
+  const bytes=await readFile(f); atDoc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('at-drop',f.name); document.getElementById('at-options').style.display='block';
+}
+async function doAddText() {
+  if(!atDoc) return; status('at','A adicionar texto...','loading');
+  try {
+    const bytes=await readFile(atFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const font=await doc.embedFont(StandardFonts.Helvetica);
+    const text=document.getElementById('at-text').value||'';
+    const size=parseInt(document.getElementById('at-size').value);
+    const col=hexToRgb(document.getElementById('at-color').value);
+    const x=parseFloat(document.getElementById('at-x').value);
+    const y=parseFloat(document.getElementById('at-y').value);
+    const pagesMode=document.getElementById('at-pages').value;
+    const pages=doc.getPages();
+    let targets=pages;
+    if(pagesMode==='first') targets=[pages[0]];
+    else if(pagesMode==='last') targets=[pages[pages.length-1]];
+    targets.forEach(p=>{p.drawText(text,{x,y,size,font,color:col});});
+    const out=await doc.save(); dl(out,'texto-'+Date.now()+'.pdf');
+    status('at','✓ Texto adicionado!','ok');
+  } catch(e){status('at','Erro: '+e.message,'err');}
+}
+
+// ---- ADD IMAGE ----
+let ai2Doc=null, ai2File=null, ai2ImgData=null;
+async function loadAI2File(input) {
+  const f=input.files[0]; if(!f) return; ai2File=f;
+  const bytes=await readFile(f); ai2Doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('ai2-drop',f.name); document.getElementById('ai2-options').style.display='block';
+}
+function handleAI2Img(input) {
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=e=>{ai2ImgData=e.target.result;document.getElementById('ai2-img-text').textContent='✓ '+f.name;}; r.readAsDataURL(f);
+}
+async function doAddImage() {
+  if(!ai2Doc||!ai2ImgData) return; status('ai2','A adicionar imagem...','loading');
+  try {
+    const bytes=await readFile(ai2File);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    let img; if(ai2ImgData.includes('data:image/png')) img=await doc.embedPng(ai2ImgData); else img=await doc.embedJpg(ai2ImgData);
+    const w=parseFloat(document.getElementById('ai2-w').value);
+    const h=parseFloat(document.getElementById('ai2-h').value);
+    const x=parseFloat(document.getElementById('ai2-x').value);
+    const y=parseFloat(document.getElementById('ai2-y').value);
+    const pages=doc.getPages();
+    const pm=document.getElementById('ai2-pages').value;
+    let targets=pages;
+    if(pm==='first') targets=[pages[0]]; else if(pm==='last') targets=[pages[pages.length-1]];
+    targets.forEach(p=>p.drawImage(img,{x,y,width:w,height:h}));
+    const out=await doc.save(); dl(out,'imagem-'+Date.now()+'.pdf');
+    status('ai2','✓ Imagem adicionada!','ok');
+  } catch(e){status('ai2','Erro: '+e.message,'err');}
+}
+
+// ---- PAGE NUMBERS ----
+let pnDoc=null, pnFile=null;
+async function loadPNFile(input) {
+  const f=input.files[0]; if(!f) return; pnFile=f;
+  const bytes=await readFile(f); pnDoc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('pn-drop',f.name+' ('+pnDoc.getPageCount()+' páginas)');
+  document.getElementById('pn-options').style.display='block';
+}
+async function doPageNumbers() {
+  if(!pnDoc) return; status('pn','A adicionar números...','loading');
+  try {
+    const bytes=await readFile(pnFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const font=await doc.embedFont(StandardFonts.Helvetica);
+    const size=parseInt(document.getElementById('pn-size').value);
+    const start=parseInt(document.getElementById('pn-start').value)||1;
+    const fmt=document.getElementById('pn-format').value;
+    const col=hexToRgb(document.getElementById('pn-color').value);
+    const pos=document.getElementById('pn-pos').value;
+    const pages=doc.getPages();
+    pages.forEach((page,i)=>{
+      const {width,height}=page.getSize();
+      const n=start+i; const total=pages.length;
+      let label=String(n);
+      if(fmt==='page-n') label='Página '+n;
+      else if(fmt==='n-of-total') label=n+' / '+total;
+      const tw=font.widthOfTextAtSize(label,size);
+      let x=width/2-tw/2, y=20;
+      if(pos.includes('top')) y=height-20-size;
+      if(pos.includes('right')) x=width-tw-20;
+      if(pos.includes('left')) x=20;
+      page.drawText(label,{x,y,size,font,color:col});
+    });
+    const out=await doc.save(); dl(out,'numerado-'+Date.now()+'.pdf');
+    status('pn','✓ Números adicionados!','ok');
+  } catch(e){status('pn','Erro: '+e.message,'err');}
+}
+
+// ---- HEADER FOOTER ----
+let hfDoc=null, hfFile=null;
+async function loadHFFile(input) {
+  const f=input.files[0]; if(!f) return; hfFile=f;
+  const bytes=await readFile(f); hfDoc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('hf-drop',f.name); document.getElementById('hf-options').style.display='block';
+}
+async function doHeaderFooter() {
+  if(!hfDoc) return; status('hf','A adicionar cabeçalho/rodapé...','loading');
+  try {
+    const bytes=await readFile(hfFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const font=await doc.embedFont(StandardFonts.Helvetica);
+    const size=parseInt(document.getElementById('hf-size').value);
+    const col=hexToRgb(document.getElementById('hf-color').value);
+    const header=document.getElementById('hf-header').value;
+    const footer=document.getElementById('hf-footer').value;
+    doc.getPages().forEach(page=>{
+      const {width,height}=page.getSize();
+      if(header) page.drawText(header,{x:20,y:height-size-10,size,font,color:col});
+      if(footer) page.drawText(footer,{x:20,y:10,size,font,color:col});
+    });
+    const out=await doc.save(); dl(out,'hf-'+Date.now()+'.pdf');
+    status('hf','✓ Cabeçalho/Rodapé adicionados!','ok');
+  } catch(e){status('hf','Erro: '+e.message,'err');}
+}
+
+// ---- IMG TO PDF ----
+let i2pFiles=[];
+function addI2PFiles(input) {
+  [...input.files].forEach(f=>i2pFiles.push(f)); input.value=''; renderI2PList();
+}
+function renderI2PList() {
+  const list=document.getElementById('i2p-list');
+  list.innerHTML=i2pFiles.map((f,i)=>`<div class="file-item"><span class="drag-handle">⠿</span><span class="file-item-name">🖼 ${f.name}</span><span class="file-item-size">${(f.size/1024).toFixed(0)} KB</span><button class="file-item-rm" onclick="i2pFiles.splice(${i},1);renderI2PList()">✕</button></div>`).join('');
+  document.getElementById('i2p-has-files').style.display=i2pFiles.length>0?'block':'none';
+}
+async function doImg2PDF() {
+  if(!i2pFiles.length) return; status('i2p','A converter imagens...','loading');
+  try {
+    const doc=await PDFDocument.create();
+    const sizeKey=document.getElementById('i2p-size').value;
+    const orient=document.getElementById('i2p-orient').value;
+    for(const f of i2pFiles) {
+      const data=await readFileAsDataURL(f);
+      let img; if(f.type==='image/png') img=await doc.embedPng(data); else img=await doc.embedJpg(data);
+      let [pw,ph]=[img.width,img.height];
+      if(sizeKey!=='fit'){[pw,ph]=pageSizePts(sizeKey,orient);}
+      const page=doc.addPage([pw,ph]);
+      const {width,height}=page.getSize();
+      const scale=Math.min(width/img.width,height/img.height);
+      const iw=img.width*scale, ih=img.height*scale;
+      page.drawImage(img,{x:(width-iw)/2,y:(height-ih)/2,width:iw,height:ih});
+    }
+    const out=await doc.save(); dl(out,'imagens-'+Date.now()+'.pdf');
+    status('i2p','✓ '+i2pFiles.length+' imagens convertidas!','ok');
+  } catch(e){status('i2p','Erro: '+e.message,'err');}
+}
+
+// ---- PDF TO IMG ----
+let p2iFile=null, p2iPDF=null;
+async function loadP2IFile(input) {
+  const f=input.files[0]; if(!f) return; p2iFile=f;
+  setDrop('p2i-drop',f.name); document.getElementById('p2i-options').style.display='block';
+  document.getElementById('p2i-pages').onchange=()=>{document.getElementById('p2i-custom-pages').style.display=document.getElementById('p2i-pages').value==='custom'?'block':'none';};
+  const bytes=await readFile(f);
+  p2iPDF=await pdfjsLib.getDocument({data:bytes}).promise;
+}
+async function doP2I() {
+  if(!p2iPDF) return;
+  status('p2i','A converter páginas...','loading');
+  document.getElementById('p2i-progress').style.display='block';
+  try {
+    const scale=parseInt(document.getElementById('p2i-dpi').value);
+    const total=p2iPDF.numPages;
+    let pageNums=[];
+    if(document.getElementById('p2i-pages').value==='all') { for(let i=1;i<=total;i++) pageNums.push(i); }
+    else { pageNums=parsePageRanges(document.getElementById('p2i-pages-input').value,total); }
+    const zip=new JSZip();
+    for(let i=0;i<pageNums.length;i++) {
+      const pct=Math.round((i/pageNums.length)*100);
+      document.getElementById('p2i-bar').style.width=pct+'%';
+      document.getElementById('p2i-prog-pct').textContent=pct+'%';
+      document.getElementById('p2i-prog-label').textContent='A converter página '+pageNums[i]+'...';
+      const page=await p2iPDF.getPage(pageNums[i]);
+      const vp=page.getViewport({scale});
+      const canvas=document.createElement('canvas');
+      canvas.width=vp.width; canvas.height=vp.height;
+      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+      const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+      const ab=await blob.arrayBuffer();
+      zip.file('pagina-'+String(pageNums[i]).padStart(3,'0')+'.png',ab);
+    }
+    document.getElementById('p2i-bar').style.width='100%';
+    document.getElementById('p2i-prog-pct').textContent='100%';
+    const zblob=await zip.generateAsync({type:'blob'});
+    dlBlob(zblob,'pdf-imagens-'+Date.now()+'.zip');
+    status('p2i','✓ '+pageNums.length+' imagens geradas!','ok');
+  } catch(e){status('p2i','Erro: '+e.message,'err');}
+}
+
+// ---- COMPRESS ----
+let cmpFile=null;
+async function loadCMPFile(input) {
+  const f=input.files[0]; if(!f) return; cmpFile=f;
+  setDrop('cmp-drop',f.name+' ('+((f.size/1024)/1024).toFixed(2)+' MB)');
+  document.getElementById('cmp-options').style.display='block';
+  document.getElementById('cmp-info').textContent='Tamanho original: '+((f.size/1024)/1024).toFixed(2)+' MB';
+}
+async function doCompress() {
+  if(!cmpFile) return; status('cmp','A comprimir...','loading');
+  try {
+    const bytes=await readFile(cmpFile);
+    const level=document.getElementById('cmp-level').value;
+    let out;
+    if(level==='low'){
+      const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+      out=await doc.save({useObjectStreams:true,addDefaultPage:false,objectsPerTick:50});
+    } else {
+      const [scale,quality]=level==='high'?[1.1,0.5]:[1.6,0.72];
+      const src=await pdfjsLib.getDocument({data:new Uint8Array(bytes.slice(0))}).promise;
+      const doc=await PDFDocument.create();
+      for(let i=1;i<=src.numPages;i++){
+        status('cmp','A comprimir página '+i+' de '+src.numPages+'...','loading');
+        const page=await src.getPage(i); const base=page.getViewport({scale:1}); const vp=page.getViewport({scale});
+        const cv=document.createElement('canvas'); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+        const ctx=cv.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+        await page.render({canvasContext:ctx,viewport:vp}).promise;
+        const jpg=await new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('falha ao gerar imagem da página '+i)),'image/jpeg',quality));
+        const img=await doc.embedJpg(await jpg.arrayBuffer());
+        doc.addPage([base.width,base.height]).drawImage(img,{x:0,y:0,width:base.width,height:base.height});
+      }
+      out=await doc.save({useObjectStreams:true});
+    }
+    const orig=bytes.byteLength;
+    if(out.byteLength>=orig){
+      status('cmp','Este PDF já está otimizado — a compressão '+(level==='low'?'leve':'escolhida')+' não o reduziu ('+(orig/1024).toFixed(0)+' KB). '+(level==='low'?'Experimenta o nível Média ou Forte.':'Mantém o original.'),'err');
+      return;
+    }
+    const saved=((orig-out.byteLength)/orig*100).toFixed(1);
+    dl(out,'comprimido-'+Date.now()+'.pdf');
+    status('cmp','✓ Comprimido! '+(orig/1024).toFixed(0)+' KB → '+(out.byteLength/1024).toFixed(0)+' KB (−'+saved+'%)','ok');
+  } catch(e){status('cmp','Erro: '+e.message,'err');}
+}
+
+// ---- ROTATE ----
+let rotFile=null;
+async function loadROTFile(input) {
+  const f=input.files[0]; if(!f) return; rotFile=f;
+  const bytes=await readFile(f); const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('rot-drop',f.name+' ('+doc.getPageCount()+' páginas)');
+  document.getElementById('rot-options').style.display='block';
+  document.getElementById('rot-pages').onchange=()=>{document.getElementById('rot-custom').style.display=document.getElementById('rot-pages').value==='custom'?'block':'none';};
+}
+async function doRotate() {
+  if(!rotFile) return; status('rot','A rodar...','loading');
+  try {
+    const bytes=await readFile(rotFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const angle=parseInt(document.getElementById('rot-angle').value);
+    const pagesMode=document.getElementById('rot-pages').value;
+    const total=doc.getPageCount();
+    let targets=[];
+    if(pagesMode==='all') targets=doc.getPageIndices();
+    else if(pagesMode==='odd') targets=doc.getPageIndices().filter(i=>i%2===0);
+    else if(pagesMode==='even') targets=doc.getPageIndices().filter(i=>i%2===1);
+    else targets=parsePageRanges(document.getElementById('rot-pages-input').value,total).map(n=>n-1);
+    targets.forEach(i=>{const p=doc.getPage(i); p.setRotation(degrees((p.getRotation().angle+angle)%360));});
+    const out=await doc.save(); dl(out,'rotado-'+Date.now()+'.pdf');
+    status('rot','✓ '+targets.length+' páginas rodadas!','ok');
+  } catch(e){status('rot','Erro: '+e.message,'err');}
+}
+
+// ---- CROP ----
+let crpFile=null;
+async function loadCRPFile(input) {
+  const f=input.files[0]; if(!f) return; crpFile=f;
+  const bytes=await readFile(f); const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('crp-drop',f.name); document.getElementById('crp-options').style.display='block';
+}
+async function doCrop() {
+  if(!crpFile) return; status('crp','A recortar...','loading');
+  try {
+    const bytes=await readFile(crpFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const top=parseFloat(document.getElementById('crp-top').value)||0;
+    const bottom=parseFloat(document.getElementById('crp-bottom').value)||0;
+    const left=parseFloat(document.getElementById('crp-left').value)||0;
+    const right=parseFloat(document.getElementById('crp-right').value)||0;
+    doc.getPages().forEach(page=>{
+      const {x,y,width,height}=page.getCropBox();
+      page.setCropBox(x+left,y+bottom,width-left-right,height-top-bottom);
+    });
+    const out=await doc.save(); dl(out,'cortado-'+Date.now()+'.pdf');
+    status('crp','✓ PDF recortado!','ok');
+  } catch(e){status('crp','Erro: '+e.message,'err');}
+}
+
+// ---- SCALE ----
+let sclFile=null;
+async function loadSCLFile(input) {
+  const f=input.files[0]; if(!f) return; sclFile=f;
+  const bytes=await readFile(f); const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('scl-drop',f.name); document.getElementById('scl-options').style.display='block';
+  document.getElementById('scl-size').onchange=()=>{document.getElementById('scl-custom').style.display=document.getElementById('scl-size').value==='custom'?'block':'none';};
+}
+async function doScale() {
+  if(!sclFile) return; status('scl','A escalar...','loading');
+  try {
+    const bytes=await readFile(sclFile);
+    const src=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const doc=await PDFDocument.create();
+    const sizeKey=document.getElementById('scl-size').value;
+    const orient=document.getElementById('scl-orient').value;
+    let pw,ph;
+    if(sizeKey==='custom'){pw=parseFloat(document.getElementById('scl-w').value);ph=parseFloat(document.getElementById('scl-h').value);}
+    else [pw,ph]=pageSizePts(sizeKey,orient);
+    if(!(pw>0&&ph>0)){status('scl','Indica largura e altura válidas.','err');return;}
+    const copied=await doc.embedPages(src.getPages());
+    copied.forEach(page=>{
+      const newPage=doc.addPage([pw,ph]);
+      const {width:ow,height:oh}=page;
+      const scale=Math.min(pw/ow,ph/oh);
+      newPage.drawPage(page,{x:(pw-ow*scale)/2,y:(ph-oh*scale)/2,width:ow*scale,height:oh*scale});
+    });
+    const out=await doc.save(); dl(out,'escalado-'+Date.now()+'.pdf');
+    status('scl','✓ PDF escalado!','ok');
+  } catch(e){status('scl','Erro: '+e.message,'err');}
+}
+
+// ---- PROTECT ----
+let prtFile=null;
+async function loadPRTFile(input) {
+  const f=input.files[0]; if(!f) return; prtFile=f;
+  setDrop('prt-drop',f.name); document.getElementById('prt-options').style.display='block';
+}
+async function doProtect() {
+  if(!prtFile) return;
+  const upw=document.getElementById('prt-user-pw').value;
+  const opw=document.getElementById('prt-owner-pw').value||upw+'_owner';
+  if(!upw){status('prt','Introduce a senha.','err');return;}
+  status('prt','A proteger...','loading');
+  try {
+    const bytes=await readFile(prtFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    doc.encrypt({userPassword:upw,ownerPassword:opw,permissions:{printing:'highResolution',modifying:true,copying:true,annotating:true,fillingForms:true,contentAccessibility:true,documentAssembly:true}});
+    const out=await doc.save();
+    dl(out,'protegido-'+Date.now()+'.pdf');
+    status('prt','✓ PDF protegido com senha!','ok');
+  } catch(e){status('prt','Erro: '+e.message,'err');}
+}
+
+// ---- UNLOCK ----
+let ulkFile=null;
+async function loadULKFile(input) {
+  const f=input.files[0]; if(!f) return; ulkFile=f;
+  setDrop('ulk-drop',f.name); document.getElementById('ulk-options').style.display='block';
+}
+async function doUnlock() {
+  if(!ulkFile) return;
+  const pw=document.getElementById('ulk-pw').value;
+  status('ulk','A remover senha...','loading');
+  try {
+    const bytes=await readFile(ulkFile);
+    const wasEncrypted=new TextDecoder('latin1').decode(bytes).includes('/Encrypt');
+    if(!wasEncrypted){status('ulk','Este PDF não tem senha — não há nada a remover.','err');return;}
+    const doc=await PDFDocument.load(bytes,{password:pw});
+    const out=await doc.save();
+    dl(out,'desbloqueado-'+Date.now()+'.pdf');
+    status('ulk','✓ Senha removida!','ok');
+  } catch(e){status('ulk','Senha incorrecta ou ficheiro inválido.','err');}
+}
+
+// ---- PERMISSIONS ----
+let prmFile=null;
+async function loadPRMFile(input) {
+  const f=input.files[0]; if(!f) return; prmFile=f;
+  setDrop('prm-drop',f.name); document.getElementById('prm-options').style.display='block';
+}
+async function doPermissions() {
+  if(!prmFile) return;
+  const pw=document.getElementById('prm-pw').value;
+  if(!pw){status('prm','Introduce a senha de proprietário.','err');return;}
+  status('prm','A aplicar permissões...','loading');
+  try {
+    const bytes=await readFile(prmFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const perms={};
+    perms.printing=document.getElementById('prm-print').classList.contains('on')?'highResolution':false;
+    perms.copying=document.getElementById('prm-copy').classList.contains('on');
+    perms.modifying=document.getElementById('prm-modify').classList.contains('on');
+    perms.annotating=document.getElementById('prm-annot').classList.contains('on');
+    perms.fillingForms=perms.modifying; perms.documentAssembly=perms.modifying; perms.contentAccessibility=true;
+    doc.encrypt({userPassword:'',ownerPassword:pw,permissions:perms});
+    const out=await doc.save();
+    dl(out,'permissoes-'+Date.now()+'.pdf');
+    status('prm','✓ Permissões aplicadas!','ok');
+  } catch(e){status('prm','Erro: '+e.message,'err');}
+}
+
+// ---- METADATA ----
+let metaFile=null;
+async function loadMETAFile(input) {
+  const f=input.files[0]; if(!f) return; metaFile=f;
+  const bytes=await readFile(f);
+  const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+  setDrop('meta-drop',f.name); document.getElementById('meta-options').style.display='block';
+  const cur=document.getElementById('meta-current');
+  cur.innerHTML=[
+    'Título: '+(doc.getTitle()||'—'),
+    'Autor: '+(doc.getAuthor()||'—'),
+    'Assunto: '+(doc.getSubject()||'—'),
+    'Keywords: '+(doc.getKeywords()||'—'),
+    'Criador: '+(doc.getCreator()||'—'),
+    'Páginas: '+doc.getPageCount()
+  ].map(s=>'<div>'+s+'</div>').join('');
+  document.getElementById('meta-title').value=doc.getTitle()||'';
+  document.getElementById('meta-author').value=doc.getAuthor()||'';
+  document.getElementById('meta-subject').value=doc.getSubject()||'';
+  document.getElementById('meta-keywords').value=doc.getKeywords()||'';
+  document.getElementById('meta-creator').value=doc.getCreator()||'';
+}
+async function doMetadata() {
+  if(!metaFile) return; status('meta','A guardar metadados...','loading');
+  try {
+    const bytes=await readFile(metaFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    doc.setTitle(document.getElementById('meta-title').value);
+    doc.setAuthor(document.getElementById('meta-author').value);
+    doc.setSubject(document.getElementById('meta-subject').value);
+    doc.setKeywords([document.getElementById('meta-keywords').value]);
+    doc.setCreator(document.getElementById('meta-creator').value);
+    doc.setModificationDate(new Date());
+    const out=await doc.save(); dl(out,'metadata-'+Date.now()+'.pdf');
+    status('meta','✓ Metadados actualizados!','ok');
+  } catch(e){status('meta','Erro: '+e.message,'err');}
+}
+
+// ---- FORMS ----
+let frmFile=null;
+function frmKind(field){
+  const L=window.PDFLib;
+  if(field instanceof L.PDFTextField) return 'text';
+  if(field instanceof L.PDFCheckBox) return 'check';
+  if(field instanceof L.PDFDropdown) return 'dropdown';
+  if(field instanceof L.PDFRadioGroup) return 'radio';
+  if(field instanceof L.PDFOptionList) return 'list';
+  return 'other';
+}
+function frmEsc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function loadFRMFile(input) {
+  const f=input.files[0]; if(!f) return; frmFile=f;
+  try {
+    const bytes=await readFile(f);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    setDrop('frm-drop',f.name);
+    const fields=doc.getForm().getFields();
+    document.getElementById('frm-no-fields').style.display=fields.length?'none':'block';
+    document.getElementById('frm-fields').style.display=fields.length?'block':'none';
+    if(!fields.length) return;
+    document.getElementById('frm-fields-list').innerHTML=fields.map(field=>{
+      const name=field.getName(); const id='frm-'+name.replace(/\W/g,'_'); const kind=frmKind(field);
+      if(kind==='check') return `<div class="toggle-row"><div style="font-size:13px">${frmEsc(name)}</div><div class="toggle${field.isChecked()?' on':''}" id="${id}" onclick="this.classList.toggle('on')"></div></div>`;
+      if(kind==='dropdown'||kind==='radio'||kind==='list'){const opts=field.getOptions();return `<div class="field"><label>${frmEsc(name)}</label><select id="${id}"><option value="">—</option>${opts.map(o=>`<option>${frmEsc(o)}</option>`).join('')}</select></div>`;}
+      if(kind==='text') return `<div class="field"><label>${frmEsc(name)}</label><input type="text" id="${id}" value="${frmEsc(field.getText()||'')}"></div>`;
+      return `<div class="field"><label>${frmEsc(name)} (não editável aqui)</label><input type="text" id="${id}" disabled></div>`;
+    }).join('');
+  } catch(e){ status('frm','Erro ao ler o formulário: '+e.message,'err'); }
+}
+async function doFillForm() {
+  if(!frmFile) return; status('frm','A preencher formulário...','loading');
+  try {
+    const bytes=await readFile(frmFile);
+    const doc=await PDFDocument.load(bytes,{ignoreEncryption:true});
+    const form=doc.getForm(); const fieldErrors=[];
+    form.getFields().forEach(field=>{
+      const name=field.getName();
+      const elId='frm-'+name.replace(/\W/g,'_');
+      const el=document.getElementById(elId); if(!el) return;
+      try {
+        const kind=frmKind(field);
+        if(kind==='text') field.setText(el.value||'');
+        else if(kind==='check'){ if(el.classList.contains('on')) field.check(); else field.uncheck(); }
+        else if((kind==='dropdown'||kind==='radio'||kind==='list')&&el.value) field.select(el.value);
+      } catch(e){ fieldErrors.push(name+': '+e.message); }
+    });
+    if(fieldErrors.length) console.warn('PDF Master: campos não preenchidos', fieldErrors);
+    form.flatten();
+    const out=await doc.save(); dl(out,'formulario-'+Date.now()+'.pdf');
+    status('frm',fieldErrors.length?'⚠ Preenchido, mas '+fieldErrors.length+' campo(s) falharam: '+fieldErrors.join('; '):'✓ Formulário preenchido!',fieldErrors.length?'err':'ok');
+  } catch(e){status('frm','Erro: '+e.message,'err');}
+}
+
+// ---- BLANK PDF ----
+function updateBlankCustom() {
+  document.getElementById('blk-custom').style.display=document.getElementById('blk-size').value==='custom'?'block':'none';
+}
+async function doBlank() {
+  status('blk','A criar PDF...','loading');
+  try {
+    const doc=await PDFDocument.create();
+    const sizeKey=document.getElementById('blk-size').value;
+    const orient=document.getElementById('blk-orient').value;
+    let pw,ph;
+    if(sizeKey==='custom'){pw=parseFloat(document.getElementById('blk-w').value);ph=parseFloat(document.getElementById('blk-h').value);}
+    else [pw,ph]=pageSizePts(sizeKey,orient);
+    const n=parseInt(document.getElementById('blk-pages').value)||1;
+    for(let i=0;i<n;i++) doc.addPage([pw,ph]);
+    doc.setTitle(document.getElementById('blk-name').value||'Documento');
+    doc.setCreator('PDF Master — Eagle Marketing');
+    const out=await doc.save();
+    dl(out,(document.getElementById('blk-name').value||'documento')+'.pdf');
+    status('blk','✓ PDF criado com '+n+' página(s)!','ok');
+  } catch(e){status('blk','Erro: '+e.message,'err');}
+}
+
+// Drop events for all zones
+document.querySelectorAll('.drop-zone').forEach(dz=>{
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{
+    e.preventDefault(); dz.classList.remove('drag');
+    const input=dz.querySelector('input[type=file]');
+    if(input&&e.dataTransfer.files.length){ input.files=e.dataTransfer.files; input.onchange({target:input}); }
+  });
+});
+</script>
+</body>
+</html>

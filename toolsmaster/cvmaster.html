@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV Master — Tools Master</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060608;--surface:#0d0d10;--surface2:#131316;--surface3:#1a1a1e;
+  --border:#1a1a1e;--border2:#232328;--border3:#303038;
+  --text:#ebebeb;--text2:#606068;--text3:#38383e;
+  --accent:#10b981;--accent2:#059669;--accent-dim:rgba(16,185,129,0.1);--accent-text:#fff;
+  --success:#4ade80;--error:#f87171;
+  --r:12px;--rs:7px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.app{display:flex;flex:1}
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#3b82f6);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.brand-parent{font-size:10px;color:var(--text3);margin-top:1px}
+.nav-sec{padding:.65rem 1.1rem .2rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:.55rem 1.2rem;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+.nav-icon{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:.9rem 1.2rem;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.7}
+.main{flex:1;overflow-y:auto;padding:2rem;max-width:1100px}
+@media(max-width:900px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.main{padding:1rem}}
+.page{display:none}.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text2)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=number],select,textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:8px 10px;width:100%;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+textarea{resize:vertical;line-height:1.6}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:500px){.row2,.row3{grid-template-columns:1fr}}
+.btn{height:38px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s,transform .1s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 16px}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-text)}
+.btn-outline{background:transparent;border:1px solid var(--border3);color:var(--text2)}
+.btn-outline:hover{color:var(--text)}
+.btn-danger{background:none;border:1px solid rgba(248,113,113,.3);color:var(--error)}
+.btn-sm{height:28px;font-size:11px;padding:0 10px}
+.btn-full{width:100%;height:46px;font-size:14px;margin-top:.75rem}
+.status{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none;line-height:1.5}
+.status.ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.status.err{background:rgba(248,113,113,.1);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.status.loading{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+
+/* LAYOUT */
+.builder-layout{display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:start}
+@media(max-width:900px){.builder-layout{grid-template-columns:1fr}}
+
+/* TEMPLATES */
+.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:1.5rem}
+.tmpl-card{border:2px solid var(--border2);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.tmpl-card:hover,.tmpl-card.active{border-color:var(--accent)}
+.tmpl-preview{height:200px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3)}
+.tmpl-name{padding:8px 12px;font-size:12px;font-weight:600;color:var(--text);border-top:1px solid var(--border);background:var(--surface)}
+.tmpl-card.active .tmpl-name{color:var(--accent)}
+
+/* SECTIONS */
+.section-item{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:12px;margin-bottom:8px;position:relative}
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer}
+.section-toggle{font-size:12px;color:var(--text3);margin-left:auto}
+.section-body{display:block}
+.section-body.collapsed{display:none}
+
+/* ENTRY */
+.entry-card{background:var(--surface3);border:1px solid var(--border2);border-radius:var(--rs);padding:10px;margin-bottom:8px}
+.entry-header{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.entry-title{font-size:12px;font-weight:600;color:var(--text2);flex:1}
+
+/* CV PREVIEW */
+.cv-preview-wrap{position:sticky;top:1rem}
+.cv-preview{background:#fff;color:#222;border-radius:var(--r);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3);font-family:'Georgia',serif;min-height:400px}
+.cv-dl-bar{display:flex;gap:8px;margin-bottom:.75rem}
+
+/* TOOL GRID */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .2s}
+.tool-card:hover{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-2px)}
+.tc-icon{font-size:26px;margin-bottom:8px}
+.tc-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.tc-desc{font-size:11px;color:var(--text2);line-height:1.4}
+
+/* PROGRESS STEPS */
+.build-steps{display:flex;gap:0;margin-bottom:1.5rem;overflow-x:auto}
+.bstep{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3);cursor:pointer;padding:.4rem .75rem;border-radius:var(--rs);white-space:nowrap;transition:all .15s}
+.bstep:hover{background:var(--surface2)}
+.bstep.active{background:var(--accent-dim);color:var(--accent)}
+.bstep.done{color:var(--success)}
+.bstep-num{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.step-sep{width:24px;height:1px;background:var(--border2);flex-shrink:0}
+
+/* AI SUGGESTIONS */
+.ai-suggestion{background:var(--accent-dim);border:1px solid rgba(16,185,129,.2);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--accent);margin-top:6px;cursor:pointer;transition:opacity .15s}
+.ai-suggestion:hover{opacity:.8}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">📄</div>
+    <div>
+      <div class="brand-name">CV Master</div>
+      <div class="brand-parent">Tools Master</div>
+    </div>
+  </div>
+  <div class="nav-sec">Início</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">⊞</span> Início</div>
+  <div class="nav-sec">Criar CV</div>
+  <div class="nav-item" onclick="nav('builder',this)"><span class="nav-icon">✦</span> Construtor de CV</div>
+  <div class="nav-item" onclick="nav('templates',this)"><span class="nav-icon">◈</span> Templates</div>
+  <div class="nav-sec">Ferramentas IA</div>
+  <div class="nav-item" onclick="nav('improve-cv',this)"><span class="nav-icon">⬆</span> Melhorar CV com IA</div>
+  <div class="nav-item" onclick="nav('cover',this)"><span class="nav-icon">✉</span> Carta de apresentação</div>
+  <div class="nav-item" onclick="nav('linkedin',this)"><span class="nav-icon">💼</span> Optimizar LinkedIn</div>
+  <div class="nav-item" onclick="nav('tailor',this)"><span class="nav-icon">🎯</span> Adaptar a vaga</div>
+  <div class="nav-sec">Outros</div>
+  <div class="nav-item" onclick="nav('ats',this)"><span class="nav-icon">✓</span> Verificar ATS</div>
+  <div class="nav-item" onclick="nav('saved',this)"><span class="nav-icon">◷</span> CVs guardados</div>
+  <div class="sidebar-footer">CV Master v1.0<br>Tools Master · Eagle Marketing</div>
+</div>
+
+<div class="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="page-header"><div class="page-title">CV Master</div><div class="page-sub">Cria CVs profissionais com IA — optimizados para cada vaga</div></div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('builder',null)"><div class="tc-icon">✦</div><div class="tc-name">Construtor de CV</div><div class="tc-desc">Cria o teu CV passo a passo</div></div>
+    <div class="tool-card" onclick="nav('templates',null)"><div class="tc-icon">◈</div><div class="tc-name">Templates</div><div class="tc-desc">6 templates profissionais</div></div>
+    <div class="tool-card" onclick="nav('improve-cv',null)"><div class="tc-icon">⬆</div><div class="tc-name">Melhorar com IA</div><div class="tc-desc">A IA melhora o teu CV actual</div></div>
+    <div class="tool-card" onclick="nav('cover',null)"><div class="tc-icon">✉</div><div class="tc-name">Carta de apresentação</div><div class="tc-desc">Gera carta personalizada</div></div>
+    <div class="tool-card" onclick="nav('linkedin',null)"><div class="tc-icon">💼</div><div class="tc-name">Optimizar LinkedIn</div><div class="tc-desc">Perfil que atrai recrutadores</div></div>
+    <div class="tool-card" onclick="nav('tailor',null)"><div class="tc-icon">🎯</div><div class="tc-name">Adaptar a vaga</div><div class="tc-desc">CV adaptado a cada oferta</div></div>
+    <div class="tool-card" onclick="nav('ats',null)"><div class="tc-icon">✓</div><div class="tc-name">Verificar ATS</div><div class="tc-desc">Passa pelos filtros automáticos</div></div>
+    <div class="tool-card" onclick="nav('saved',null)"><div class="tc-icon">◷</div><div class="tc-name">CVs guardados</div><div class="tc-desc">Os teus CVs guardados</div></div>
+  </div>
+</div>
+
+<!-- BUILDER -->
+<div class="page" id="page-builder">
+  <div class="page-header"><div class="page-title">✦ Construtor de CV</div><div class="page-sub">Preenche a informação — o CV gera-se automaticamente</div></div>
+
+  <div class="build-steps" id="build-steps">
+    <div class="bstep active" id="bstep-1" onclick="goStep(1)"><div class="bstep-num">1</div>Informação pessoal</div>
+    <div class="step-sep"></div>
+    <div class="bstep" id="bstep-2" onclick="goStep(2)"><div class="bstep-num">2</div>Experiência</div>
+    <div class="step-sep"></div>
+    <div class="bstep" id="bstep-3" onclick="goStep(3)"><div class="bstep-num">3</div>Formação</div>
+    <div class="step-sep"></div>
+    <div class="bstep" id="bstep-4" onclick="goStep(4)"><div class="bstep-num">4</div>Competências</div>
+    <div class="step-sep"></div>
+    <div class="bstep" id="bstep-5" onclick="goStep(5)"><div class="bstep-num">5</div>Exportar</div>
+  </div>
+
+  <div class="builder-layout">
+    <div id="builder-form">
+
+      <!-- STEP 1 -->
+      <div id="step-1" class="build-step">
+        <div class="card">
+          <div class="card-title">Informação pessoal</div>
+          <div class="row2">
+            <div class="field"><label>Nome completo</label><input type="text" id="cv-name" placeholder="Yanick dos Reis Silva" oninput="updatePreview()"></div>
+            <div class="field"><label>Cargo / Profissão</label><input type="text" id="cv-title" placeholder="Fotógrafo · Creative Director" oninput="updatePreview()"></div>
+          </div>
+          <div class="row3">
+            <div class="field"><label>Email</label><input type="email" id="cv-email" placeholder="yax@eagle.cv" oninput="updatePreview()"></div>
+            <div class="field"><label>Telefone</label><input type="tel" id="cv-phone" placeholder="+238 9XX XXX XXX" oninput="updatePreview()"></div>
+            <div class="field"><label>Localização</label><input type="text" id="cv-location" placeholder="Praia, Cabo Verde" oninput="updatePreview()"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>LinkedIn</label><input type="url" id="cv-linkedin" placeholder="linkedin.com/in/yax" oninput="updatePreview()"></div>
+            <div class="field"><label>Website / Portfolio</label><input type="url" id="cv-website" placeholder="eaglemarketing.cv" oninput="updatePreview()"></div>
+          </div>
+          <div class="field"><label>Resumo profissional</label>
+            <textarea id="cv-summary" rows="3" placeholder="Descreve quem és e o que trazes de valor..." oninput="updatePreview()"></textarea>
+          </div>
+          <div class="ai-suggestion" onclick="generateSummary()">✦ Gerar resumo com IA a partir dos dados preenchidos</div>
+          <div style="display:flex;justify-content:flex-end;margin-top:.75rem"><button class="btn btn-primary" onclick="goStep(2)">Continuar → Experiência</button></div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step-2" class="build-step" style="display:none">
+        <div class="card">
+          <div class="card-title">Experiência profissional <button class="btn btn-outline btn-sm" onclick="addExp()">+ Adicionar</button></div>
+          <div id="exp-list"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:.75rem">
+            <button class="btn btn-outline" onclick="goStep(1)">← Anterior</button>
+            <button class="btn btn-primary" onclick="goStep(3)">Continuar → Formação</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="step-3" class="build-step" style="display:none">
+        <div class="card">
+          <div class="card-title">Formação académica <button class="btn btn-outline btn-sm" onclick="addEdu()">+ Adicionar</button></div>
+          <div id="edu-list"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:.75rem">
+            <button class="btn btn-outline" onclick="goStep(2)">← Anterior</button>
+            <button class="btn btn-primary" onclick="goStep(4)">Continuar → Competências</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div id="step-4" class="build-step" style="display:none">
+        <div class="card">
+          <div class="card-title">Competências & idiomas</div>
+          <div class="field"><label>Competências técnicas (separadas por vírgula)</label>
+            <textarea id="cv-skills" rows="2" placeholder="Adobe Photoshop, Premiere Pro, IA generativa, Gestão de redes sociais..." oninput="updatePreview()"></textarea>
+          </div>
+          <div class="ai-suggestion" onclick="suggestSkills()">✦ Sugerir competências com IA com base na minha experiência</div>
+          <div class="field" style="margin-top:.75rem"><label>Idiomas</label>
+            <textarea id="cv-langs" rows="2" placeholder="Português (nativo), Crioulo Cabo-verdiano (nativo), Inglês (avançado), Francês (básico)" oninput="updatePreview()"></textarea>
+          </div>
+          <div class="field"><label>Certificações & prémios (opcional)</label>
+            <textarea id="cv-certs" rows="2" placeholder="Google Analytics, Adobe Certified Expert..." oninput="updatePreview()"></textarea>
+          </div>
+          <div class="field"><label>Interesses (opcional)</label>
+            <input type="text" id="cv-interests" placeholder="Fotografia, música, tecnologia..." oninput="updatePreview()">
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:.75rem">
+            <button class="btn btn-outline" onclick="goStep(3)">← Anterior</button>
+            <button class="btn btn-primary" onclick="goStep(5)">Continuar → Exportar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div id="step-5" class="build-step" style="display:none">
+        <div class="card">
+          <div class="card-title">Template & exportação</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem">
+            <div class="tmpl-card active" id="tmpl-modern" onclick="selectTemplate('modern',this)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#1e293b,#334155)"><span>Moderno</span></div><div class="tmpl-name">Moderno</div></div>
+            <div class="tmpl-card" id="tmpl-classic" onclick="selectTemplate('classic',this)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#f8f7f4,#e5e3dc)"><span style="color:#333">Clássico</span></div><div class="tmpl-name">Clássico</div></div>
+            <div class="tmpl-card" id="tmpl-minimal" onclick="selectTemplate('minimal',this)"><div class="tmpl-preview" style="background:#fff;border:1px solid #eee"><span style="color:#555">Minimalista</span></div><div class="tmpl-name">Minimalista</div></div>
+            <div class="tmpl-card" id="tmpl-bold" onclick="selectTemplate('bold',this)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#10b981,#3b82f6)"><span>Bold</span></div><div class="tmpl-name">Bold</div></div>
+            <div class="tmpl-card" id="tmpl-creative" onclick="selectTemplate('creative',this)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#f97316,#ec4899)"><span>Criativo</span></div><div class="tmpl-name">Criativo</div></div>
+            <div class="tmpl-card" id="tmpl-executive" onclick="selectTemplate('executive',this)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#1e1e2e,#4a4a6a)"><span>Executivo</span></div><div class="tmpl-name">Executivo</div></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Idioma do CV</label><select id="cv-output-lang"><option value="pt">Português</option><option value="en">English</option><option value="fr">Français</option></select></div>
+            <div class="field"><label>Formato</label><select id="cv-output-fmt"><option value="pdf">PDF</option><option value="docx">Word (.docx)</option></select></div>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="exportCV()">↓ Descarregar CV</button>
+          <button class="btn btn-outline btn-full" style="margin-top:6px" onclick="saveCV()">◷ Guardar rascunho</button>
+          <div class="status" id="builder-status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="cv-preview-wrap">
+      <div class="cv-dl-bar">
+        <button class="btn btn-outline btn-sm" onclick="exportCV()">↓ PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="saveCV()">◷ Guardar</button>
+      </div>
+      <div class="cv-preview" id="cv-preview-area">
+        <div id="cv-rendered" style="padding:32px;min-height:500px;font-size:12px;line-height:1.5"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATES PAGE -->
+<div class="page" id="page-templates">
+  <div class="page-header"><div class="page-title">◈ Templates</div><div class="page-sub">Escolhe um template e começa a preencher</div></div>
+  <div class="template-grid">
+    <div class="tmpl-card" onclick="nav('builder',null);setTimeout(()=>selectTemplate('modern',document.getElementById('tmpl-modern')),100)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#1e293b,#334155)"><span>Moderno</span></div><div class="tmpl-name">Moderno</div></div>
+    <div class="tmpl-card" onclick="nav('builder',null);setTimeout(()=>selectTemplate('classic',document.getElementById('tmpl-classic')),100)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#f8f7f4,#e5e3dc)"><span style="color:#333">Clássico</span></div><div class="tmpl-name">Clássico</div></div>
+    <div class="tmpl-card" onclick="nav('builder',null);setTimeout(()=>selectTemplate('minimal',document.getElementById('tmpl-minimal')),100)"><div class="tmpl-preview" style="background:#fff;border:1px solid #eee"><span style="color:#555">Minimalista</span></div><div class="tmpl-name">Minimalista</div></div>
+    <div class="tmpl-card" onclick="nav('builder',null);setTimeout(()=>selectTemplate('bold',document.getElementById('tmpl-bold')),100)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#10b981,#3b82f6)"><span>Bold</span></div><div class="tmpl-name">Bold</div></div>
+    <div class="tmpl-card" onclick="nav('builder',null);setTimeout(()=>selectTemplate('creative',document.getElementById('tmpl-creative')),100)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#f97316,#ec4899)"><span>Criativo</span></div><div class="tmpl-name">Criativo</div></div>
+    <div class="tmpl-card" onclick="nav('builder',null);setTimeout(()=>selectTemplate('executive',document.getElementById('tmpl-executive')),100)"><div class="tmpl-preview" style="background:linear-gradient(135deg,#1e1e2e,#4a4a6a)"><span>Executivo</span></div><div class="tmpl-name">Executivo</div></div>
+  </div>
+</div>
+
+<!-- IMPROVE CV -->
+<div class="page" id="page-improve-cv">
+  <div class="page-header"><div class="page-title">⬆ Melhorar CV com IA</div><div class="page-sub">Cola o teu CV e a IA sugere melhorias concretas</div></div>
+  <div class="card">
+    <div class="field"><label>Cola o teu CV actual (texto)</label><textarea id="imp-cv-text" rows="10" placeholder="Cola aqui o texto do teu CV..."></textarea></div>
+    <div class="field"><label>Área profissional</label><input type="text" id="imp-cv-area" placeholder="Marketing, Fotografia, Tecnologia, Gestão..."></div>
+    <button class="btn btn-primary btn-full" onclick="doImproveCV()">⬆ Analisar e melhorar</button>
+    <div class="field" id="imp-cv-result-field" style="display:none;margin-top:.75rem">
+      <label>Sugestões da IA</label>
+      <textarea id="imp-cv-result" rows="12" style="font-size:12px" readonly></textarea>
+    </div>
+    <div class="status" id="improve-cv-status"></div>
+  </div>
+</div>
+
+<!-- COVER LETTER -->
+<div class="page" id="page-cover">
+  <div class="page-header"><div class="page-title">✉ Carta de apresentação</div><div class="page-sub">Carta personalizada para cada candidatura</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>O teu nome</label><input type="text" id="cov-name" placeholder="Yanick dos Reis Silva"></div>
+      <div class="field"><label>Cargo a que te candidatas</label><input type="text" id="cov-job" placeholder="Gestor de Marketing Digital"></div>
+    </div>
+    <div class="field"><label>Nome da empresa</label><input type="text" id="cov-company" placeholder="Nome da empresa"></div>
+    <div class="field"><label>A tua experiência relevante</label><textarea id="cov-exp" rows="3" placeholder="Resume a experiência mais relevante para esta vaga..."></textarea></div>
+    <div class="field"><label>Porquê esta empresa?</label><textarea id="cov-why" rows="2" placeholder="O que te atraiu nesta empresa/vaga?"></textarea></div>
+    <div class="field"><label>Tom</label><select id="cov-tone"><option>Formal e profissional</option><option>Confiante e directo</option><option>Entusiasta e criativo</option></select></div>
+    <button class="btn btn-primary btn-full" onclick="doCoverLetter()">✉ Gerar carta</button>
+    <div class="field" id="cov-result-field" style="display:none;margin-top:.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><label>Carta gerada</label><button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('cov-result').value)">⎘ Copiar</button></div>
+      <textarea id="cov-result" rows="14" style="font-size:12px"></textarea>
+    </div>
+    <div class="status" id="cover-status"></div>
+  </div>
+</div>
+
+<!-- LINKEDIN -->
+<div class="page" id="page-linkedin">
+  <div class="page-header"><div class="page-title">💼 Optimizar LinkedIn</div><div class="page-sub">Headline, resumo e secções optimizadas para recrutadores</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>Nome e cargo actual</label><input type="text" id="li-name" placeholder="Yanick Silva · Fotógrafo & Director Criativo"></div>
+      <div class="field"><label>Área / Sector</label><input type="text" id="li-area" placeholder="Fotografia, Marketing, Tecnologia..."></div>
+    </div>
+    <div class="field"><label>O que fazes (descreve em linguagem simples)</label><textarea id="li-what" rows="3" placeholder="Sou fotógrafo e director criativo baseado em Cabo Verde. Trabalho com marcas locais e internacionais..."></textarea></div>
+    <div class="field"><label>Principais conquistas</label><textarea id="li-wins" rows="2" placeholder="Fundei a Eagle Marketing, trabalhei com CNE, produzi conteúdo para..."></textarea></div>
+    <button class="btn btn-primary btn-full" onclick="doLinkedIn()">💼 Gerar perfil LinkedIn</button>
+    <div class="field" id="li-result-field" style="display:none;margin-top:.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><label>Perfil optimizado</label><button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('li-result').value)">⎘ Copiar</button></div>
+      <textarea id="li-result" rows="14" style="font-size:12px"></textarea>
+    </div>
+    <div class="status" id="linkedin-status"></div>
+  </div>
+</div>
+
+<!-- TAILOR -->
+<div class="page" id="page-tailor">
+  <div class="page-header"><div class="page-title">🎯 Adaptar CV a uma vaga</div><div class="page-sub">A IA ajusta o teu CV para maximizar a compatibilidade com a oferta</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>O teu CV (texto)</label><textarea id="tail-cv" rows="8" placeholder="Cola o teu CV..."></textarea></div>
+      <div class="field"><label>Descrição da vaga</label><textarea id="tail-job" rows="8" placeholder="Cola a descrição completa da vaga..."></textarea></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doTailor()">🎯 Adaptar CV</button>
+    <div class="field" id="tail-result-field" style="display:none;margin-top:.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><label>CV adaptado</label><button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('tail-result').value)">⎘ Copiar</button></div>
+      <textarea id="tail-result" rows="14" style="font-size:12px"></textarea>
+    </div>
+    <div class="status" id="tailor-status"></div>
+  </div>
+</div>
+
+<!-- ATS -->
+<div class="page" id="page-ats">
+  <div class="page-header"><div class="page-title">✓ Verificar compatibilidade ATS</div><div class="page-sub">Verifica se o teu CV passa pelos filtros automáticos de recrutamento</div></div>
+  <div class="card">
+    <div class="field"><label>Cola o teu CV</label><textarea id="ats-cv" rows="8" placeholder="Cola o texto do teu CV aqui..."></textarea></div>
+    <div class="field"><label>Descrição da vaga (opcional — para análise de keywords)</label><textarea id="ats-job" rows="4" placeholder="Cola a descrição da vaga para análise de compatibilidade..."></textarea></div>
+    <button class="btn btn-primary btn-full" onclick="doATS()">✓ Verificar ATS</button>
+    <div id="ats-result" style="display:none;margin-top:.75rem"></div>
+    <div class="status" id="ats-status"></div>
+  </div>
+</div>
+
+<!-- SAVED -->
+<div class="page" id="page-saved">
+  <div class="page-header"><div class="page-title">◷ CVs guardados</div><div class="page-sub">Os teus rascunhos guardados localmente</div></div>
+  <div class="card"><div id="saved-list"></div></div>
+</div>
+
+</div>
+</div>
+
+<script src="tm-core.js"></script>
+<script>
+// NAV
+function nav(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');else document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active');});if(id==='saved')renderSaved();}
+
+// HELPERS
+function st(id,msg,type='loading'){const el=document.getElementById(id+'-status');if(!el)return;el.style.display='block';el.className='status '+type;el.textContent=msg;}
+
+// CV DATA
+let cvData={name:'',title:'',email:'',phone:'',location:'',linkedin:'',website:'',summary:'',skills:'',langs:'',certs:'',interests:'',experience:[],education:[]};
+let currentTemplate='modern';
+
+// STEPS
+function goStep(n){
+  document.querySelectorAll('.build-step').forEach(s=>s.style.display='none');document.getElementById('step-'+n).style.display='block';
+  document.querySelectorAll('.bstep').forEach(b=>b.classList.remove('active'));document.getElementById('bstep-'+n).classList.add('active');
+}
+
+// EXPERIENCE
+function addExp(){
+  const id='exp-'+Date.now();const div=document.createElement('div');div.className='entry-card';div.id=id;
+  div.innerHTML=`<div class="entry-header"><span class="entry-title">Nova experiência</span><button class="btn btn-danger btn-sm" onclick="document.getElementById('${id}').remove();updatePreview()">✕</button></div>
+    <div class="row2"><div class="field"><label>Cargo</label><input type="text" placeholder="Director Criativo" onchange="updatePreview()"></div><div class="field"><label>Empresa</label><input type="text" placeholder="Eagle Marketing" onchange="updatePreview()"></div></div>
+    <div class="row2"><div class="field"><label>Início</label><input type="text" placeholder="Jan 2020" onchange="updatePreview()"></div><div class="field"><label>Fim</label><input type="text" placeholder="Presente" onchange="updatePreview()"></div></div>
+    <div class="field"><label>Descrição</label><textarea rows="2" placeholder="Responsabilidades e conquistas..." onchange="updatePreview()"></textarea></div>`;
+  document.getElementById('exp-list').appendChild(div);
+}
+
+// EDUCATION
+function addEdu(){
+  const id='edu-'+Date.now();const div=document.createElement('div');div.className='entry-card';div.id=id;
+  div.innerHTML=`<div class="entry-header"><span class="entry-title">Nova formação</span><button class="btn btn-danger btn-sm" onclick="document.getElementById('${id}').remove();updatePreview()">✕</button></div>
+    <div class="row2"><div class="field"><label>Grau / Curso</label><input type="text" placeholder="Licenciatura em Comunicação" onchange="updatePreview()"></div><div class="field"><label>Instituição</label><input type="text" placeholder="Universidade de Cabo Verde" onchange="updatePreview()"></div></div>
+    <div class="row2"><div class="field"><label>Início</label><input type="text" placeholder="2018" onchange="updatePreview()"></div><div class="field"><label>Fim</label><input type="text" placeholder="2022" onchange="updatePreview()"></div></div>`;
+  document.getElementById('edu-list').appendChild(div);
+}
+
+// TEMPLATES
+function selectTemplate(tmpl,el){
+  currentTemplate=tmpl;document.querySelectorAll('.tmpl-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');updatePreview();
+}
+
+// PREVIEW
+function getField(id){return document.getElementById(id)?.value||'';}
+function updatePreview(){
+  const name=getField('cv-name');const title=getField('cv-title');const email=getField('cv-email');const phone=getField('cv-phone');const location=getField('cv-location');const linkedin=getField('cv-linkedin');const website=getField('cv-website');const summary=getField('cv-summary');const skills=getField('cv-skills');const langs=getField('cv-langs');const certs=getField('cv-certs');const interests=getField('cv-interests');
+
+  const themes={
+    modern:{bg:'#1e293b',accent:'#38bdf8',text:'#f1f5f9',sidebar:'#0f172a'},
+    classic:{bg:'#ffffff',accent:'#1e293b',text:'#1e293b',sidebar:'#f8f7f4'},
+    minimal:{bg:'#ffffff',accent:'#374151',text:'#111827',sidebar:'#ffffff'},
+    bold:{bg:'#10b981',accent:'#ffffff',text:'#ffffff',sidebar:'#059669'},
+    creative:{bg:'#f97316',accent:'#ffffff',text:'#ffffff',sidebar:'#ea580c'},
+    executive:{bg:'#1e1e2e',accent:'#a855f7',text:'#ebebeb',sidebar:'#13131e'},
+  };
+  const t=themes[currentTemplate]||themes.modern;
+
+  const expItems=document.querySelectorAll('#exp-list .entry-card');let expHTML='';
+  expItems.forEach(item=>{const inputs=[...item.querySelectorAll('input,textarea')];expHTML+=`<div style="margin-bottom:10px"><div style="font-weight:600;font-size:11px">${inputs[0]?.value||'Cargo'}</div><div style="font-size:10px;opacity:.7">${inputs[1]?.value||'Empresa'} · ${inputs[2]?.value||''} — ${inputs[3]?.value||''}</div><div style="font-size:10px;margin-top:3px">${inputs[4]?.value||''}</div></div>`;});
+  const eduItems=document.querySelectorAll('#edu-list .entry-card');let eduHTML='';
+  eduItems.forEach(item=>{const inputs=[...item.querySelectorAll('input')];eduHTML+=`<div style="margin-bottom:8px"><div style="font-weight:600;font-size:11px">${inputs[0]?.value||'Curso'}</div><div style="font-size:10px;opacity:.7">${inputs[1]?.value||'Instituição'} · ${inputs[2]?.value||''} — ${inputs[3]?.value||''}</div></div>`;});
+
+  document.getElementById('cv-rendered').innerHTML=`
+    <div style="background:${t.bg};color:${t.text};min-height:500px;font-family:-apple-system,sans-serif">
+      <div style="padding:24px 24px 16px;border-bottom:2px solid ${t.accent}20">
+        <div style="font-size:22px;font-weight:700;letter-spacing:-.5px">${name||'O teu nome'}</div>
+        <div style="font-size:13px;color:${t.accent};margin-top:3px;font-weight:500">${title||'Cargo / Profissão'}</div>
+        <div style="font-size:10px;margin-top:8px;opacity:.7;display:flex;flex-wrap:wrap;gap:10px">
+          ${email?`<span>${email}</span>`:''}${phone?`<span>${phone}</span>`:''}${location?`<span>${location}</span>`:''}${linkedin?`<span>${linkedin}</span>`:''}${website?`<span>${website}</span>`:''}
+        </div>
+      </div>
+      <div style="padding:16px 24px;display:grid;grid-template-columns:1fr 130px;gap:16px">
+        <div>
+          ${summary?`<div style="margin-bottom:14px"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:${t.accent};font-weight:700;margin-bottom:6px">Perfil</div><div style="font-size:10px;opacity:.85;line-height:1.5">${summary}</div></div>`:''}
+          ${expHTML?`<div style="margin-bottom:14px"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:${t.accent};font-weight:700;margin-bottom:6px">Experiência</div>${expHTML}</div>`:''}
+          ${eduHTML?`<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:${t.accent};font-weight:700;margin-bottom:6px">Formação</div>${eduHTML}</div>`:''}
+        </div>
+        <div>
+          ${skills?`<div style="margin-bottom:12px"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:${t.accent};font-weight:700;margin-bottom:6px">Competências</div><div style="font-size:10px;opacity:.85">${skills.split(',').map(s=>`<div>• ${s.trim()}</div>`).join('')}</div></div>`:''}
+          ${langs?`<div style="margin-bottom:12px"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:${t.accent};font-weight:700;margin-bottom:6px">Idiomas</div><div style="font-size:10px;opacity:.85">${langs.split(',').map(l=>`<div>• ${l.trim()}</div>`).join('')}</div></div>`:''}
+          ${interests?`<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:${t.accent};font-weight:700;margin-bottom:6px">Interesses</div><div style="font-size:10px;opacity:.85">${interests}</div></div>`:''}
+        </div>
+      </div>
+    </div>`;
+}
+
+// EXPORT
+function exportCV(){
+  const preview=document.getElementById('cv-preview-area');const html=preview.innerHTML;
+  const win=window.open('','_blank');win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CV</title><style>*{box-sizing:border-box;margin:0;padding:0}body{margin:0}@media print{body{margin:0}}</style></head><body>${html}</body></html>`);
+  win.document.close();setTimeout(()=>{win.print();},500);
+  st('builder','✓ Janela de impressão aberta — escolhe "Guardar como PDF" na impressora.','ok');
+}
+
+function saveCV(){
+  const saves=JSON.parse(localStorage.getItem('cv_saves')||'[]');
+  const entry={name:getField('cv-name')||'CV sem nome',date:new Date().toLocaleDateString('pt'),html:document.getElementById('cv-preview-area').innerHTML,ts:Date.now()};
+  saves.unshift(entry);localStorage.setItem('cv_saves',JSON.stringify(saves.slice(0,10)));
+  st('builder','✓ CV guardado localmente!','ok');
+}
+
+function renderSaved(){
+  const saves=JSON.parse(localStorage.getItem('cv_saves')||'[]');
+  const el=document.getElementById('saved-list');
+  if(!saves.length){el.innerHTML='<div style="color:var(--text3);text-align:center;padding:2rem;font-size:13px">Ainda não tens CVs guardados.</div>';return;}
+  el.innerHTML=saves.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;margin-bottom:8px"><div style="flex:1"><div style="font-size:13px;font-weight:500">${s.name}</div><div style="font-size:11px;color:var(--text2)">${s.date}</div></div><button class="btn btn-outline btn-sm" onclick="loadSaved(${i})">Abrir</button></div>`).join('');
+}
+function loadSaved(i){const saves=JSON.parse(localStorage.getItem('cv_saves')||'[]');if(saves[i]){document.getElementById('cv-preview-area').innerHTML=saves[i].html;nav('builder',null);}}
+
+// AI TOOLS
+async function callAI(prompt,outId,statusId){
+  st(statusId,'A gerar com IA...','loading');
+  try{
+    const text=await TM.aiText(prompt);
+    const el=document.getElementById(outId);if(el){el.value=text;el.parentElement.style.display='block';}
+    st(statusId,'✓ Gerado com sucesso!','ok');
+  }catch(e){st(statusId,'✗ '+e.message,'err');}
+}
+
+function generateSummary(){callAI(`Gera um resumo profissional conciso (3-4 frases) para um CV. Nome: ${getField('cv-name')}, Cargo: ${getField('cv-title')}, Localização: ${getField('cv-location')}. Competências: ${getField('cv-skills')}. Tom: profissional e impactante. Responde apenas com o resumo.`,'cv-summary','builder');}
+function suggestSkills(){callAI(`Sugere 10 competências relevantes para um ${getField('cv-title')||'profissional'} em ${getField('cv-location')||'Cabo Verde'}. Responde apenas com as competências separadas por vírgula.`,'cv-skills','builder');}
+function doImproveCV(){callAI(`Analisa este CV e dá sugestões específicas e accionáveis para melhorar cada secção. Indica: 1) Pontos fortes, 2) O que melhorar, 3) Palavras-chave em falta, 4) Versão melhorada do resumo.\n\nCV:\n${getField('imp-cv-text')}\n\nÁrea: ${getField('imp-cv-area')}`,'imp-cv-result','improve-cv');}
+function doCoverLetter(){callAI(`Escreve uma carta de apresentação profissional em português para ${getField('cov-name')} que se candidata ao cargo de ${getField('cov-job')} na empresa ${getField('cov-company')}. Tom: ${getField('cov-tone')}. Experiência relevante: ${getField('cov-exp')}. Motivação: ${getField('cov-why')}. Escreve apenas a carta completa.`,'cov-result','cover');}
+function doLinkedIn(){callAI(`Cria um perfil LinkedIn optimizado para ${getField('li-name')} na área de ${getField('li-area')}.\n\nO que faz: ${getField('li-what')}\nConquistas: ${getField('li-wins')}\n\nGera:\n1. Headline (120 caracteres)\n2. Resumo/About (2000 caracteres)\n3. 5 palavras-chave para o perfil`,'li-result','linkedin');}
+function doTailor(){callAI(`Adapta este CV para maximizar a compatibilidade com a seguinte vaga. Mantém os factos verdadeiros mas reorganiza, reenfatiza e adiciona keywords relevantes.\n\nCV:\n${getField('tail-cv')}\n\nVaga:\n${getField('tail-job')}\n\nResponde com o CV adaptado.`,'tail-result','tailor');}
+
+const ATS_STOP=new Set('a o e é de da do das dos em no na nos nas um uma uns umas para por com sem que se ao aos à às ou como mais muito seu sua seus suas the and of to in for with on at by an or is are be as from this that will you your our we their it'.split(' '));
+function atsWords(t){return (t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').match(/[a-z0-9+#.]{3,}/g)||[]).map(w=>w.replace(/\.+$/,'')).filter(w=>!ATS_STOP.has(w));}
+async function doATS(){
+  const cv=getField('ats-cv');const job=getField('ats-job');if(!cv){st('ats','Cola o teu CV primeiro.','err');return;}
+  st('ats','A analisar...','loading');
+  const words=cv.trim().split(/\s+/).length;
+  const cvSet=new Set(atsWords(cv));
+  let missing=[],matched=[],kwScore=null;
+  if(job){
+    const freq={};atsWords(job).forEach(w=>freq[w]=(freq[w]||0)+1);
+    const top=Object.entries(freq).sort((x,y)=>y[1]-x[1]).slice(0,25).map(x=>x[0]);
+    matched=top.filter(w=>cvSet.has(w));missing=top.filter(w=>!cvSet.has(w));
+    kwScore=top.length?matched.length/top.length:0;
+  }
+  const actionVerbs=/\b(geri|liderei|criei|desenvolvi|implementei|aumentei|reduzi|coordenei|organizei|produzi|lancei|melhorei|managed|led|created|developed|built|increased|reduced|launched|improved)\b/i;
+  const checks=[
+    {name:'Email visível',ok:/[\w.+-]+@[\w-]+\.[\w.]+/.test(cv)},
+    {name:'Telefone visível',ok:/(\+?\d[\d\s-]{7,})/.test(cv)},
+    {name:'Datas presentes (ex.: 2021, 03/2022)',ok:/\b(19|20)\d{2}\b/.test(cv)},
+    {name:'Secções claras (Experiência, Formação, Competências)',ok:/(experi[eê]ncia|experience)/i.test(cv)&&/(forma[cç][aã]o|educa[cç][aã]o|education)/i.test(cv)},
+    {name:'Verbos de acção nas experiências',ok:actionVerbs.test(cv)},
+    {name:'Resultados com números (%, valores)',ok:/\d+\s?%|\d+\s?(mil|k|ECV|€|\$)/i.test(cv)},
+    {name:'Comprimento adequado (300–900 palavras)',ok:words>=300&&words<=900},
+    {name:'Sem caracteres que confundem ATS (★ ● ▪ ✓)',ok:!/[★●▪✓✔■◆]/.test(cv)},
+  ];
+  if(job)checks.push({name:`Palavras-chave da vaga: ${matched.length}/${matched.length+missing.length}`,ok:kwScore>=0.6});
+  const base=checks.filter(c=>c.ok).length/checks.length;
+  const score=Math.round(100*(kwScore===null?base:base*0.5+kwScore*0.5));
+  const res=document.getElementById('ats-result');res.style.display='block';
+  const color=score>=80?'var(--success)':score>=60?'var(--warn)':'var(--error)';
+  const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  res.innerHTML=`<div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:1rem;margin-bottom:.75rem;text-align:center"><div style="font-size:36px;font-weight:700;color:${color}">${score}/100</div><div style="font-size:12px;color:var(--text2)">Pontuação ATS (${words} palavras${job?', comparado com a vaga':' — cola a vaga para comparar palavras-chave'})</div></div><div style="display:flex;flex-direction:column;gap:6px">${checks.map(c=>`<div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px"><span style="color:${c.ok?'var(--success)':'var(--error)'};font-size:14px">${c.ok?'✓':'✗'}</span><span style="font-size:12px">${c.name}</span></div>`).join('')}</div>${missing.length?`<div style="margin-top:.75rem;font-size:12px;color:var(--text2)">Palavras-chave da vaga em falta no CV: <b style="color:var(--text)">${esc(missing.join(', '))}</b></div>`:''}`;
+  st('ats','✓ Análise ATS concluída!','ok');
+}
+
+// INIT
+updatePreview();addExp();addEdu();
+</script>
+</body>
+</html>

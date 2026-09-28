@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRT Sync — Groq Whisper</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --border2: #3a3a3a;
+    --text: #f0f0f0;
+    --text2: #888;
+    --text3: #555;
+    --accent: #e8ff47;
+    --accent-dim: rgba(232,255,71,0.12);
+    --accent-text: #0f0f0f;
+    --success: #4ade80;
+    --success-bg: rgba(74,222,128,0.1);
+    --error: #f87171;
+    --error-bg: rgba(248,113,113,0.1);
+    --warn: #fbbf24;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .container { width: 100%; max-width: 720px; }
+
+  /* Header */
+  .header { margin-bottom: 2rem; }
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+  .tagline { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+  /* Drop zone */
+  .drop-zone {
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    position: relative;
+  }
+  .drop-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .drop-zone.drag { border-color: var(--accent); background: var(--accent-dim); }
+  .drop-zone.ready { border-color: var(--success); border-style: solid; background: var(--success-bg); }
+  .drop-icon { font-size: 36px; margin-bottom: 12px; }
+  .drop-title { font-size: 15px; font-weight: 500; margin-bottom: 5px; }
+  .drop-sub { font-size: 12px; color: var(--text2); }
+  .drop-zone.ready .drop-title { color: var(--success); }
+  #fileInput { display: none; }
+
+  /* Controls */
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    margin-top: 14px;
+    align-items: flex-end;
+  }
+  @media (max-width: 580px) { .controls { grid-template-columns: 1fr 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  select, input[type="text"] {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 13px;
+    padding: 8px 10px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+
+  .btn-go {
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 38px;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.1s;
+    display: flex; align-items: center; gap: 7px;
+    letter-spacing: -0.2px;
+  }
+  .btn-go:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn-go:not(:disabled):hover { opacity: 0.88; }
+  .btn-go:not(:disabled):active { transform: scale(0.97); }
+
+  /* API key */
+  .key-row {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .key-row .field { flex: 1; }
+  .key-row input { font-family: monospace; font-size: 12px; letter-spacing: 0.3px; }
+  .key-hint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .key-hint a { color: var(--text2); }
+
+  /* Progress */
+  .progress-wrap { margin-top: 14px; display: none; }
+  .progress-header { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 12px; color: var(--text2); }
+  .bar-bg { height: 2px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+
+  /* Log */
+  .log-wrap {
+    margin-top: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    color: var(--text2);
+    max-height: 110px;
+    overflow-y: auto;
+    display: none;
+  }
+  .ll { padding: 1.5px 0; }
+  .ll.ok { color: var(--success); }
+  .ll.err { color: var(--error); }
+  .ll.warn { color: var(--warn); }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* Result */
+  .result-wrap { display: none; }
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .result-title {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid rgba(74,222,128,0.3);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .result-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    font-size: 12px;
+    height: 30px;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .btn-sm:hover { opacity: 0.8; }
+  .btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+  .btn-filled { background: var(--accent); border: none; color: var(--accent-text); }
+
+  /* Stats */
+  .stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    min-width: 80px;
+  }
+  .stat-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .stat-val { font-size: 20px; font-weight: 600; }
+
+  /* SRT preview */
+  .srt-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 11.5px;
+    font-family: 'Courier New', monospace;
+    color: var(--text);
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre;
+    line-height: 1.8;
+  }
+  .srt-preview::-webkit-scrollbar { width: 4px; }
+  .srt-preview::-webkit-scrollbar-track { background: transparent; }
+  .srt-preview::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+  /* Footer */
+  .footer { margin-top: 2rem; text-align: center; font-size: 11px; color: var(--text3); }
+  .footer span { color: var(--text2); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <h1>SRT Sync</h1>
+    </div>
+    <div class="tagline">Groq Whisper · Timestamps reais da voz · Premiere-ready</div>
+  </div>
+
+  <!-- Drop Zone -->
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon" id="dropIcon">🎙️</div>
+    <div class="drop-title" id="dropTitle">Clica ou arrasta o ficheiro de áudio</div>
+    <div class="drop-sub" id="dropSub">MP3 · WAV · M4A · OGG · WEBM · FLAC — máx. 25 MB</div>
+    <input type="file" id="fileInput" accept="audio/*">
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="field">
+      <label>Idioma</label>
+      <select id="langSel">
+        <option value="pt">Português</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="es">Español</option>
+        <option value="">Auto-detectar</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Modelo Whisper</label>
+      <select id="modelSel">
+        <option value="whisper-large-v3-turbo" selected>Large v3 Turbo</option>
+        <option value="whisper-large-v3">Large v3 (máx. precisão)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Duração máx. legenda</label>
+      <select id="maxDur">
+        <option value="3">3 segundos</option>
+        <option value="4" selected>4 segundos</option>
+        <option value="5">5 segundos</option>
+        <option value="6">6 segundos</option>
+      </select>
+    </div>
+    <button class="btn-go" id="goBtn" disabled>
+      ✦ Gerar SRT
+    </button>
+  </div>
+
+  <!-- API Key -->
+  <div class="key-row">
+    <div class="field">
+      <label>Groq API Key</label>
+      <input type="password" id="apiKey" placeholder="gsk_... (ou define no hub → ⚙ Chaves de API)" autocomplete="off">
+    </div>
+  </div>
+  <div class="key-hint">Actualiza a key em <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a> sempre que necessário</div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-header">
+      <span id="progressLabel">A processar...</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" id="barFill"></div></div>
+  </div>
+
+  <div class="log-wrap" id="logWrap"></div>
+
+  <hr class="divider" id="divider" style="display:none">
+
+  <!-- Result -->
+  <div class="result-wrap" id="resultWrap">
+    <div class="result-header">
+      <div class="result-title">
+        Legenda gerada
+        <span class="badge">✓ TIMESTAMPS REAIS</span>
+      </div>
+      <div class="result-actions">
+        <button class="btn-sm btn-outline" onclick="copySRT()">⎘ Copiar</button>
+        <button class="btn-sm btn-filled" onclick="downloadSRT()">↓ Descarregar .srt</button>
+      </div>
+    </div>
+
+    <div class="stats" id="statsEl"></div>
+    <div class="srt-preview" id="srtPreview"></div>
+  </div>
+
+  <div class="footer">
+    SRT Sync by <span>Eagle Marketing · Afro-Berdiano Image</span> · Groq Whisper API
+  </div>
+
+</div>
+
+<script src="tm-core.js"></script>
+<script>
+  let audioFile = null;
+  let srtContent = '';
+  let baseName = 'legenda';
+
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const goBtn = document.getElementById('goBtn');
+
+  // Drop zone
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag');
+    if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+
+  function setFile(f) {
+    if (f.size > 25 * 1024 * 1024) { alert('Ficheiro demasiado grande. Máximo 25 MB.'); return; }
+    audioFile = f;
+    baseName = f.name.replace(/\.[^.]+$/, '');
+    dropZone.classList.add('ready');
+    document.getElementById('dropIcon').textContent = '✓';
+    document.getElementById('dropTitle').textContent = f.name;
+    document.getElementById('dropSub').textContent =
+      (f.size / 1024 / 1024).toFixed(2) + ' MB  ·  ' + (f.type || 'audio');
+    goBtn.disabled = false;
+  }
+
+  function log(msg, type = '') {
+    const el = document.getElementById('logWrap');
+    el.style.display = 'block';
+    const d = document.createElement('div');
+    d.className = 'll ' + type;
+    d.textContent = '› ' + msg;
+    el.appendChild(d);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function setProgress(pct, label) {
+    document.getElementById('progressWrap').style.display = 'block';
+    document.getElementById('barFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressLabel').textContent = label;
+  }
+
+  function toSRTTime(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    const ms = Math.round((sec % 1) * 1000);
+    return [h, m, s].map(n => String(n).padStart(2, '0')).join(':') + ',' + String(ms).padStart(3, '0');
+  }
+
+  function buildSRT(segments, maxDur) {
+    maxDur = maxDur > 0.5 ? maxDur : 5;
+    const blocks = [];
+    // Divide um segmento em partes <= maxDur, repartindo o tempo pelo nº de caracteres de cada parte.
+    function split(start, end, words) {
+      if (!words.length) return;
+      const dur = end - start;
+      if (dur <= maxDur || words.length === 1) {
+        // uma palavra sozinha num segmento muito longo (ex.: silêncio) não deve ficar no ecrã mais do que maxDur
+        blocks.push({ start, end: Math.min(end, start + maxDur), text: words.join(' ') });
+        return;
+      }
+      const parts = Math.min(words.length, Math.ceil(dur / maxDur));
+      const per = Math.ceil(words.length / parts);
+      const total = words.join(' ').length;
+      let t = start;
+      for (let i = 0; i < words.length; i += per) {
+        const chunk = words.slice(i, i + per);
+        const d = dur * (chunk.join(' ').length + (i + per < words.length ? 1 : 0)) / total;
+        split(t, Math.min(end, t + d), chunk);
+        t += d;
+      }
+    }
+    for (const seg of segments) {
+      const words = String(seg.text || '').trim().split(/\s+/).filter(Boolean);
+      if (words.length && seg.end > seg.start) split(seg.start, seg.end, words);
+    }
+    // sem sobreposições, duração mínima legível
+    for (let i = 0; i < blocks.length; i++) {
+      const next = blocks[i + 1];
+      if (next && blocks[i].end > next.start - 0.05) blocks[i].end = Math.max(blocks[i].start + 0.3, next.start - 0.05);
+      if (blocks[i].end - blocks[i].start < 0.5 && (!next || next.start - blocks[i].start >= 0.55)) blocks[i].end = blocks[i].start + 0.5;
+    }
+    // quebra linhas longas (máx. ~42 caracteres por linha, 2 linhas)
+    const wrap = t => { if (t.length <= 42) return t; const w = t.split(' '); let best = 1, diff = Infinity;
+      for (let k = 1; k < w.length; k++) { const d = Math.abs(w.slice(0, k).join(' ').length - w.slice(k).join(' ').length); if (d < diff) { diff = d; best = k; } }
+      return w.slice(0, best).join(' ') + '\n' + w.slice(best).join(' '); };
+    return blocks
+      .map((b, i) => `${i + 1}\n${toSRTTime(b.start)} --> ${toSRTTime(b.end)}\n${wrap(b.text)}`)
+      .join('\n\n') + '\n';
+  }
+
+
+  goBtn.addEventListener('click', async () => {
+    if (!audioFile) return;
+
+    const apiKey = document.getElementById('apiKey').value.trim();
+    if (!apiKey || !apiKey.startsWith('gsk_')) {
+      alert('Introduz uma Groq API key válida (começa com gsk_). Podes guardá-la no hub → ⚙ Chaves de API.');
+      return;
+    }
+
+    goBtn.disabled = true;
+    document.getElementById('resultWrap').style.display = 'none';
+    document.getElementById('divider').style.display = 'none';
+    document.getElementById('logWrap').innerHTML = '';
+
+    const lang = document.getElementById('langSel').value;
+    const model = document.getElementById('modelSel').value;
+    const maxDur = parseFloat(document.getElementById('maxDur').value);
+
+    try {
+      setProgress(10, 'A preparar ficheiro...');
+      log('Ficheiro: ' + audioFile.name + ' (' + (audioFile.size / 1024 / 1024).toFixed(2) + ' MB)');
+      log('Modelo: ' + model + (lang ? ' · Idioma: ' + lang : ' · Auto-detectar'));
+
+      const formData = new FormData();
+      formData.append('file', audioFile, audioFile.name);
+      formData.append('model', model);
+      formData.append('response_format', 'verbose_json');
+      formData.append('timestamp_granularities[]', 'segment');
+      if (lang) formData.append('language', lang);
+
+      setProgress(25, 'A enviar para Groq Whisper...');
+      log('A enviar para api.groq.com...');
+
+      const resp = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + apiKey },
+        body: formData
+      });
+
+      setProgress(70, 'A receber transcrição...');
+
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error?.message || 'Erro HTTP ' + resp.status);
+      }
+
+      const data = await resp.json();
+      log('Transcrição recebida: ' + (data.segments?.length || 0) + ' segmentos', 'ok');
+      log('Idioma detectado: ' + (data.language || 'n/a'), 'ok');
+
+      if (!data.segments || data.segments.length === 0) {
+        throw new Error('Nenhum segmento encontrado. Verifica se o áudio contém fala.');
+      }
+
+      setProgress(88, 'A construir SRT...');
+      srtContent = buildSRT(data.segments, maxDur);
+
+      const blockCount = (srtContent.match(/^\d+$/gm) || []).length;
+      const lastSeg = data.segments[data.segments.length - 1];
+      const totalSec = lastSeg?.end || 0;
+      const mm = Math.floor(totalSec / 60);
+      const ss = Math.floor(totalSec % 60);
+
+      log('SRT construído: ' + blockCount + ' legendas · duração ' + mm + ':' + String(ss).padStart(2,'0'), 'ok');
+      setProgress(100, 'Concluído!');
+
+      // Render result
+      document.getElementById('statsEl').innerHTML = `
+        <div class="stat"><div class="stat-label">Legendas</div><div class="stat-val">${blockCount}</div></div>
+        <div class="stat"><div class="stat-label">Segmentos</div><div class="stat-val">${data.segments.length}</div></div>
+        <div class="stat"><div class="stat-label">Duração</div><div class="stat-val">${mm}:${String(ss).padStart(2,'0')}</div></div>
+        <div class="stat"><div class="stat-label">Idioma</div><div class="stat-val">${data.language || '—'}</div></div>
+      `;
+
+      document.getElementById('srtPreview').textContent =
+        srtContent.length > 3000 ? srtContent.substring(0, 3000) + '\n\n... (descarrega para ver completo)' : srtContent;
+
+      document.getElementById('divider').style.display = 'block';
+      document.getElementById('resultWrap').style.display = 'block';
+
+    } catch (err) {
+      log('ERRO: ' + err.message, 'err');
+      if (err.message.includes('fetch')) {
+        log('Verifica a ligação à internet e tenta novamente.', 'warn');
+      }
+      setProgress(0, 'Erro na transcrição');
+      console.error(err);
+    } finally {
+      goBtn.disabled = false;
+    }
+  });
+
+  function copySRT() {
+    navigator.clipboard.writeText(srtContent).then(() => log('SRT copiado para clipboard!', 'ok'));
+  }
+
+  function downloadSRT() {
+    const blob = new Blob([srtContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = baseName + '.srt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    log('Ficheiro descarregado: ' + baseName + '.srt', 'ok');
+  }
+</script>
+<script>
+(function(){const el=document.getElementById('apiKey');if(el&&!el.value)el.value=TM.getKey('groq');el&&el.addEventListener('change',()=>TM.setKey('groq',el.value));})();
+</script>
+</body>
+</html>

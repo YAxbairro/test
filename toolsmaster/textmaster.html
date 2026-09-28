@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Master — Tools Master</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06060a;--surface:#0d0d14;--surface2:#13131e;--surface3:#1a1a28;
+  --border:#1a1a28;--border2:#242436;--border3:#323248;
+  --text:#ebebeb;--text2:#6b6b8a;--text3:#3a3a55;
+  --accent:#f59e0b;--accent-dim:rgba(245,158,11,0.1);--accent-text:#000;
+  --success:#4ade80;--error:#f87171;
+  --r:12px;--rs:7px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.app{display:flex;flex:1}
+
+/* SIDEBAR */
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.brand{padding:1.2rem 1.2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#ef4444);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;flex-shrink:0}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.brand-parent{font-size:10px;color:var(--text3);margin-top:1px}
+.nav-sec{padding:.65rem 1.1rem .2rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:.55rem 1.2rem;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+.nav-icon{font-size:14px;width:16px;text-align:center;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:.9rem 1.2rem;border-top:1px solid var(--border);font-size:10px;color:var(--text3);line-height:1.7}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:2rem;max-width:960px}
+@media(max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.main{padding:1rem}}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.page-sub{font-size:12px;color:var(--text2)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:.75rem}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+input[type=text],select,textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:9px 11px;width:100%;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+textarea{resize:vertical;line-height:1.6}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:500px){.row2{grid-template-columns:1fr}}
+
+/* TEXT AREAS */
+.text-io{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:.75rem}
+@media(max-width:640px){.text-io{grid-template-columns:1fr}}
+.text-box{display:flex;flex-direction:column;gap:6px}
+.text-box-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.text-box-label span{font-size:10px;color:var(--text3);text-transform:none;letter-spacing:0}
+.text-area{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;padding:12px;width:100%;outline:none;transition:border-color .2s;font-family:inherit;resize:vertical;line-height:1.7;min-height:200px}
+.text-area:focus{border-color:var(--accent)}
+.text-area::placeholder{color:var(--text3)}
+.text-area.output{background:var(--surface3);cursor:default;border-style:dashed}
+.text-area.loading-state{opacity:.5}
+
+/* BTNS */
+.btn{height:40px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s,transform .1s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 18px}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-text)}
+.btn-outline{background:transparent;border:1px solid var(--border3);color:var(--text2)}
+.btn-outline:hover{color:var(--text)}
+.btn-full{width:100%;height:46px;font-size:14px;margin-top:.75rem}
+.btn-sm{height:30px;font-size:11px;padding:0 12px;border-radius:var(--rs)}
+
+/* ACTION ROW */
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:.5rem}
+
+/* STATUS */
+.status{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none;line-height:1.5}
+.status.ok{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.status.err{background:rgba(248,113,113,.1);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.status.loading{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+
+/* TOOL GRID */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .2s}
+.tool-card:hover{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-2px)}
+.tc-icon{font-size:26px;margin-bottom:8px}
+.tc-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.tc-desc{font-size:11px;color:var(--text2);line-height:1.4}
+
+/* CHAR COUNT */
+.char-count{font-size:10px;color:var(--text3)}
+
+/* TONE GRID */
+.tone-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem}
+.tone-btn{padding:5px 12px;border-radius:99px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:11px;font-weight:500;transition:all .15s;font-family:inherit}
+.tone-btn:hover{border-color:var(--border3);color:var(--text)}
+.tone-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+
+/* TEMPLATE CARDS */
+.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:.75rem}
+.tmpl-card{background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--rs);padding:10px 12px;cursor:pointer;transition:all .15s}
+.tmpl-card:hover{border-color:var(--accent);background:var(--accent-dim)}
+.tmpl-card.active{border-color:var(--accent);background:var(--accent-dim)}
+.tmpl-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.tmpl-desc{font-size:10px;color:var(--text2)}
+
+/* COPY BTN */
+.copy-btn{height:28px;padding:0 12px;font-size:11px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s}
+.copy-btn:hover{color:var(--text);border-color:var(--border3)}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">Tx</div>
+    <div>
+      <div class="brand-name">Text Master</div>
+      <div class="brand-parent">Tools Master</div>
+    </div>
+  </div>
+
+  <div class="nav-sec">Início</div>
+  <div class="nav-item active" onclick="nav('home',this)"><span class="nav-icon">⊞</span> Todas as ferramentas</div>
+
+  <div class="nav-sec">Escrever</div>
+  <div class="nav-item" onclick="nav('rewrite',this)"><span class="nav-icon">✦</span> Reescrever texto</div>
+  <div class="nav-item" onclick="nav('improve',this)"><span class="nav-icon">⬆</span> Melhorar escrita</div>
+  <div class="nav-item" onclick="nav('email',this)"><span class="nav-icon">✉</span> Gerar email</div>
+  <div class="nav-item" onclick="nav('post',this)"><span class="nav-icon">📱</span> Post para redes sociais</div>
+  <div class="nav-item" onclick="nav('bio',this)"><span class="nav-icon">👤</span> Gerar bio</div>
+  <div class="nav-item" onclick="nav('subject',this)"><span class="nav-icon">⚡</span> Linha de assunto</div>
+
+  <div class="nav-sec">Analisar</div>
+  <div class="nav-item" onclick="nav('summarize',this)"><span class="nav-icon">◎</span> Resumir texto</div>
+  <div class="nav-item" onclick="nav('correct',this)"><span class="nav-icon">✓</span> Corrigir texto</div>
+  <div class="nav-item" onclick="nav('tone',this)"><span class="nav-icon">🎚</span> Mudar tom</div>
+  <div class="nav-item" onclick="nav('translate',this)"><span class="nav-icon">🌐</span> Traduzir</div>
+
+  <div class="nav-sec">Gerar</div>
+  <div class="nav-item" onclick="nav('hashtags',this)"><span class="nav-icon">#</span> Gerar hashtags</div>
+  <div class="nav-item" onclick="nav('cta',this)"><span class="nav-icon">→</span> Calls-to-action</div>
+  <div class="nav-item" onclick="nav('script',this)"><span class="nav-icon">🎬</span> Script de vídeo</div>
+  <div class="nav-item" onclick="nav('ideas',this)"><span class="nav-icon">💡</span> Gerar ideias</div>
+
+  <div class="sidebar-footer">Text Master v1.0<br>Tools Master · Eagle Marketing</div>
+</div>
+
+<div class="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="page-header"><div class="page-title">Text Master</div><div class="page-sub">Escreve, melhora e gera textos profissionais com IA</div></div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="nav('rewrite',null)"><div class="tc-icon">✦</div><div class="tc-name">Reescrever</div><div class="tc-desc">Transforma texto informal em profissional</div></div>
+    <div class="tool-card" onclick="nav('improve',null)"><div class="tc-icon">⬆</div><div class="tc-name">Melhorar escrita</div><div class="tc-desc">Corrige e melhora qualquer texto</div></div>
+    <div class="tool-card" onclick="nav('email',null)"><div class="tc-icon">✉</div><div class="tc-name">Gerar email</div><div class="tc-desc">Emails profissionais em segundos</div></div>
+    <div class="tool-card" onclick="nav('post',null)"><div class="tc-icon">📱</div><div class="tc-name">Post social</div><div class="tc-desc">Instagram, LinkedIn, Facebook, X</div></div>
+    <div class="tool-card" onclick="nav('bio',null)"><div class="tc-icon">👤</div><div class="tc-name">Gerar bio</div><div class="tc-desc">Bio profissional para qualquer plataforma</div></div>
+    <div class="tool-card" onclick="nav('subject',null)"><div class="tc-icon">⚡</div><div class="tc-name">Linha de assunto</div><div class="tc-desc">Assuntos de email que abrem</div></div>
+    <div class="tool-card" onclick="nav('summarize',null)"><div class="tc-icon">◎</div><div class="tc-name">Resumir</div><div class="tc-desc">Resume textos longos em segundos</div></div>
+    <div class="tool-card" onclick="nav('correct',null)"><div class="tc-icon">✓</div><div class="tc-name">Corrigir</div><div class="tc-desc">Corrige gramática e ortografia</div></div>
+    <div class="tool-card" onclick="nav('tone',null)"><div class="tc-icon">🎚</div><div class="tc-name">Mudar tom</div><div class="tc-desc">Formal, casual, persuasivo...</div></div>
+    <div class="tool-card" onclick="nav('translate',null)"><div class="tc-icon">🌐</div><div class="tc-name">Traduzir</div><div class="tc-desc">PT, EN, FR, ES, Crioulo CV</div></div>
+    <div class="tool-card" onclick="nav('hashtags',null)"><div class="tc-icon">#</div><div class="tc-name">Hashtags</div><div class="tc-desc">Hashtags relevantes para qualquer nicho</div></div>
+    <div class="tool-card" onclick="nav('cta',null)"><div class="tc-icon">→</div><div class="tc-name">Calls-to-action</div><div class="tc-desc">CTAs que convertem</div></div>
+    <div class="tool-card" onclick="nav('script',null)"><div class="tc-icon">🎬</div><div class="tc-name">Script de vídeo</div><div class="tc-desc">Scripts para Reels, YouTube, TikTok</div></div>
+    <div class="tool-card" onclick="nav('ideas',null)"><div class="tc-icon">💡</div><div class="tc-name">Gerar ideias</div><div class="tc-desc">Ideias de conteúdo para qualquer tema</div></div>
+  </div>
+</div>
+
+<!-- REWRITE -->
+<div class="page" id="page-rewrite">
+  <div class="page-header"><div class="page-title">✦ Reescrever texto</div><div class="page-sub">Transforma qualquer texto mantendo o significado</div></div>
+  <div class="card">
+    <div class="card-title">Tom</div>
+    <div class="tone-grid" id="rewrite-tones">
+      <button class="tone-btn active" onclick="setTone('rewrite','Profissional',this)">Profissional</button>
+      <button class="tone-btn" onclick="setTone('rewrite','Casual',this)">Casual</button>
+      <button class="tone-btn" onclick="setTone('rewrite','Formal',this)">Formal</button>
+      <button class="tone-btn" onclick="setTone('rewrite','Criativo',this)">Criativo</button>
+      <button class="tone-btn" onclick="setTone('rewrite','Persuasivo',this)">Persuasivo</button>
+      <button class="tone-btn" onclick="setTone('rewrite','Simples',this)">Simples</button>
+    </div>
+    <div class="text-io">
+      <div class="text-box">
+        <div class="text-box-label">Texto original <span id="rw-in-count">0 caracteres</span></div>
+        <textarea class="text-area" id="rw-input" placeholder="Cola o texto que queres reescrever..." oninput="countChars('rw-input','rw-in-count')"></textarea>
+      </div>
+      <div class="text-box">
+        <div class="text-box-label">Resultado <button class="copy-btn" onclick="copyText('rw-output')">⎘ Copiar</button></div>
+        <textarea class="text-area output" id="rw-output" placeholder="O texto reescrito vai aparecer aqui..." readonly></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doAI('rewrite')">✦ Reescrever</button>
+    <div class="status" id="rw-status"></div>
+  </div>
+</div>
+
+<!-- IMPROVE -->
+<div class="page" id="page-improve">
+  <div class="page-header"><div class="page-title">⬆ Melhorar escrita</div><div class="page-sub">Aprimora o texto mantendo a tua voz</div></div>
+  <div class="card">
+    <div class="text-io">
+      <div class="text-box">
+        <div class="text-box-label">Texto a melhorar <span id="imp-in-count">0 caracteres</span></div>
+        <textarea class="text-area" id="imp-input" placeholder="Cola o texto que queres melhorar..." oninput="countChars('imp-input','imp-in-count')"></textarea>
+      </div>
+      <div class="text-box">
+        <div class="text-box-label">Texto melhorado <button class="copy-btn" onclick="copyText('imp-output')">⎘ Copiar</button></div>
+        <textarea class="text-area output" id="imp-output" placeholder="Versão melhorada aparece aqui..." readonly></textarea>
+      </div>
+    </div>
+    <div class="field"><label>O que melhorar</label>
+      <select id="imp-focus">
+        <option value="geral">Tudo — gramática, estilo e clareza</option>
+        <option value="clareza">Clareza e objectividade</option>
+        <option value="fluidez">Fluidez e ritmo</option>
+        <option value="vocabulario">Vocabulário e palavra certa</option>
+        <option value="estrutura">Estrutura e organização</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doAI('improve')">⬆ Melhorar</button>
+    <div class="status" id="imp-status"></div>
+  </div>
+</div>
+
+<!-- EMAIL -->
+<div class="page" id="page-email">
+  <div class="page-header"><div class="page-title">✉ Gerar email</div><div class="page-sub">Emails profissionais a partir de uma descrição simples</div></div>
+  <div class="card">
+    <div class="template-grid" id="email-templates">
+      <div class="tmpl-card active" id="etmpl-profissional" onclick="setEmailTmpl('profissional')"><div class="tmpl-name">Profissional</div><div class="tmpl-desc">Tom formal para negócios</div></div>
+      <div class="tmpl-card" id="etmpl-followup" onclick="setEmailTmpl('followup')"><div class="tmpl-name">Follow-up</div><div class="tmpl-desc">Acompanhamento após reunião</div></div>
+      <div class="tmpl-card" id="etmpl-proposta" onclick="setEmailTmpl('proposta')"><div class="tmpl-name">Proposta</div><div class="tmpl-desc">Apresentar serviço ou produto</div></div>
+      <div class="tmpl-card" id="etmpl-agradecimento" onclick="setEmailTmpl('agradecimento')"><div class="tmpl-name">Agradecimento</div><div class="tmpl-desc">Agradecer cliente ou parceiro</div></div>
+      <div class="tmpl-card" id="etmpl-desculpa" onclick="setEmailTmpl('desculpa')"><div class="tmpl-name">Pedido de desculpa</div><div class="tmpl-desc">Resolver situação delicada</div></div>
+      <div class="tmpl-card" id="etmpl-livre" onclick="setEmailTmpl('livre')"><div class="tmpl-name">Livre</div><div class="tmpl-desc">Descreve tu mesmo</div></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Para quem</label><input type="text" id="email-to" placeholder="Cliente, fornecedor, parceiro..."></div>
+      <div class="field"><label>Assunto / objectivo</label><input type="text" id="email-about" placeholder="O que queres comunicar?"></div>
+    </div>
+    <div class="field"><label>Detalhes adicionais (opcional)</label><textarea id="email-details" placeholder="Contexto extra, pontos a mencionar..." style="min-height:80px"></textarea></div>
+    <div class="field"><label>Email gerado</label><textarea class="text-area output" id="email-output" placeholder="O email vai aparecer aqui..." readonly style="min-height:220px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('email')">✉ Gerar email</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('email-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="email-status"></div>
+  </div>
+</div>
+
+<!-- POST -->
+<div class="page" id="page-post">
+  <div class="page-header"><div class="page-title">📱 Post para redes sociais</div><div class="page-sub">Cria posts optimizados para cada plataforma</div></div>
+  <div class="card">
+    <div class="tone-grid" id="post-networks">
+      <button class="tone-btn active" onclick="setTone('post','Instagram',this)">📸 Instagram</button>
+      <button class="tone-btn" onclick="setTone('post','LinkedIn',this)">💼 LinkedIn</button>
+      <button class="tone-btn" onclick="setTone('post','Facebook',this)">👥 Facebook</button>
+      <button class="tone-btn" onclick="setTone('post','Twitter/X',this)">✦ Twitter/X</button>
+      <button class="tone-btn" onclick="setTone('post','TikTok',this)">♪ TikTok</button>
+    </div>
+    <div class="field"><label>Tema / produto / serviço</label><input type="text" id="post-topic" placeholder="O que queres comunicar?"></div>
+    <div class="row2">
+      <div class="field"><label>Tom</label>
+        <select id="post-tone"><option>Profissional</option><option>Casual</option><option>Divertido</option><option>Inspiracional</option><option>Urgente</option></select>
+      </div>
+      <div class="field"><label>Incluir emojis?</label>
+        <select id="post-emoji"><option value="sim">Sim</option><option value="nao">Não</option><option value="poucos">Poucos</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Post gerado</label><textarea class="text-area output" id="post-output" placeholder="O post vai aparecer aqui..." readonly style="min-height:160px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('post')">📱 Gerar post</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('post-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="post-status"></div>
+  </div>
+</div>
+
+<!-- BIO -->
+<div class="page" id="page-bio">
+  <div class="page-header"><div class="page-title">👤 Gerar bio</div><div class="page-sub">Bio profissional para Instagram, LinkedIn, site...</div></div>
+  <div class="card">
+    <div class="tone-grid">
+      <button class="tone-btn active" onclick="setTone('bio','Instagram',this)">Instagram</button>
+      <button class="tone-btn" onclick="setTone('bio','LinkedIn',this)">LinkedIn</button>
+      <button class="tone-btn" onclick="setTone('bio','Twitter/X',this)">Twitter/X</button>
+      <button class="tone-btn" onclick="setTone('bio','Site pessoal',this)">Site pessoal</button>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Nome / marca</label><input type="text" id="bio-name" placeholder="Yax · Eagle Marketing..."></div>
+      <div class="field"><label>Profissão / área</label><input type="text" id="bio-job" placeholder="Fotógrafo · Criativo · CEO..."></div>
+    </div>
+    <div class="field"><label>O que fazes / ofereces</label><textarea id="bio-what" placeholder="Descreve o que fazes, o teu diferencial..." style="min-height:80px"></textarea></div>
+    <div class="field"><label>Bio gerada</label><textarea class="text-area output" id="bio-output" placeholder="A bio vai aparecer aqui..." readonly style="min-height:120px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('bio')">👤 Gerar bio</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('bio-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="bio-status"></div>
+  </div>
+</div>
+
+<!-- SUBJECT LINE -->
+<div class="page" id="page-subject">
+  <div class="page-header"><div class="page-title">⚡ Linha de assunto de email</div><div class="page-sub">Assuntos que aumentam a taxa de abertura</div></div>
+  <div class="card">
+    <div class="field"><label>Do que trata o email</label><textarea id="sub-topic" placeholder="Ex: promoção de 30% para novos clientes, lançamento de produto, convite para evento..." style="min-height:80px"></textarea></div>
+    <div class="field"><label>Resultado — 5 opções</label><textarea class="text-area output" id="sub-output" placeholder="As linhas de assunto vão aparecer aqui..." readonly style="min-height:150px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('subject')">⚡ Gerar assuntos</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('sub-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="sub-status"></div>
+  </div>
+</div>
+
+<!-- SUMMARIZE -->
+<div class="page" id="page-summarize">
+  <div class="page-header"><div class="page-title">◎ Resumir texto</div><div class="page-sub">Resume qualquer texto em pontos claros</div></div>
+  <div class="card">
+    <div class="field"><label>Formato do resumo</label>
+      <select id="sum-format">
+        <option value="bullet">Pontos principais (bullet points)</option>
+        <option value="paragrafo">Parágrafo curto</option>
+        <option value="tldr">TL;DR — uma frase</option>
+        <option value="executivo">Resumo executivo</option>
+      </select>
+    </div>
+    <div class="text-io">
+      <div class="text-box">
+        <div class="text-box-label">Texto original <span id="sum-in-count">0 caracteres</span></div>
+        <textarea class="text-area" id="sum-input" placeholder="Cola o texto que queres resumir..." oninput="countChars('sum-input','sum-in-count')"></textarea>
+      </div>
+      <div class="text-box">
+        <div class="text-box-label">Resumo <button class="copy-btn" onclick="copyText('sum-output')">⎘ Copiar</button></div>
+        <textarea class="text-area output" id="sum-output" placeholder="O resumo vai aparecer aqui..." readonly></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doAI('summarize')">◎ Resumir</button>
+    <div class="status" id="sum-status"></div>
+  </div>
+</div>
+
+<!-- CORRECT -->
+<div class="page" id="page-correct">
+  <div class="page-header"><div class="page-title">✓ Corrigir texto</div><div class="page-sub">Corrige gramática, ortografia e pontuação</div></div>
+  <div class="card">
+    <div class="text-io">
+      <div class="text-box">
+        <div class="text-box-label">Texto com erros <span id="cor-in-count">0 caracteres</span></div>
+        <textarea class="text-area" id="cor-input" placeholder="Cola o texto para corrigir..." oninput="countChars('cor-input','cor-in-count')"></textarea>
+      </div>
+      <div class="text-box">
+        <div class="text-box-label">Texto corrigido <button class="copy-btn" onclick="copyText('cor-output')">⎘ Copiar</button></div>
+        <textarea class="text-area output" id="cor-output" placeholder="Versão corrigida aparece aqui..." readonly></textarea>
+      </div>
+    </div>
+    <div class="field"><label>Variante do português</label>
+      <select id="cor-lang">
+        <option value="pt-PT">Português Europeu (Portugal)</option>
+        <option value="pt-CV">Português Cabo Verde</option>
+        <option value="pt-BR">Português do Brasil</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doAI('correct')">✓ Corrigir</button>
+    <div class="status" id="cor-status"></div>
+  </div>
+</div>
+
+<!-- TONE -->
+<div class="page" id="page-tone">
+  <div class="page-header"><div class="page-title">🎚 Mudar tom do texto</div><div class="page-sub">O mesmo conteúdo, um tom diferente</div></div>
+  <div class="card">
+    <div class="card-title">Tom pretendido</div>
+    <div class="tone-grid" id="tone-tones">
+      <button class="tone-btn active" onclick="setTone('tone','Formal',this)">Formal</button>
+      <button class="tone-btn" onclick="setTone('tone','Casual',this)">Casual</button>
+      <button class="tone-btn" onclick="setTone('tone','Persuasivo',this)">Persuasivo</button>
+      <button class="tone-btn" onclick="setTone('tone','Empático',this)">Empático</button>
+      <button class="tone-btn" onclick="setTone('tone','Confiante',this)">Confiante</button>
+      <button class="tone-btn" onclick="setTone('tone','Urgente',this)">Urgente</button>
+      <button class="tone-btn" onclick="setTone('tone','Humorístico',this)">Humorístico</button>
+      <button class="tone-btn" onclick="setTone('tone','Inspiracional',this)">Inspiracional</button>
+    </div>
+    <div class="text-io">
+      <div class="text-box">
+        <div class="text-box-label">Texto original <span id="tone-in-count">0 caracteres</span></div>
+        <textarea class="text-area" id="tone-input" placeholder="Cola o texto..." oninput="countChars('tone-input','tone-in-count')"></textarea>
+      </div>
+      <div class="text-box">
+        <div class="text-box-label">Novo tom <button class="copy-btn" onclick="copyText('tone-output')">⎘ Copiar</button></div>
+        <textarea class="text-area output" id="tone-output" placeholder="Resultado aqui..." readonly></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doAI('tone')">🎚 Mudar tom</button>
+    <div class="status" id="tone-status"></div>
+  </div>
+</div>
+
+<!-- TRANSLATE -->
+<div class="page" id="page-translate">
+  <div class="page-header"><div class="page-title">🌐 Traduzir texto</div><div class="page-sub">Traduz mantendo o tom e o contexto</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>De</label>
+        <select id="trans-from">
+          <option value="auto">Detectar automaticamente</option>
+          <option value="pt">Português</option>
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="es">Español</option>
+          <option value="cv">Crioulo Cabo-verdiano</option>
+        </select>
+      </div>
+      <div class="field"><label>Para</label>
+        <select id="trans-to">
+          <option value="en">English</option>
+          <option value="pt">Português</option>
+          <option value="fr">Français</option>
+          <option value="es">Español</option>
+          <option value="cv">Crioulo Cabo-verdiano</option>
+        </select>
+      </div>
+    </div>
+    <div class="text-io">
+      <div class="text-box">
+        <div class="text-box-label">Texto original <span id="tr-in-count">0 caracteres</span></div>
+        <textarea class="text-area" id="tr-input" placeholder="Cola o texto para traduzir..." oninput="countChars('tr-input','tr-in-count')"></textarea>
+      </div>
+      <div class="text-box">
+        <div class="text-box-label">Tradução <button class="copy-btn" onclick="copyText('tr-output')">⎘ Copiar</button></div>
+        <textarea class="text-area output" id="tr-output" placeholder="Tradução aparece aqui..." readonly></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doAI('translate')">🌐 Traduzir</button>
+    <div class="status" id="tr-status"></div>
+  </div>
+</div>
+
+<!-- HASHTAGS -->
+<div class="page" id="page-hashtags">
+  <div class="page-header"><div class="page-title"># Gerar hashtags</div><div class="page-sub">Hashtags relevantes para aumentar o alcance</div></div>
+  <div class="card">
+    <div class="field"><label>Tema / nicho / post</label><textarea id="hash-input" placeholder="Descreve o tema do teu post ou cola o texto..." style="min-height:100px"></textarea></div>
+    <div class="row2">
+      <div class="field"><label>Rede social</label>
+        <select id="hash-net"><option>Instagram</option><option>TikTok</option><option>LinkedIn</option><option>Twitter/X</option><option>Facebook</option></select>
+      </div>
+      <div class="field"><label>Quantidade</label>
+        <select id="hash-qty"><option value="10">10 hashtags</option><option value="20" selected>20 hashtags</option><option value="30">30 hashtags</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Hashtags geradas</label><textarea class="text-area output" id="hash-output" placeholder="As hashtags vão aparecer aqui..." readonly style="min-height:120px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('hashtags')"># Gerar hashtags</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('hash-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="hash-status"></div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="page" id="page-cta">
+  <div class="page-header"><div class="page-title">→ Calls-to-action</div><div class="page-sub">CTAs que levam o utilizador a agir</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>Produto / serviço</label><input type="text" id="cta-product" placeholder="App, serviço, produto..."></div>
+      <div class="field"><label>Objectivo</label>
+        <select id="cta-goal"><option>Comprar agora</option><option>Subscrever</option><option>Contactar</option><option>Descarregar</option><option>Saber mais</option><option>Registar</option></select>
+      </div>
+    </div>
+    <div class="field"><label>5 CTAs gerados</label><textarea class="text-area output" id="cta-output" placeholder="Os CTAs vão aparecer aqui..." readonly style="min-height:150px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('cta')">→ Gerar CTAs</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('cta-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="cta-status"></div>
+  </div>
+</div>
+
+<!-- SCRIPT -->
+<div class="page" id="page-script">
+  <div class="page-header"><div class="page-title">🎬 Script de vídeo</div><div class="page-sub">Scripts prontos para gravar — Reels, YouTube, TikTok</div></div>
+  <div class="card">
+    <div class="tone-grid">
+      <button class="tone-btn active" onclick="setTone('script','Reels / TikTok (30-60s)',this)">Reels / TikTok</button>
+      <button class="tone-btn" onclick="setTone('script','YouTube (3-5min)',this)">YouTube</button>
+      <button class="tone-btn" onclick="setTone('script','Publicidade (15s)',this)">Publicidade 15s</button>
+      <button class="tone-btn" onclick="setTone('script','Apresentação (2min)',this)">Apresentação</button>
+    </div>
+    <div class="field"><label>Tema do vídeo</label><textarea id="script-topic" placeholder="O que vai ser o vídeo? Ex: apresentar os serviços da Eagle Marketing, dicas de fotografia, promoção de produto..." style="min-height:80px"></textarea></div>
+    <div class="field"><label>Script gerado</label><textarea class="text-area output" id="script-output" placeholder="O script vai aparecer aqui, pronto para gravar..." readonly style="min-height:250px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('script')">🎬 Gerar script</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('script-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="script-status"></div>
+  </div>
+</div>
+
+<!-- IDEAS -->
+<div class="page" id="page-ideas">
+  <div class="page-header"><div class="page-title">💡 Gerar ideias de conteúdo</div><div class="page-sub">10 ideias prontas para criar</div></div>
+  <div class="card">
+    <div class="row2">
+      <div class="field"><label>Nicho / área</label><input type="text" id="ideas-niche" placeholder="Fotografia, restaurante, moda, tecnologia..."></div>
+      <div class="field"><label>Plataforma</label>
+        <select id="ideas-platform"><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>LinkedIn</option><option>Blog</option><option>Todas</option></select>
+      </div>
+    </div>
+    <div class="field"><label>10 ideias geradas</label><textarea class="text-area output" id="ideas-output" placeholder="As ideias vão aparecer aqui..." readonly style="min-height:280px"></textarea></div>
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1;height:44px" onclick="doAI('ideas')">💡 Gerar ideias</button>
+      <button class="btn btn-outline" style="height:44px" onclick="copyText('ideas-output')">⎘ Copiar</button>
+    </div>
+    <div class="status" id="ideas-status"></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script src="tm-core.js"></script>
+<script>
+// NAV
+function nav(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active');});
+}
+
+// HELPERS
+function st(id,msg,type='loading'){const el=document.getElementById(id+'-status');if(!el)return;el.style.display='block';el.className='status '+type;el.textContent=msg;}
+function countChars(inId,outId){const el=document.getElementById(outId);if(el)el.textContent=document.getElementById(inId).value.length+' caracteres';}
+function copyText(id){const el=document.getElementById(id);if(!el||!el.value)return;navigator.clipboard.writeText(el.value).then(()=>{const btn=event.target;const orig=btn.textContent;btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent=orig,1500);});}
+
+// TONE / TEMPLATE SELECTORS
+let tones = {};
+function setTone(tool,val,btn){
+  tones[tool]=val;
+  const parent=btn.parentElement;
+  parent.querySelectorAll('.tone-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+tones.rewrite='Profissional';tones.post='Instagram';tones.bio='Instagram';tones.tone='Formal';tones.script='Reels / TikTok (30-60s)';
+
+let emailTmpl='profissional';
+function setEmailTmpl(t){
+  emailTmpl=t;
+  document.querySelectorAll('#email-templates .tmpl-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('etmpl-'+t)?.classList.add('active');
+}
+
+// AI ENGINE
+const API_KEY = ''; // To be connected to Tools Master backend
+
+function getPrompt(tool) {
+  switch(tool) {
+    case 'rewrite': {
+      const text=document.getElementById('rw-input').value.trim();
+      const tone=tones.rewrite||'Profissional';
+      if(!text)return null;
+      return {prompt:`Reescreve o seguinte texto com tom ${tone}, mantendo o significado original. Responde apenas com o texto reescrito, sem explicações:\n\n${text}`, outId:'rw-output', statusId:'rw'};
+    }
+    case 'improve': {
+      const text=document.getElementById('imp-input').value.trim();
+      const focus=document.getElementById('imp-focus').value;
+      if(!text)return null;
+      return {prompt:`Melhora o seguinte texto focando em ${focus}. Mantém a voz original. Responde apenas com o texto melhorado:\n\n${text}`, outId:'imp-output', statusId:'imp'};
+    }
+    case 'email': {
+      const to=document.getElementById('email-to').value.trim();
+      const about=document.getElementById('email-about').value.trim();
+      const details=document.getElementById('email-details').value.trim();
+      if(!about)return null;
+      return {prompt:`Escreve um email profissional em português.\nDe: Eagle Marketing\nPara: ${to||'destinatário'}\nTipo: ${emailTmpl}\nAssunto/objectivo: ${about}\n${details?'Detalhes: '+details:''}\n\nEscreve o email completo com assunto, saudação, corpo e despedida. Responde apenas com o email.`, outId:'email-output', statusId:'email'};
+    }
+    case 'post': {
+      const topic=document.getElementById('post-topic').value.trim();
+      const net=tones.post||'Instagram';
+      const tone=document.getElementById('post-tone').value;
+      const emoji=document.getElementById('post-emoji').value;
+      if(!topic)return null;
+      return {prompt:`Escreve um post para ${net} sobre: ${topic}\nTom: ${tone}\nEmojis: ${emoji}\n\nEscreve o post optimizado para ${net}, com o comprimento e formato ideal para a plataforma. Responde apenas com o post.`, outId:'post-output', statusId:'post'};
+    }
+    case 'bio': {
+      const name=document.getElementById('bio-name').value.trim();
+      const job=document.getElementById('bio-job').value.trim();
+      const what=document.getElementById('bio-what').value.trim();
+      const platform=tones.bio||'Instagram';
+      if(!job)return null;
+      return {prompt:`Escreve uma bio profissional para ${platform}.\nNome/marca: ${name}\nProfissão: ${job}\nO que faz: ${what}\n\nAdapta o comprimento e estilo para ${platform}. Responde apenas com a bio.`, outId:'bio-output', statusId:'bio'};
+    }
+    case 'subject': {
+      const topic=document.getElementById('sub-topic').value.trim();
+      if(!topic)return null;
+      return {prompt:`Cria 5 linhas de assunto de email diferentes e criativas para: ${topic}\n\nCada uma deve ter um estilo diferente (curiosidade, urgência, benefício, pergunta, personalização). Apresenta numeradas 1 a 5.`, outId:'sub-output', statusId:'sub'};
+    }
+    case 'summarize': {
+      const text=document.getElementById('sum-input').value.trim();
+      const fmt=document.getElementById('sum-format').value;
+      if(!text)return null;
+      const fmtMap={bullet:'em pontos principais (bullet points)',paragrafo:'num parágrafo curto',tldr:'numa única frase (TL;DR)',executivo:'como resumo executivo estruturado'};
+      return {prompt:`Resume o seguinte texto ${fmtMap[fmt]}. Responde apenas com o resumo:\n\n${text}`, outId:'sum-output', statusId:'sum'};
+    }
+    case 'correct': {
+      const text=document.getElementById('cor-input').value.trim();
+      const lang=document.getElementById('cor-lang').value;
+      if(!text)return null;
+      return {prompt:`Corrige a gramática, ortografia e pontuação do seguinte texto em ${lang}, mantendo o estilo e a voz originais. Responde apenas com o texto corrigido:\n\n${text}`, outId:'cor-output', statusId:'cor'};
+    }
+    case 'tone': {
+      const text=document.getElementById('tone-input').value.trim();
+      const tone=tones.tone||'Formal';
+      if(!text)return null;
+      return {prompt:`Reescreve o seguinte texto com tom ${tone}, mantendo o conteúdo e significado. Responde apenas com o texto:\n\n${text}`, outId:'tone-output', statusId:'tone'};
+    }
+    case 'translate': {
+      const text=document.getElementById('tr-input').value.trim();
+      const from=document.getElementById('trans-from').value;
+      const to=document.getElementById('trans-to').value;
+      if(!text)return null;
+      const langMap={auto:'detectado automaticamente',pt:'Português',en:'Inglês',fr:'Francês',es:'Espanhol',cv:'Crioulo Cabo-verdiano'};
+      return {prompt:`Traduz o seguinte texto de ${langMap[from]} para ${langMap[to]}, mantendo o tom e o contexto. Responde apenas com a tradução:\n\n${text}`, outId:'tr-output', statusId:'tr'};
+    }
+    case 'hashtags': {
+      const text=document.getElementById('hash-input').value.trim();
+      const net=document.getElementById('hash-net').value;
+      const qty=document.getElementById('hash-qty').value;
+      if(!text)return null;
+      return {prompt:`Gera ${qty} hashtags relevantes para ${net} sobre o seguinte tema: ${text}\n\nMix de hashtags populares e de nicho. Apresenta numa linha separadas por espaços, com #.`, outId:'hash-output', statusId:'hash'};
+    }
+    case 'cta': {
+      const product=document.getElementById('cta-product').value.trim();
+      const goal=document.getElementById('cta-goal').value;
+      if(!product)return null;
+      return {prompt:`Cria 5 calls-to-action diferentes e persuasivos para: ${product}\nObjectivo: ${goal}\n\nCada CTA deve ser curto, directo e com urgência ou benefício claro. Apresenta numerados 1 a 5.`, outId:'cta-output', statusId:'cta'};
+    }
+    case 'script': {
+      const topic=document.getElementById('script-topic').value.trim();
+      const type=tones.script||'Reels / TikTok (30-60s)';
+      if(!topic)return null;
+      return {prompt:`Escreve um script de vídeo completo para ${type} sobre: ${topic}\n\nIncluir: gancho de abertura forte, desenvolvimento, call-to-action no final. Formato com indicações de cena [INTRO], [DESENVOLVIMENTO], [CTA]. Escreve apenas o script.`, outId:'script-output', statusId:'script'};
+    }
+    case 'ideas': {
+      const niche=document.getElementById('ideas-niche').value.trim();
+      const platform=document.getElementById('ideas-platform').value;
+      if(!niche)return null;
+      return {prompt:`Gera 10 ideias de conteúdo criativas e originais para ${platform} no nicho de: ${niche}\n\nCada ideia deve ser específica e accionável. Apresenta numeradas 1 a 10 com uma breve descrição de cada.`, outId:'ideas-output', statusId:'ideas'};
+    }
+    default: return null;
+  }
+}
+
+async function doAI(tool) {
+  const config = getPrompt(tool);
+  if(!config) { const el=document.querySelector('#page-'+tool+' .status'); if(el){ el.style.display='block'; el.className='status err'; el.textContent='Preenche os campos primeiro.'; } return; }
+  if(!config.prompt) { st(config.statusId,'Preenche os campos primeiro.','err'); return; }
+
+  st(config.statusId,'A gerar...','loading');
+  const outEl = document.getElementById(config.outId);
+  if(outEl) { outEl.value=''; outEl.classList.add('loading-state'); }
+
+  try {
+    const text = await TM.aiText(config.prompt);
+    if(outEl) { outEl.value = text; outEl.classList.remove('loading-state'); }
+    st(config.statusId, '✓ Gerado com sucesso!', 'ok');
+  } catch(e) {
+    if(outEl) outEl.classList.remove('loading-state');
+    st(config.statusId, '✗ ' + e.message, 'err');
+  }
+}
+</script>
+</body>
+</html>

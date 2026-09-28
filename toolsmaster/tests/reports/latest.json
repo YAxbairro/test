@@ -1,0 +1,45 @@
+{
+  "when": "2026-09-28T23:39:19.257Z",
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "results": [
+    {
+      "robot": "09-voice.mjs",
+      "tool": "Voice Master",
+      "checks": [
+        {
+          "name": "PT-PT → MP3",
+          "ok": true,
+          "detail": "3.46s",
+          "ms": 13305
+        },
+        {
+          "name": "velocidade 1,5×",
+          "ok": true,
+          "detail": "2.31s",
+          "ms": 19255
+        },
+        {
+          "name": "SSML com pausa de 2 s",
+          "ok": true,
+          "detail": "3.81s",
+          "ms": 23637
+        },
+        {
+          "name": "clonagem sem chave explica o que falta",
+          "ok": true,
+          "detail": "ok",
+          "ms": 53
+        },
+        {
+          "name": "sem erros JS",
+          "ok": true,
+          "detail": "ok",
+          "ms": 0
+        }
+      ],
+      "ms": 56473
+    }
+  ]
+}

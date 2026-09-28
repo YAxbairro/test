@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QRMaster — Gerador de QR Profissional</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--surface:#111;--surface2:#1a1a1a;--surface3:#222;
+  --border:#252525;--border2:#303030;--border3:#3a3a3a;
+  --text:#f2f2f2;--text2:#888;--text3:#4a4a4a;
+  --accent:#c8ff00;--accent2:#a8d800;--accent-dim:rgba(200,255,0,0.08);--accent-text:#080808;
+  --success:#4ade80;--error:#f87171;--warn:#fbbf24;
+  --r:10px;--rs:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+
+/* LAYOUT */
+.app{display:flex;flex:1;min-height:100vh}
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.main{flex:1;overflow-y:auto;padding:2rem;max-width:900px}
+@media(max-width:768px){.app{flex-direction:column}.sidebar{width:100%;height:auto;position:relative}.main{padding:1rem}}
+
+/* SIDEBAR */
+.brand{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:var(--accent-text);flex-shrink:0;letter-spacing:-1px}
+.brand-name{font-size:17px;font-weight:700;letter-spacing:-0.5px}
+.brand-tag{font-size:10px;color:var(--text3);margin-top:1px}
+
+.nav-section{padding:.75rem 1rem .25rem;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:.6rem 1.25rem;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;border-left:2px solid transparent;margin:1px 0}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent)}
+.nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+
+.sidebar-footer{margin-top:auto;padding:1rem 1.25rem;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
+
+/* HEADER */
+.page-header{margin-bottom:1.75rem}
+.page-title{font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text2)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.card+.card{margin-top:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+input[type=text],input[type=url],input[type=tel],input[type=email],input[type=number],textarea,select{
+  background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);
+  color:var(--text);font-size:13px;padding:9px 11px;width:100%;outline:none;
+  transition:border-color .2s;font-family:inherit;-webkit-appearance:none
+}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:75px;line-height:1.5}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:500px){.row2,.row3{grid-template-columns:1fr}}
+
+/* TYPE TABS */
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:1rem}
+.type-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:11px;transition:all .15s;font-family:inherit;text-align:center}
+.type-btn:hover{border-color:var(--border3);color:var(--text)}
+.type-btn.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.type-icon{font-size:20px}
+
+/* STYLE PICKERS */
+.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:8px}
+.style-opt{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.style-opt input[type=radio]{display:none}
+.style-preview{width:52px;height:52px;border:2px solid var(--border2);border-radius:var(--rs);background:var(--surface2);display:flex;align-items:center;justify-content:center;transition:all .15s;overflow:hidden}
+.style-opt input:checked+.style-preview,.style-preview:hover{border-color:var(--accent);background:var(--accent-dim)}
+.style-label{font-size:10px;color:var(--text2);text-align:center}
+
+/* COLOR */
+.color-row{display:flex;align-items:center;gap:8px}
+input[type=color]{width:36px;height:34px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface2);cursor:pointer;padding:2px;flex-shrink:0}
+.hex-in{flex:1;font-family:monospace;font-size:12px}
+
+/* RANGE */
+.range-row{display:flex;align-items:center;gap:10px}
+input[type=range]{flex:1;accent-color:var(--accent);height:4px;cursor:pointer}
+.range-val{font-size:12px;color:var(--text2);min-width:36px;text-align:right}
+
+/* GRADIENT */
+.grad-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grad-type{display:flex;gap:6px}
+.grad-btn{padding:5px 10px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s}
+.grad-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
+
+/* LOGO UPLOAD */
+.logo-drop{border:1.5px dashed var(--border2);border-radius:var(--rs);padding:1rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);font-size:12px;color:var(--text2)}
+.logo-drop:hover{border-color:var(--accent);background:var(--accent-dim);color:var(--text)}
+.logo-drop.has-logo{border-color:var(--success);background:rgba(74,222,128,.06);color:var(--success)}
+.logo-mode-btn{border:1.5px solid var(--border2);border-radius:var(--rs);padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);color:var(--text2)}
+.logo-mode-btn:hover{border-color:var(--border3);color:var(--text)}
+.logo-mode-btn.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+
+/* FRAME */
+.frame-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.frame-opt{cursor:pointer}
+.frame-opt input[type=radio]{display:none}
+.frame-preview{border:2px solid var(--border2);border-radius:var(--rs);padding:6px;background:var(--surface2);transition:all .15s;text-align:center;font-size:10px;color:var(--text2)}
+.frame-opt input:checked+.frame-preview{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+
+/* GENERATE BTN */
+.btn-gen{width:100%;background:var(--accent);color:var(--accent-text);border:none;border-radius:var(--rs);height:46px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:-.2px;transition:opacity .2s,transform .1s;font-family:inherit;margin-top:1rem}
+.btn-gen:hover{opacity:.88}
+.btn-gen:active{transform:scale(.99)}
+
+/* PREVIEW PANEL */
+.preview-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;position:sticky;top:1rem}
+.qr-output{background:#fff;border-radius:8px;padding:16px;display:inline-flex;min-width:180px;min-height:180px;align-items:center;justify-content:center}
+#qrcode canvas,#qrcode img{display:block}
+.qr-placeholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:#aaa;font-size:13px}
+.qr-placeholder-icon{font-size:48px;opacity:.3}
+
+.dl-btns{display:flex;gap:8px;width:100%;flex-wrap:wrap}
+.btn-dl{flex:1;min-width:70px;height:34px;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:opacity .2s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px}
+.btn-dl:hover{opacity:.82}
+.btn-png{background:var(--accent);color:var(--accent-text)}
+.btn-svg2{background:var(--surface2);color:var(--text);border:1px solid var(--border2)!important}
+.btn-cp{background:var(--surface2);color:var(--text);border:1px solid var(--border2)!important}
+
+.qr-meta{font-size:11px;color:var(--text3);text-align:center;word-break:break-all;max-width:200px;line-height:1.5}
+
+/* SPLIT LAYOUT */
+.split{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start}
+@media(max-width:900px){.split{grid-template-columns:1fr}}
+
+/* HISTORY */
+.hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-top:.75rem}
+.hist-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px;cursor:pointer;transition:border-color .15s;text-align:center}
+.hist-item:hover{border-color:var(--accent)}
+.hist-qr{width:70px;height:70px;margin:0 auto}
+.hist-label{font-size:9px;color:var(--text3);margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-time{font-size:9px;color:var(--text3);margin-top:2px}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:500}
+.badge-green{background:rgba(74,222,128,.1);color:var(--success);border:1px solid rgba(74,222,128,.2)}
+.badge-accent{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(200,255,0,.2)}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* TABS inside page */
+.inner-tabs{display:flex;gap:4px;margin-bottom:1rem;flex-wrap:wrap}
+.inner-tab{padding:6px 14px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.inner-tab:hover{color:var(--text)}
+.inner-tab.active{background:var(--surface2);border-color:var(--border3);color:var(--text)}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.toggle-label{font-size:13px;color:var(--text)}
+.toggle-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.toggle{width:38px;height:22px;background:var(--surface3);border-radius:99px;position:relative;cursor:pointer;transition:background .2s;border:1px solid var(--border2);flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:18px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* FOOTER */
+.app-footer{padding:.75rem 2rem;border-top:1px solid var(--border);font-size:11px;color:var(--text3);display:flex;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">QR</div>
+    <div>
+      <div class="brand-name">QRMaster</div>
+      <div class="brand-tag">Gerador Profissional</div>
+    </div>
+  </div>
+
+  <div class="nav-section">Criar</div>
+  <div class="nav-item active" onclick="showPage('create')"><span class="nav-icon">✦</span> Novo QR Code</div>
+  <div class="nav-item" onclick="showPage('bulk')"><span class="nav-icon">⊞</span> Batch / Múltiplos</div>
+
+  <div class="nav-section">Gestão</div>
+  <div class="nav-item" onclick="showPage('history')"><span class="nav-icon">◷</span> Histórico</div>
+  <div class="nav-item" onclick="showPage('templates')"><span class="nav-icon">◈</span> Templates</div>
+
+  <div class="sidebar-footer">
+    QRMaster v1.0<br>
+    Eagle Marketing · Afro-Berdiano Image
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PAGE: CREATE -->
+  <div class="page active" id="page-create">
+    <div class="page-header">
+      <div class="page-title">Novo QR Code</div>
+      <div class="page-sub">Cria, personaliza e exporta QR codes profissionais</div>
+    </div>
+
+    <div class="split">
+      <!-- LEFT: FORM -->
+      <div>
+
+        <!-- TYPE -->
+        <div class="card">
+          <div class="card-title">📋 Tipo de conteúdo</div>
+          <div class="type-grid">
+            <button class="type-btn active" onclick="setType('url',this)"><span class="type-icon">🔗</span>URL</button>
+            <button class="type-btn" onclick="setType('text',this)"><span class="type-icon">📝</span>Texto</button>
+            <button class="type-btn" onclick="setType('email',this)"><span class="type-icon">✉️</span>Email</button>
+            <button class="type-btn" onclick="setType('phone',this)"><span class="type-icon">📞</span>Telefone</button>
+            <button class="type-btn" onclick="setType('whatsapp',this)"><span class="type-icon">💬</span>WhatsApp</button>
+            <button class="type-btn" onclick="setType('wifi',this)"><span class="type-icon">📶</span>WiFi</button>
+            <button class="type-btn" onclick="setType('vcard',this)"><span class="type-icon">👤</span>Contacto</button>
+            <button class="type-btn" onclick="setType('location',this)"><span class="type-icon">📍</span>Localização</button>
+            <button class="type-btn" onclick="setType('social',this)"><span class="type-icon">📱</span>Social</button>
+            <button class="type-btn" onclick="setType('event',this)"><span class="type-icon">📅</span>Evento</button>
+            <button class="type-btn" onclick="setType('menu',this)"><span class="type-icon">🍽️</span>Menu</button>
+            <button class="type-btn" onclick="setType('app',this)"><span class="type-icon">📲</span>App Store</button>
+          </div>
+
+          <!-- FORMS -->
+          <div id="form-url">
+            <div class="field"><label>URL / Link</label><input type="url" id="i-url" placeholder="https://exemplo.com"></div>
+          </div>
+          <div id="form-text" style="display:none">
+            <div class="field"><label>Texto</label><textarea id="i-text" placeholder="Escreve qualquer texto..."></textarea></div>
+          </div>
+          <div id="form-email" style="display:none">
+            <div class="field"><label>Email</label><input type="email" id="i-email-addr" placeholder="nome@exemplo.com"></div>
+            <div class="row2">
+              <div class="field"><label>Assunto</label><input type="text" id="i-email-sub" placeholder="Assunto"></div>
+              <div class="field"><label>Mensagem</label><input type="text" id="i-email-body" placeholder="Mensagem"></div>
+            </div>
+          </div>
+          <div id="form-phone" style="display:none">
+            <div class="field"><label>Número</label><input type="tel" id="i-phone" placeholder="+238 9XX XXX XXX"></div>
+          </div>
+          <div id="form-whatsapp" style="display:none">
+            <div class="field"><label>Número WhatsApp</label><input type="tel" id="i-wa-num" placeholder="+238 9XX XXX XXX"></div>
+            <div class="field"><label>Mensagem pré-definida</label><textarea id="i-wa-msg" placeholder="Olá! Vi o vosso QR code..." style="min-height:60px"></textarea></div>
+          </div>
+          <div id="form-wifi" style="display:none">
+            <div class="field"><label>Nome da rede (SSID)</label><input type="text" id="i-wifi-ssid" placeholder="Nome do WiFi"></div>
+            <div class="row2">
+              <div class="field"><label>Senha</label><input type="text" id="i-wifi-pass" placeholder="Senha"></div>
+              <div class="field"><label>Segurança</label><select id="i-wifi-sec"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="">Sem senha</option></select></div>
+            </div>
+          </div>
+          <div id="form-vcard" style="display:none">
+            <div class="row2">
+              <div class="field"><label>Nome</label><input type="text" id="i-vc-name" placeholder="Nome completo"></div>
+              <div class="field"><label>Empresa</label><input type="text" id="i-vc-org" placeholder="Empresa"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Telefone</label><input type="tel" id="i-vc-phone" placeholder="+238..."></div>
+              <div class="field"><label>Email</label><input type="email" id="i-vc-email" placeholder="email@..."></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Website</label><input type="url" id="i-vc-web" placeholder="https://..."></div>
+              <div class="field"><label>Cargo</label><input type="text" id="i-vc-title" placeholder="Director, CEO..."></div>
+            </div>
+            <div class="field"><label>Endereço</label><input type="text" id="i-vc-addr" placeholder="Rua, Cidade, País"></div>
+          </div>
+          <div id="form-location" style="display:none">
+            <div class="row2">
+              <div class="field"><label>Latitude</label><input type="text" id="i-lat" placeholder="14.9305"></div>
+              <div class="field"><label>Longitude</label><input type="text" id="i-lng" placeholder="-23.5133"></div>
+            </div>
+            <div class="field"><label>Nome do local (opcional)</label><input type="text" id="i-loc-name" placeholder="Eagle Marketing, Praia"></div>
+          </div>
+          <div id="form-social" style="display:none">
+            <div class="field"><label>Rede social</label>
+              <select id="i-social-net">
+                <option value="instagram">Instagram</option>
+                <option value="facebook">Facebook</option>
+                <option value="linkedin">LinkedIn</option>
+                <option value="tiktok">TikTok</option>
+                <option value="youtube">YouTube</option>
+                <option value="twitter">Twitter / X</option>
+              </select>
+            </div>
+            <div class="field"><label>Username ou URL do perfil</label><input type="text" id="i-social-user" placeholder="@eaglemarketing ou https://..."></div>
+          </div>
+          <div id="form-event" style="display:none">
+            <div class="field"><label>Nome do evento</label><input type="text" id="i-ev-name" placeholder="Nome do evento"></div>
+            <div class="row2">
+              <div class="field"><label>Início</label><input type="datetime-local" id="i-ev-start"></div>
+              <div class="field"><label>Fim</label><input type="datetime-local" id="i-ev-end"></div>
+            </div>
+            <div class="field"><label>Local</label><input type="text" id="i-ev-loc" placeholder="Morada ou nome do local"></div>
+            <div class="field"><label>Descrição</label><textarea id="i-ev-desc" placeholder="Descrição do evento..." style="min-height:60px"></textarea></div>
+          </div>
+          <div id="form-menu" style="display:none">
+            <div class="field"><label>Nome do restaurante / negócio</label><input type="text" id="i-menu-name" placeholder="Restaurante Atlântico"></div>
+            <div class="field"><label>Link do menu (URL)</label><input type="url" id="i-menu-url" placeholder="https://meu-menu.com ou link do PDF"></div>
+            <div class="field"><label>Mensagem extra (opcional)</label><input type="text" id="i-menu-msg" placeholder="Bem-vindo! Scan para ver o menu"></div>
+          </div>
+          <div id="form-app" style="display:none">
+            <div class="field"><label>Link App Store (iOS)</label><input type="url" id="i-app-ios" placeholder="https://apps.apple.com/..."></div>
+            <div class="field"><label>Link Play Store (Android)</label><input type="url" id="i-app-android" placeholder="https://play.google.com/..."></div>
+            <div class="field"><label>Link fallback (web)</label><input type="url" id="i-app-web" placeholder="https://meuapp.com"></div>
+          </div>
+        </div>
+
+        <!-- DESIGN -->
+        <div class="card">
+          <div class="card-title">🎨 Design & Estilo</div>
+
+          <div class="inner-tabs">
+            <button class="inner-tab active" onclick="setDesignTab('colors',this)">Cores</button>
+            <button class="inner-tab" onclick="setDesignTab('modules',this)">Módulos</button>
+            <button class="inner-tab" onclick="setDesignTab('eyes',this)">Eyes</button>
+            <button class="inner-tab" onclick="setDesignTab('logo',this)">Logo</button>
+            <button class="inner-tab" onclick="setDesignTab('frame',this)">Frame</button>
+          </div>
+
+          <!-- COLORS TAB -->
+          <div id="dtab-colors">
+            <div class="row2">
+              <div class="field"><label>Cor do QR</label>
+                <div class="color-row">
+                  <input type="color" id="c-dark" value="#000000" oninput="syncHex('dark')">
+                  <input type="text" class="hex-in" id="h-dark" value="#000000" oninput="syncColor('dark')" maxlength="7">
+                </div>
+              </div>
+              <div class="field"><label>Cor de fundo</label>
+                <div class="color-row">
+                  <input type="color" id="c-light" value="#ffffff" oninput="syncHex('light')">
+                  <input type="text" class="hex-in" id="h-light" value="#ffffff" oninput="syncColor('light')" maxlength="7">
+                </div>
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:10px"><label>Gradiente</label>
+              <div class="grad-row">
+                <div class="grad-type">
+                  <button class="grad-btn active" id="grad-none" onclick="setGrad('none')">Nenhum</button>
+                  <button class="grad-btn" id="grad-linear" onclick="setGrad('linear')">Linear</button>
+                  <button class="grad-btn" id="grad-radial" onclick="setGrad('radial')">Radial</button>
+                </div>
+              </div>
+              <div id="grad-colors" style="display:none;margin-top:10px">
+                <div class="row2">
+                  <div class="field"><label>Cor 1</label>
+                    <div class="color-row">
+                      <input type="color" id="c-g1" value="#000000" oninput="document.getElementById('h-g1').value=this.value">
+                      <input type="text" class="hex-in" id="h-g1" value="#000000" maxlength="7" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('c-g1').value=this.value">
+                    </div>
+                  </div>
+                  <div class="field"><label>Cor 2</label>
+                    <div class="color-row">
+                      <input type="color" id="c-g2" value="#0055ff" oninput="document.getElementById('h-g2').value=this.value">
+                      <input type="text" class="hex-in" id="h-g2" value="#0055ff" maxlength="7" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('c-g2').value=this.value">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field"><label>Fundo transparente</label>
+              <div class="toggle-row" style="padding:6px 0">
+                <div><div class="toggle-label" style="font-size:13px">Fundo transparente (PNG)</div><div style="font-size:11px;color:var(--text2)">Ideal para colar em designs</div></div>
+                <div class="toggle" id="toggle-transparent" onclick="toggleTransparent()"></div>
+              </div>
+            </div>
+
+            <div class="field"><label>Tamanho — <span id="size-val">256px</span></label>
+              <div class="range-row">
+                <input type="range" id="qr-size" min="128" max="1024" step="32" value="256" oninput="document.getElementById('size-val').textContent=this.value+'px'">
+              </div>
+            </div>
+          </div>
+
+          <!-- MODULES TAB -->
+          <div id="dtab-modules" style="display:none">
+            <div class="field"><label>Forma dos módulos</label></div>
+            <div class="style-grid">
+              <label class="style-opt"><input type="radio" name="mod-shape" value="square" checked>
+                <div class="style-preview"><svg width="36" height="36" viewBox="0 0 36 36"><rect x="4" y="4" width="8" height="8" fill="currentColor"/><rect x="14" y="4" width="8" height="8" fill="currentColor"/><rect x="24" y="4" width="8" height="8" fill="currentColor"/><rect x="4" y="14" width="8" height="8" fill="currentColor"/><rect x="24" y="14" width="8" height="8" fill="currentColor"/><rect x="4" y="24" width="8" height="8" fill="currentColor"/><rect x="14" y="24" width="8" height="8" fill="currentColor"/><rect x="24" y="24" width="8" height="8" fill="currentColor"/></svg></div>
+                <div class="style-label">Quadrado</div></label>
+              <label class="style-opt"><input type="radio" name="mod-shape" value="dot">
+                <div class="style-preview"><svg width="36" height="36" viewBox="0 0 36 36"><circle cx="8" cy="8" r="4" fill="currentColor"/><circle cx="18" cy="8" r="4" fill="currentColor"/><circle cx="28" cy="8" r="4" fill="currentColor"/><circle cx="8" cy="18" r="4" fill="currentColor"/><circle cx="28" cy="18" r="4" fill="currentColor"/><circle cx="8" cy="28" r="4" fill="currentColor"/><circle cx="18" cy="28" r="4" fill="currentColor"/><circle cx="28" cy="28" r="4" fill="currentColor"/></svg></div>
+                <div class="style-label">Círculo</div></label>
+              <label class="style-opt"><input type="radio" name="mod-shape" value="rounded">
+                <div class="style-preview"><svg width="36" height="36" viewBox="0 0 36 36"><rect x="4" y="4" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="14" y="4" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="24" y="4" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="4" y="14" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="24" y="14" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="4" y="24" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="14" y="24" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="24" y="24" width="8" height="8" rx="2.5" fill="currentColor"/></svg></div>
+                <div class="style-label">Arredondado</div></label>
+              <label class="style-opt"><input type="radio" name="mod-shape" value="diamond">
+                <div class="style-preview"><svg width="36" height="36" viewBox="0 0 36 36"><polygon points="8,4 12,8 8,12 4,8" fill="currentColor"/><polygon points="18,4 22,8 18,12 14,8" fill="currentColor"/><polygon points="28,4 32,8 28,12 24,8" fill="currentColor"/><polygon points="8,14 12,18 8,22 4,18" fill="currentColor"/><polygon points="28,14 32,18 28,22 24,18" fill="currentColor"/><polygon points="8,24 12,28 8,32 4,28" fill="currentColor"/><polygon points="18,24 22,28 18,32 14,28" fill="currentColor"/><polygon points="28,24 32,28 28,32 24,28" fill="currentColor"/></svg></div>
+                <div class="style-label">Diamante</div></label>
+              <label class="style-opt"><input type="radio" name="mod-shape" value="star">
+                <div class="style-preview"><svg width="36" height="36" viewBox="0 0 36 36"><text x="2" y="14" font-size="12" fill="currentColor">★</text><text x="13" y="14" font-size="12" fill="currentColor">★</text><text x="24" y="14" font-size="12" fill="currentColor">★</text><text x="2" y="26" font-size="12" fill="currentColor">★</text><text x="13" y="26" font-size="12" fill="currentColor">★</text><text x="24" y="26" font-size="12" fill="currentColor">★</text></svg></div>
+                <div class="style-label">Estrela</div></label>
+              <label class="style-opt"><input type="radio" name="mod-shape" value="vertical">
+                <div class="style-preview"><svg width="36" height="36" viewBox="0 0 36 36"><rect x="5" y="4" width="6" height="10" rx="3" fill="currentColor"/><rect x="15" y="4" width="6" height="10" rx="3" fill="currentColor"/><rect x="25" y="4" width="6" height="10" rx="3" fill="currentColor"/><rect x="5" y="18" width="6" height="10" rx="3" fill="currentColor"/><rect x="25" y="18" width="6" height="10" rx="3" fill="currentColor"/></svg></div>
+                <div class="style-label">Vertical</div></label>
+            </div>
+          </div>
+
+          <!-- EYES TAB -->
+          <div id="dtab-eyes" style="display:none">
+            <div class="field"><label>Forma dos Eyes (cantos)</label></div>
+            <div class="style-grid">
+              <label class="style-opt"><input type="radio" name="eye-shape" value="square" checked>
+                <div class="style-preview"><svg width="44" height="44" viewBox="0 0 44 44"><rect x="4" y="4" width="36" height="36" fill="none" stroke="currentColor" stroke-width="5"/><rect x="13" y="13" width="18" height="18" fill="currentColor"/></svg></div>
+                <div class="style-label">Quadrado</div></label>
+              <label class="style-opt"><input type="radio" name="eye-shape" value="rounded">
+                <div class="style-preview"><svg width="44" height="44" viewBox="0 0 44 44"><rect x="4" y="4" width="36" height="36" rx="8" fill="none" stroke="currentColor" stroke-width="5"/><rect x="13" y="13" width="18" height="18" rx="4" fill="currentColor"/></svg></div>
+                <div class="style-label">Arredondado</div></label>
+              <label class="style-opt"><input type="radio" name="eye-shape" value="circle">
+                <div class="style-preview"><svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="22" cy="22" r="9" fill="currentColor"/></svg></div>
+                <div class="style-label">Círculo</div></label>
+              <label class="style-opt"><input type="radio" name="eye-shape" value="leaf">
+                <div class="style-preview"><svg width="44" height="44" viewBox="0 0 44 44"><rect x="4" y="4" width="36" height="36" rx="18" ry="2" fill="none" stroke="currentColor" stroke-width="5"/><rect x="13" y="13" width="18" height="18" rx="9" ry="1" fill="currentColor"/></svg></div>
+                <div class="style-label">Folha</div></label>
+            </div>
+            <div class="field" style="margin-top:12px"><label>Cor dos eyes (opcional)</label>
+              <div class="color-row">
+                <input type="color" id="c-eye" value="#000000" oninput="document.getElementById('h-eye').value=this.value">
+                <input type="text" class="hex-in" id="h-eye" value="#000000" maxlength="7" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('c-eye').value=this.value">
+              </div>
+            </div>
+          </div>
+
+          <!-- LOGO TAB -->
+          <div id="dtab-logo" style="display:none">
+
+            <!-- 3 MODE SELECTOR -->
+            <div class="field"><label>Modo de logo</label></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+              <div class="logo-mode-btn active" id="lmode-center" onclick="setLogoMode('center')">
+                <div style="font-size:20px;margin-bottom:4px">▣</div>
+                <div style="font-size:11px;font-weight:600">Logo no centro</div>
+                <div style="font-size:10px;color:var(--text2);margin-top:2px">Logo dentro do QR</div>
+              </div>
+              <div class="logo-mode-btn" id="lmode-overlay" onclick="setLogoMode('overlay')">
+                <div style="font-size:20px;margin-bottom:4px">🖼</div>
+                <div style="font-size:11px;font-weight:600">QR sobre imagem</div>
+                <div style="font-size:10px;color:var(--text2);margin-top:2px">Fundo artístico</div>
+              </div>
+              <div class="logo-mode-btn" id="lmode-ai" onclick="setLogoMode('ai')">
+                <div style="font-size:20px;margin-bottom:4px">✦</div>
+                <div style="font-size:11px;font-weight:600">QR Artístico IA</div>
+                <div style="font-size:10px;color:var(--text2);margin-top:2px">Fusão com IA</div>
+              </div>
+            </div>
+
+            <!-- MODE: CENTER (original) -->
+            <div id="lsec-center">
+              <div class="logo-drop" id="logo-drop" onclick="document.getElementById('logo-file').click()">
+                <div id="logo-drop-text">📎 Clica para fazer upload do logo<br><span style="font-size:11px;color:var(--text3)">PNG, JPG, SVG — recomendado PNG transparente</span></div>
+                <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogo(this)">
+              </div>
+              <div id="logo-controls" style="display:none;margin-top:12px">
+                <div class="field"><label>Tamanho do logo — <span id="logo-size-val">25%</span></label>
+                  <div class="range-row">
+                    <input type="range" id="logo-size" min="10" max="35" value="25" oninput="document.getElementById('logo-size-val').textContent=this.value+'%'">
+                  </div>
+                </div>
+                <button onclick="removeLogo()" style="font-size:12px;color:var(--error);background:none;border:none;cursor:pointer;padding:4px 0;font-family:inherit">✕ Remover logo</button>
+              </div>
+            </div>
+
+            <!-- MODE: OVERLAY -->
+            <div id="lsec-overlay" style="display:none">
+              <div class="logo-drop" id="overlay-drop" onclick="document.getElementById('overlay-file').click()">
+                <div id="overlay-drop-text">🖼 Upload da imagem de fundo<br><span style="font-size:11px;color:var(--text3)">PNG, JPG — a imagem fica por baixo do QR</span></div>
+                <input type="file" id="overlay-file" accept="image/*" style="display:none" onchange="handleOverlay(this)">
+              </div>
+              <div id="overlay-controls" style="display:none;margin-top:12px">
+                <div class="field"><label>Opacidade do QR — <span id="overlay-opacity-val">80%</span></label>
+                  <div class="range-row">
+                    <input type="range" id="overlay-opacity" min="40" max="100" value="80" oninput="document.getElementById('overlay-opacity-val').textContent=this.value+'%'">
+                  </div>
+                </div>
+                <div class="field"><label>Mistura</label>
+                  <select id="overlay-blend">
+                    <option value="normal">Normal</option>
+                    <option value="multiply">Multiply</option>
+                    <option value="overlay">Overlay</option>
+                    <option value="screen">Screen</option>
+                    <option value="darken">Darken</option>
+                  </select>
+                </div>
+                <button onclick="removeOverlay()" style="font-size:12px;color:var(--error);background:none;border:none;cursor:pointer;padding:4px 0;font-family:inherit">✕ Remover imagem</button>
+              </div>
+            </div>
+
+            <!-- MODE: AI -->
+            <div id="lsec-ai" style="display:none">
+              <div style="background:var(--accent-dim);border:1px solid rgba(200,255,0,.2);border-radius:var(--rs);padding:14px;margin-bottom:12px">
+                <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">✦ QR Artístico com IA</div>
+                <div style="font-size:12px;color:var(--text2);line-height:1.6">O modelo de IA funde o teu logo ou imagem com o QR de forma artística. O resultado parece uma ilustração mas continua a ser escanável.</div>
+              </div>
+              <div class="logo-drop" id="ai-drop" onclick="document.getElementById('ai-file').click()">
+                <div id="ai-drop-text">✦ Upload do logo / imagem de referência<br><span style="font-size:11px;color:var(--text3)">A IA vai fundir esta imagem com o QR</span></div>
+                <input type="file" id="ai-file" accept="image/*" style="display:none" onchange="handleAILogo(this)">
+              </div>
+              <div id="ai-controls" style="display:none;margin-top:12px">
+                <div style="font-size:12px;color:var(--text2);line-height:1.6;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px">
+                  <b style="color:var(--text)">QR artístico com IA — ainda não disponível.</b><br>
+                  Não existe hoje uma API grátis que gere QR artísticos legíveis e aceite pedidos a partir do browser (as opções — Replicate/ControlNet — são pagas e exigem um servidor intermediário).
+                  Entretanto, o modo <b>Imagem de fundo</b> mistura o QR com uma foto tua e mantém-no legível.
+                </div>
+                <button class="btn-gen" onclick="setLogoMode('overlay')" style="height:38px;font-size:13px;margin-top:8px">🖼 Usar QR com imagem de fundo</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- FRAME TAB -->
+          <div id="dtab-frame" style="display:none">
+            <div class="field"><label>Estilo de frame</label></div>
+            <div class="frame-grid">
+              <label class="frame-opt"><input type="radio" name="frame-style" value="none" checked><div class="frame-preview" style="padding:10px;font-size:18px">∅<div style="font-size:9px;margin-top:3px">Sem frame</div></div></label>
+              <label class="frame-opt"><input type="radio" name="frame-style" value="simple"><div class="frame-preview">
+                <div style="border:3px solid currentColor;padding:4px;display:inline-block;font-size:9px">QR CODE</div></div></label>
+              <label class="frame-opt"><input type="radio" name="frame-style" value="rounded"><div class="frame-preview">
+                <div style="border:3px solid currentColor;border-radius:8px;padding:4px;display:inline-block;font-size:9px">QR CODE</div></div></label>
+              <label class="frame-opt"><input type="radio" name="frame-style" value="bottom-text"><div class="frame-preview" style="padding:6px">
+                <div style="font-size:8px;background:currentColor;color:#fff;padding:2px 4px;margin-top:4px;border-radius:2px">SCAN ME</div></div></label>
+            </div>
+            <div class="field" style="margin-top:12px" id="frame-text-field">
+              <label>Texto do frame</label>
+              <input type="text" id="i-frame-text" placeholder="SCAN ME · Ver Cardápio · Seguir-nos" maxlength="30">
+            </div>
+            <div class="field"><label>Cor do frame</label>
+              <div class="color-row">
+                <input type="color" id="c-frame" value="#000000" oninput="document.getElementById('h-frame').value=this.value">
+                <input type="text" class="hex-in" id="h-frame" value="#000000" maxlength="7" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('c-frame').value=this.value">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ERROR CORRECTION -->
+        <div class="card">
+          <div class="card-title">⚙️ Configurações</div>
+          <div class="row2">
+            <div class="field"><label>Correcção de erros</label>
+              <select id="i-ecc">
+                <option value="H" selected>H — Alta (recomendado com logo)</option>
+                <option value="Q">Q — Média-alta</option>
+                <option value="M">M — Média</option>
+                <option value="L">L — Baixa (ficheiros menores)</option>
+              </select>
+            </div>
+            <div class="field"><label>Nome do ficheiro</label>
+              <input type="text" id="i-filename" placeholder="meu-qrcode">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-gen" onclick="generateQR()">✦ Gerar QR Code</button>
+      </div>
+
+      <!-- RIGHT: PREVIEW -->
+      <div class="preview-panel" id="preview-panel">
+        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;width:100%">Pré-visualização</div>
+        <div class="qr-output" id="qr-output">
+          <div class="qr-placeholder">
+            <div class="qr-placeholder-icon">▣</div>
+            <div>Preenche e gera</div>
+          </div>
+        </div>
+        <div class="dl-btns" id="dl-btns" style="display:none">
+          <button class="btn-dl btn-png" onclick="downloadPNG()">↓ PNG</button>
+          <button class="btn-dl btn-svg2" onclick="downloadSVGFile()">↓ SVG</button>
+          <button class="btn-dl btn-cp" onclick="copyToClipboard()">⎘ Copiar</button>
+        </div>
+        <div class="qr-meta" id="qr-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: HISTORY -->
+  <div class="page" id="page-history">
+    <div class="page-header">
+      <div class="page-title">Histórico</div>
+      <div class="page-sub">Últimos QR codes gerados</div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
+      <button onclick="clearHistory()" style="font-size:12px;color:var(--error);background:none;border:none;cursor:pointer;font-family:inherit">Limpar histórico</button>
+    </div>
+    <div class="hist-grid" id="hist-grid">
+      <div style="color:var(--text3);font-size:13px;grid-column:1/-1;padding:2rem 0;text-align:center">Ainda não geraste nenhum QR code.</div>
+    </div>
+  </div>
+
+  <!-- PAGE: TEMPLATES -->
+  <div class="page" id="page-templates">
+    <div class="page-header">
+      <div class="page-title">Templates</div>
+      <div class="page-sub">Guarda estilos para reutilizar rapidamente</div>
+    </div>
+    <div id="templates-grid">
+      <div style="color:var(--text3);font-size:13px;padding:2rem 0;text-align:center">Ainda não tens templates guardados.<br>Gera um QR e guarda o estilo como template.</div>
+    </div>
+    <button class="btn-gen" onclick="saveTemplate()" style="margin-top:1rem;max-width:300px">+ Guardar estilo actual como template</button>
+  </div>
+
+  <!-- PAGE: BATCH -->
+  <div class="page" id="page-bulk">
+    <div class="page-header">
+      <div class="page-title">Batch — Múltiplos QR Codes</div>
+      <div class="page-sub">Gera vários QR codes de uma vez a partir de uma lista</div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Lista de URLs / Textos</div>
+      <div class="field">
+        <label>Um item por linha</label>
+        <textarea id="bulk-input" placeholder="https://site1.com&#10;https://site2.com&#10;https://site3.com&#10;..." style="min-height:160px"></textarea>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Tamanho</label>
+          <select id="bulk-size">
+            <option value="128">128px</option>
+            <option value="256" selected>256px</option>
+            <option value="512">512px</option>
+          </select>
+        </div>
+        <div class="field"><label>Cor</label>
+          <div class="color-row">
+            <input type="color" id="bulk-color" value="#000000">
+            <input type="text" value="Preto padrão" style="font-size:12px;color:var(--text2)" readonly>
+          </div>
+        </div>
+      </div>
+      <button class="btn-gen" onclick="generateBatch()">⊞ Gerar Todos e Descarregar (ZIP)</button>
+    </div>
+    <div id="bulk-output" style="margin-top:1rem"></div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<div class="app-footer">
+  <span>QRMaster v1.0 · Eagle Marketing · Afro-Berdiano Image</span>
+  <span>100% offline · sem limites · sem subscrição</span>
+</div>
+
+<!-- HIDDEN CANVAS for rendering -->
+<canvas id="render-canvas" style="display:none"></canvas>
+<div id="qrcode-hidden" style="display:none;position:absolute;left:-9999px;top:-9999px"></div>
+
+<script src="vendor/qrcode-generator.js"></script>
+<script src="tm-qr.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script>
+// STATE
+let state = {
+  type: 'url',
+  gradType: 'none',
+  transparent: false,
+  logoData: null,
+  generated: false
+};
+
+let history = JSON.parse(localStorage.getItem('qrmaster_history') || '[]');
+let templates = JSON.parse(localStorage.getItem('qrmaster_templates') || '[]');
+
+// NAV
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  if (id === 'history') renderHistory();
+  if (id === 'templates') renderTemplates();
+}
+
+// TYPE
+function setType(type, btn) {
+  state.type = type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const forms = ['url','text','email','phone','whatsapp','wifi','vcard','location','social','event','menu','app'];
+  forms.forEach(f => { const el = document.getElementById('form-' + f); if(el) el.style.display = f === type ? 'block' : 'none'; });
+}
+
+// DESIGN TABS
+function setDesignTab(tab, btn) {
+  document.querySelectorAll('.inner-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  ['colors','modules','eyes','logo','frame'].forEach(t => {
+    const el = document.getElementById('dtab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// GRADIENT
+function setGrad(type) {
+  state.gradType = type;
+  document.querySelectorAll('.grad-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('grad-' + type).classList.add('active');
+  document.getElementById('grad-colors').style.display = type === 'none' ? 'none' : 'block';
+}
+
+// TRANSPARENT
+function toggleTransparent() {
+  state.transparent = !state.transparent;
+  const t = document.getElementById('toggle-transparent');
+  t.classList.toggle('on', state.transparent);
+}
+
+// COLOR SYNC
+function syncHex(which) {
+  const val = document.getElementById('c-' + which).value;
+  document.getElementById('h-' + which).value = val;
+}
+function syncColor(which) {
+  const val = document.getElementById('h-' + which).value;
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) document.getElementById('c-' + which).value = val;
+}
+
+// LOGO
+function handleLogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    state.logoData = e.target.result;
+    const drop = document.getElementById('logo-drop');
+    drop.classList.add('has-logo');
+    document.getElementById('logo-drop-text').textContent = '✓ ' + file.name;
+    document.getElementById('logo-controls').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeLogo() {
+  state.logoData = null;
+  document.getElementById('logo-drop').classList.remove('has-logo');
+  document.getElementById('logo-drop-text').innerHTML = '📎 Clica para fazer upload do logo<br><span style="font-size:11px;color:var(--text3)">PNG, JPG, SVG — recomendado PNG transparente</span>';
+  document.getElementById('logo-controls').style.display = 'none';
+  document.getElementById('logo-file').value = '';
+}
+
+// GET DATA
+function qrToast(msg) {
+  let t = document.getElementById('qr-toast');
+  if (!t) { t = document.createElement('div'); t.id = 'qr-toast'; t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2a1215;color:#f87171;border:1px solid #7f1d1d;padding:10px 16px;border-radius:8px;font-size:13px;z-index:999;max-width:90vw'; document.body.appendChild(t); }
+  t.textContent = '✗ ' + msg; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 5000);
+}
+function getDataSafe() { try { return getData(); } catch (e) { qrToast(e.message); return null; } }
+function getData() {
+  switch(state.type) {
+    case 'url': return document.getElementById('i-url').value.trim() || 'https://eaglemarketing.cv';
+    case 'text': return document.getElementById('i-text').value.trim() || 'QRMaster';
+    case 'email': {
+      const a = document.getElementById('i-email-addr').value.trim();
+      const s = document.getElementById('i-email-sub').value.trim();
+      const b = document.getElementById('i-email-body').value.trim();
+      let str = 'mailto:' + a;
+      const p = [];
+      if(s) p.push('subject='+encodeURIComponent(s));
+      if(b) p.push('body='+encodeURIComponent(b));
+      if(p.length) str += '?' + p.join('&');
+      return str;
+    }
+    case 'phone': return 'tel:' + document.getElementById('i-phone').value.trim().replace(/\s/g,'');
+    case 'whatsapp': {
+      const n = document.getElementById('i-wa-num').value.trim().replace(/[\s\+\-]/g,'');
+      const m = document.getElementById('i-wa-msg').value.trim();
+      return 'https://wa.me/' + n + (m ? '?text='+encodeURIComponent(m) : '');
+    }
+    case 'wifi': {
+      const s = document.getElementById('i-wifi-ssid').value.trim();
+      const p = document.getElementById('i-wifi-pass').value.trim();
+      const t = document.getElementById('i-wifi-sec').value;
+      const esc = v => v.replace(/([\\;,:"])/g,'\\$1');
+      if (!s) throw new Error('Indica o nome da rede (SSID).');
+      return t === 'nopass' ? `WIFI:T:nopass;S:${esc(s)};;` : `WIFI:T:${t};S:${esc(s)};P:${esc(p)};;`;
+    }
+    case 'vcard': {
+      const n = document.getElementById('i-vc-name').value.trim();
+      const o = document.getElementById('i-vc-org').value.trim();
+      const p = document.getElementById('i-vc-phone').value.trim();
+      const e = document.getElementById('i-vc-email').value.trim();
+      const w = document.getElementById('i-vc-web').value.trim();
+      const t = document.getElementById('i-vc-title').value.trim();
+      const a = document.getElementById('i-vc-addr').value.trim();
+      if (!n) throw new Error('Indica o nome do contacto.');
+      const esc = v => v.replace(/([\\;,])/g,'\\$1').replace(/\n/g,'\\n');
+      const parts = n.split(/\s+/); const last = parts.length > 1 ? parts.pop() : ''; 
+      return ['BEGIN:VCARD','VERSION:3.0',`N:${esc(last)};${esc(parts.join(' '))};;;`,`FN:${esc(n)}`,
+        o&&`ORG:${esc(o)}`, t&&`TITLE:${esc(t)}`, p&&`TEL;TYPE=CELL:${p.replace(/\s/g,'')}`, e&&`EMAIL:${e}`, w&&`URL:${w}`, a&&`ADR:;;${esc(a)};;;;`,'END:VCARD'].filter(Boolean).join('\r\n');
+    }
+    case 'location': {
+      const lat = document.getElementById('i-lat').value.trim();
+      const lng = document.getElementById('i-lng').value.trim();
+      const name = document.getElementById('i-loc-name').value.trim();
+      if (!(isFinite(parseFloat(lat)) && isFinite(parseFloat(lng)))) throw new Error('Indica latitude e longitude válidas.');
+      return `https://www.google.com/maps/search/?api=1&query=${parseFloat(lat)},${parseFloat(lng)}`;
+    }
+    case 'social': {
+      const net = document.getElementById('i-social-net').value;
+      let user = document.getElementById('i-social-user').value.trim();
+      if (user.startsWith('http')) return user;
+      user = user.replace('@','');
+      const map = { instagram:'https://instagram.com/', facebook:'https://facebook.com/', linkedin:'https://linkedin.com/in/', tiktok:'https://tiktok.com/@', youtube:'https://youtube.com/@', twitter:'https://x.com/' };
+      return (map[net] || 'https://') + user;
+    }
+    case 'event': {
+      const n = document.getElementById('i-ev-name').value.trim();
+      const s = document.getElementById('i-ev-start').value;
+      const e = document.getElementById('i-ev-end').value;
+      const l = document.getElementById('i-ev-loc').value.trim();
+      const d = document.getElementById('i-ev-desc').value.trim();
+      if (!n || !s) throw new Error('Indica pelo menos o nome e a data de início do evento.');
+      const fmt = v => new Date(v).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+      const end = e || new Date(new Date(s).getTime() + 3600000).toISOString();
+      if (new Date(end) <= new Date(s)) throw new Error('A data de fim tem de ser depois do início.');
+      const esc = v => v.replace(/([\\;,])/g,'\\$1').replace(/\n/g,'\\n');
+      return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Tools Master//QR//PT','BEGIN:VEVENT',`UID:${Date.now()}@toolsmaster`,`DTSTAMP:${fmt(new Date().toISOString())}`,
+        `SUMMARY:${esc(n)}`,`DTSTART:${fmt(s)}`,`DTEND:${fmt(end)}`, l&&`LOCATION:${esc(l)}`, d&&`DESCRIPTION:${esc(d)}`,'END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
+    }
+    case 'menu': {
+      const url = document.getElementById('i-menu-url').value.trim();
+      if (!url) throw new Error('Indica o link do menu.');
+      return url;
+    }
+    case 'app': {
+      const web = document.getElementById('i-app-web').value.trim();
+      if (!web) throw new Error('Indica o link da app.');
+      return web;
+    }
+  }
+  return 'QRMaster';
+}
+
+// MAIN GENERATE
+function generateQR() {
+  const data = getDataSafe(); if (data === null) return;
+  const size = parseInt(document.getElementById('qr-size').value);
+  const darkColor = document.getElementById('c-dark').value;
+  const lightColor = state.transparent ? '#ffffff' : document.getElementById('c-light').value;
+  const eccMap = { H: QRCode.CorrectLevel.H, Q: QRCode.CorrectLevel.Q, M: QRCode.CorrectLevel.M, L: QRCode.CorrectLevel.L };
+  const ecc = eccMap[document.getElementById('i-ecc').value] || QRCode.CorrectLevel.H;
+
+  // Generate base QR
+  const hidden = document.getElementById('qrcode-hidden');
+  hidden.innerHTML = '';
+  try { new QRCode(hidden, { text: data, width: size, height: size, colorDark: darkColor, colorLight: lightColor, correctLevel: ecc }); } catch (e) { qrToast(e.message); return; }
+
+  setTimeout(() => {
+    const baseCanvas = hidden.querySelector('canvas');
+    if (!baseCanvas) { alert('Erro ao gerar QR. Verifica os dados e tenta novamente.'); return; }
+
+    const canvas = document.getElementById('render-canvas');
+    const modShape = document.querySelector('input[name="mod-shape"]:checked')?.value || 'square';
+    const eyeShape = document.querySelector('input[name="eye-shape"]:checked')?.value || 'square';
+    const frameStyle = document.querySelector('input[name="frame-style"]:checked')?.value || 'none';
+    const frameText = document.getElementById('i-frame-text').value.trim() || 'SCAN ME';
+    const frameColor = document.getElementById('c-frame').value;
+    const framePad = frameStyle !== 'none' ? 48 : 0;
+    const totalSize = size + framePad;
+
+    canvas.width = totalSize;
+    canvas.height = frameStyle === 'bottom-text' ? totalSize + 28 : totalSize;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Background
+    if (!state.transparent) {
+      ctx.fillStyle = lightColor;
+      if (frameStyle === 'rounded') {
+        roundRect(ctx, 0, 0, canvas.width, canvas.height, 16);
+        ctx.fill();
+      } else {
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    const offsetX = framePad / 2;
+    const offsetY = framePad / 2;
+
+    // Desenho do QR a partir da matriz real (formas, olhos e gradiente só nos módulos)
+    let matrixQR;
+    try { matrixQR = TMQR.matrix(data, document.getElementById('i-ecc').value || 'H'); }
+    catch (e) { qrToast(e.message); return; }
+    const qrOpts = { modShape, eyeShape, dark: darkColor, eye: document.getElementById('c-eye').value, light: lightColor,
+      gradient: { type: state.gradType, c1: document.getElementById('c-g1').value, c2: document.getElementById('c-g2').value } };
+    TMQR.draw(ctx, matrixQR, offsetX, offsetY, size, qrOpts);
+    state.lastQR = { data, ecc: document.getElementById('i-ecc').value || 'H', opts: qrOpts, size, transparent: state.transparent };
+
+    // Logo
+    if (state.logoData) {
+      const logoSize = parseInt(document.getElementById('logo-size').value);
+      drawLogo(ctx, state.logoData, offsetX, offsetY, size, logoSize);
+    }
+
+    // Frame
+    if (frameStyle !== 'none') {
+      drawFrame(ctx, frameStyle, frameText, frameColor, totalSize, size, offsetX, offsetY, framePad, canvas.height);
+    }
+
+    // Show result
+    const output = document.getElementById('qr-output');
+    output.innerHTML = '';
+    const img = new Image();
+    img.src = canvas.toDataURL('image/png');
+    img.style.cssText = 'max-width:220px;max-height:220px;border-radius:4px';
+    output.appendChild(img);
+
+    document.getElementById('dl-btns').style.display = 'flex';
+    document.getElementById('qr-meta').textContent = data.length > 60 ? data.substring(0,60)+'...' : data;
+    state.generated = true;
+
+    saveHistory(data, canvas.toDataURL('image/png'));
+  }, 100);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function applyGradient(ctx, ox, oy, size, base, c1, c2, type) {
+  let grad;
+  if (type === 'linear') grad = ctx.createLinearGradient(ox, oy, ox+size, oy+size);
+  else grad = ctx.createRadialGradient(ox+size/2, oy+size/2, 0, ox+size/2, oy+size/2, size/2);
+  grad.addColorStop(0, c1);
+  grad.addColorStop(1, c2);
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.fillStyle = grad;
+  ctx.fillRect(ox, oy, size, size);
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+function drawCustomQR(ctx, baseCanvas, ox, oy, size, modShape, eyeShape, darkColor, eyeColor, lightColor) {
+  // Draw base first, then re-draw with shapes
+  ctx.drawImage(baseCanvas, ox, oy, size, size);
+  // Module shape customization is applied via canvas compositing — base rendering sufficient for v1
+  // Eye customization
+  if (eyeShape !== 'square') {
+    const mod = size / 33;
+    const eyePositions = [[0,0],[0,24],[24,0]];
+    eyePositions.forEach(([ex, ey]) => {
+      const x = ox + ex * mod;
+      const y = oy + ey * mod;
+      const s = 9 * mod;
+      ctx.fillStyle = lightColor;
+      ctx.fillRect(x, y, s, s);
+      ctx.fillStyle = eyeColor || darkColor;
+      if (eyeShape === 'circle') {
+        ctx.beginPath();
+        ctx.arc(x + s/2, y + s/2, s/2, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = lightColor;
+        ctx.beginPath();
+        ctx.arc(x + s/2, y + s/2, s/3.5, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = eyeColor || darkColor;
+        ctx.beginPath();
+        ctx.arc(x + s/2, y + s/2, s/6, 0, Math.PI*2);
+        ctx.fill();
+      } else if (eyeShape === 'rounded') {
+        roundRect(ctx, x, y, s, s, s*0.2);
+        ctx.fill();
+        ctx.fillStyle = lightColor;
+        roundRect(ctx, x+s*.15, y+s*.15, s*.7, s*.7, s*.12);
+        ctx.fill();
+        ctx.fillStyle = eyeColor || darkColor;
+        roundRect(ctx, x+s*.3, y+s*.3, s*.4, s*.4, s*.08);
+        ctx.fill();
+      } else {
+        ctx.fillRect(x, y, s, s);
+        ctx.fillStyle = lightColor;
+        ctx.fillRect(x+s*.15, y+s*.15, s*.7, s*.7);
+        ctx.fillStyle = eyeColor || darkColor;
+        ctx.fillRect(x+s*.3, y+s*.3, s*.4, s*.4);
+      }
+    });
+  }
+}
+
+function drawLogo(ctx, logoData, ox, oy, size, logoPct) {
+  const img = new Image();
+  img.onload = () => {
+    const ls = size * (logoPct / 100);
+    const lx = ox + (size - ls) / 2;
+    const ly = oy + (size - ls) / 2;
+    ctx.fillStyle = '#ffffff';
+    roundRect(ctx, lx - 4, ly - 4, ls + 8, ls + 8, 4);
+    ctx.fill();
+    ctx.drawImage(img, lx, ly, ls, ls);
+    refreshPreview();
+  };
+  img.src = logoData;
+}
+
+function drawFrame(ctx, style, text, color, totalSize, qrSize, ox, oy, pad, canvasH) {
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 3;
+  if (style === 'simple') {
+    ctx.strokeRect(4, 4, totalSize-8, canvasH-8);
+  } else if (style === 'rounded') {
+    roundRect(ctx, 4, 4, totalSize-8, canvasH-8, 14);
+    ctx.stroke();
+  } else if (style === 'bottom-text') {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, qrSize + pad, totalSize, 28);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 13px -apple-system,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(text.toUpperCase(), totalSize/2, qrSize + pad + 19);
+  }
+  if ((style === 'simple' || style === 'rounded') && text) {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, canvasH - 26, totalSize, 26);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 12px -apple-system,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(text.toUpperCase(), totalSize/2, canvasH - 9);
+  }
+}
+
+function refreshPreview() {
+  const canvas = document.getElementById('render-canvas');
+  const output = document.getElementById('qr-output');
+  const imgs = output.querySelectorAll('img');
+  if (imgs.length > 0) {
+    imgs[0].src = canvas.toDataURL('image/png');
+  }
+}
+
+// DOWNLOADS
+function getFilename() {
+  return (document.getElementById('i-filename').value.trim() || 'qrmaster-' + Date.now());
+}
+function downloadPNG() {
+  const canvas = document.getElementById('render-canvas');
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = getFilename() + '.png';
+  a.click();
+}
+function downloadSVGFile() {
+  if (!state.lastQR) { qrToast('Gera primeiro um QR.'); return; }
+  const q = state.lastQR;
+  const svg = TMQR.svg(TMQR.matrix(q.data, q.ecc), { ...q.opts, transparent: q.transparent, size: q.size });
+  const blob = new Blob([svg], {type:'image/svg+xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = getFilename() + '.svg'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function copyToClipboard() {
+  const canvas = document.getElementById('render-canvas');
+  canvas.toBlob(blob => {
+    navigator.clipboard.write([new ClipboardItem({'image/png': blob})]).then(()=>{
+      const btn = document.querySelector('.btn-cp');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copiado';
+      setTimeout(()=>btn.textContent=orig, 1500);
+    });
+  });
+}
+
+// HISTORY
+function saveHistory(data, dataUrl) {
+  const entry = { data, dataUrl, ts: Date.now() };
+  history.unshift(entry);
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('qrmaster_history', JSON.stringify(history));
+}
+function renderHistory() {
+  const grid = document.getElementById('hist-grid');
+  if (history.length === 0) {
+    grid.innerHTML = '<div style="color:var(--text3);font-size:13px;grid-column:1/-1;padding:2rem 0;text-align:center">Ainda não geraste nenhum QR code.</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  history.forEach((entry, i) => {
+    const div = document.createElement('div');
+    div.className = 'hist-item';
+    const ago = timeAgo(entry.ts);
+    div.innerHTML = `<img src="${entry.dataUrl}" class="hist-qr" style="width:70px;height:70px;object-fit:contain"><div class="hist-label" title="${entry.data}">${entry.data.replace(/^https?:\/\//,'').substring(0,20)}</div><div class="hist-time">${ago}</div>`;
+    div.onclick = () => {
+      const a = document.createElement('a');
+      a.href = entry.dataUrl;
+      a.download = 'qrmaster-' + entry.ts + '.png';
+      a.click();
+    };
+    grid.appendChild(div);
+  });
+}
+function clearHistory() {
+  if (!confirm('Limpar todo o histórico?')) return;
+  history = [];
+  localStorage.removeItem('qrmaster_history');
+  renderHistory();
+}
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return 'agora';
+  if (diff < 3600000) return Math.floor(diff/60000) + 'm atrás';
+  if (diff < 86400000) return Math.floor(diff/3600000) + 'h atrás';
+  return Math.floor(diff/86400000) + 'd atrás';
+}
+
+// TEMPLATES
+function saveTemplate() {
+  const name = prompt('Nome do template:');
+  if (!name) return;
+  const tmpl = {
+    name,
+    dark: document.getElementById('c-dark').value,
+    light: document.getElementById('c-light').value,
+    modShape: document.querySelector('input[name="mod-shape"]:checked')?.value || 'square',
+    eyeShape: document.querySelector('input[name="eye-shape"]:checked')?.value || 'square',
+    frameStyle: document.querySelector('input[name="frame-style"]:checked')?.value || 'none',
+    frameText: document.getElementById('i-frame-text').value,
+    ts: Date.now()
+  };
+  templates.unshift(tmpl);
+  localStorage.setItem('qrmaster_templates', JSON.stringify(templates));
+  renderTemplates();
+  alert('Template "' + name + '" guardado!');
+}
+function renderTemplates() {
+  const el = document.getElementById('templates-grid');
+  if (templates.length === 0) {
+    el.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:2rem 0;text-align:center">Ainda não tens templates guardados.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="hist-grid">' + templates.map((t,i) => `
+    <div class="hist-item" onclick="applyTemplate(${i})">
+      <div style="width:60px;height:60px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:24px" style="background:${t.light}">▣</div>
+      <div class="hist-label">${t.name}</div>
+      <div class="hist-time">${t.modShape} · ${t.eyeShape}</div>
+    </div>`).join('') + '</div>';
+}
+function applyTemplate(i) {
+  const t = templates[i];
+  document.getElementById('c-dark').value = t.dark;
+  document.getElementById('h-dark').value = t.dark;
+  document.getElementById('c-light').value = t.light;
+  document.getElementById('h-light').value = t.light;
+  document.querySelector(`input[name="mod-shape"][value="${t.modShape}"]`).checked = true;
+  document.querySelector(`input[name="eye-shape"][value="${t.eyeShape}"]`).checked = true;
+  showPage('create');
+  alert('Template "' + t.name + '" aplicado!');
+}
+
+// BATCH
+async function generateBatch() {
+  const lines = document.getElementById('bulk-input').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  if (lines.length === 0) { alert('Adiciona pelo menos um item.'); return; }
+  if (lines.length > 50) { alert('Máximo 50 por vez.'); return; }
+
+  const size = parseInt(document.getElementById('bulk-size').value);
+  const color = document.getElementById('bulk-color').value;
+  const output = document.getElementById('bulk-output');
+  output.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:1rem 0">A gerar ' + lines.length + ' QR codes...</div>';
+
+  const zip = new JSZip(); const batchErrors = [];
+  let done = 0;
+
+  for (const line of lines) {
+    await new Promise(resolve => {
+      const tmp = document.createElement('div');
+      tmp.style.cssText = 'position:absolute;left:-9999px';
+      document.body.appendChild(tmp);
+      try { new QRCode(tmp, { text: line, width: size, height: size, colorDark: color, colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H }); }
+      catch (e) { batchErrors.push(line.slice(0,30) + ': ' + e.message); }
+      setTimeout(() => {
+        const canvas = tmp.querySelector('canvas');
+        if (canvas) {
+          const dataUrl = canvas.toDataURL('image/png');
+          const b64 = dataUrl.split(',')[1];
+          const safe = line.replace(/[^a-zA-Z0-9]/g,'_').substring(0,30);
+          zip.file('qr_' + safe + '.png', b64, {base64:true});
+        }
+        document.body.removeChild(tmp);
+        done++;
+        output.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:1rem 0">A gerar... ' + done + '/' + lines.length + '</div>';
+        resolve();
+      }, 150);
+    });
+  }
+
+  const blob = await zip.generateAsync({type:'blob'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'qrmaster-batch-' + Date.now() + '.zip'; a.click();
+  URL.revokeObjectURL(url);
+  output.innerHTML = batchErrors.length
+    ? '<div style="color:var(--warn);font-size:13px;padding:1rem 0">⚠ ' + (lines.length - batchErrors.length) + ' QR gerados; ' + batchErrors.length + ' falharam: ' + batchErrors.map(e => e.replace(/</g,'&lt;')).join('; ') + '</div>'
+    : '<div style="color:var(--success);font-size:13px;padding:1rem 0">✓ ' + lines.length + ' QR codes gerados e descarregados em ZIP!</div>';
+}
+
+
+// LOGO MODES
+let overlayData = null;
+let aiLogoData = null;
+let currentLogoMode = 'center';
+
+function setLogoMode(mode) {
+  currentLogoMode = mode;
+  ['center','overlay','ai'].forEach(m => {
+    document.getElementById('lmode-' + m).classList.toggle('active', m === mode);
+    document.getElementById('lsec-' + m).style.display = m === mode ? 'block' : 'none';
+  });
+  if (mode !== 'overlay') overlayData = null;
+  if (mode !== 'ai') aiLogoData = null;
+}
+
+function handleOverlay(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    overlayData = e.target.result;
+    document.getElementById('overlay-drop').classList.add('has-logo');
+    document.getElementById('overlay-drop-text').textContent = '✓ ' + file.name;
+    document.getElementById('overlay-controls').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeOverlay() {
+  overlayData = null;
+  document.getElementById('overlay-drop').classList.remove('has-logo');
+  document.getElementById('overlay-drop-text').innerHTML = '🖼 Upload da imagem de fundo<br><span style="font-size:11px;color:var(--text3)">PNG, JPG — a imagem fica por baixo do QR</span>';
+  document.getElementById('overlay-controls').style.display = 'none';
+  document.getElementById('overlay-file').value = '';
+}
+
+function handleAILogo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    aiLogoData = e.target.result;
+    document.getElementById('ai-drop').classList.add('has-logo');
+    document.getElementById('ai-drop-text').textContent = '✓ ' + file.name;
+    document.getElementById('ai-controls').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function generateAIQR() { setLogoMode('overlay'); }
+
+function generateQRWithOverlay() {
+  const data = getDataSafe(); if (data === null) return;
+  const size = parseInt(document.getElementById('qr-size').value);
+  const darkColor = document.getElementById('c-dark').value;
+  const eccMap = { H: QRCode.CorrectLevel.H, Q: QRCode.CorrectLevel.Q, M: QRCode.CorrectLevel.M, L: QRCode.CorrectLevel.L };
+  const ecc = eccMap[document.getElementById('i-ecc').value] || QRCode.CorrectLevel.H;
+  const opacity = parseInt(document.getElementById('overlay-opacity').value) / 100;
+  const blend = document.getElementById('overlay-blend').value;
+
+  const hidden = document.getElementById('qrcode-hidden');
+  hidden.innerHTML = '';
+  try { new QRCode(hidden, { text: data, width: size, height: size, colorDark: darkColor, colorLight: '#ffffff', correctLevel: ecc }); } catch (e) { qrToast(e.message); return; }
+
+  setTimeout(() => {
+    const baseCanvas = hidden.querySelector('canvas');
+    if (!baseCanvas) return;
+    const canvas = document.getElementById('render-canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const bgImg = new Image();
+    bgImg.onload = () => {
+      ctx.drawImage(bgImg, 0, 0, size, size);
+      ctx.globalAlpha = opacity;
+      ctx.globalCompositeOperation = blend;
+      ctx.drawImage(baseCanvas, 0, 0, size, size);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      if (state.logoData) drawLogo(ctx, state.logoData, 0, 0, size, parseInt(document.getElementById('logo-size').value));
+      const output = document.getElementById('qr-output');
+      output.innerHTML = '';
+      const img = new Image();
+      img.src = canvas.toDataURL('image/png');
+      img.style.cssText = 'max-width:220px;max-height:220px;border-radius:4px';
+      output.appendChild(img);
+      document.getElementById('dl-btns').style.display = 'flex';
+      document.getElementById('qr-meta').textContent = data.length > 60 ? data.substring(0,60)+'...' : data;
+      state.generated = true;
+      saveHistory(data, canvas.toDataURL('image/png'));
+    };
+    bgImg.src = overlayData;
+  }, 100);
+}
+
+// Override generateQR to support overlay mode
+const _origGenerateQR = generateQR;
+generateQR = function() {
+  if (currentLogoMode === 'overlay' && overlayData) generateQRWithOverlay();
+  else _origGenerateQR();
+};
+
+// INIT
+document.getElementById('i-url').value = '';
+</script>
+</body>
+</html>

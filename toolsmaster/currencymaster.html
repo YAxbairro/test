@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Currency Master — Tools Master</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060608;--surface:#0d0d12;--surface2:#131318;--surface3:#1a1a22;
+  --border:#1a1a22;--border2:#24242f;--border3:#32323f;
+  --text:#ebebeb;--text2:#707085;--text3:#44445a;
+  --accent:#22c55e;--accent-dim:rgba(34,197,94,.1);
+  --success:#4ade80;--error:#f87171;--warn:#fbbf24;--r:12px;--rs:7px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:2rem 1rem 3rem}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem}
+.brand-mark{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#22c55e,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:18px}
+.brand-name{font-size:18px;font-weight:700;letter-spacing:-.4px}
+.brand-sub{font-size:11px;color:var(--text2)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:.75rem}
+.conv{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+@media(max-width:560px){.conv{grid-template-columns:1fr}.swap{justify-self:center;transform:rotate(90deg)}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+input,select{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:15px;padding:10px 11px;width:100%;outline:none;font-family:inherit}
+input:focus,select:focus{border-color:var(--accent)}
+.swap{height:42px;width:42px;border-radius:50%;border:1px solid var(--border3);background:var(--surface2);color:var(--text);cursor:pointer;font-size:16px}
+.swap:hover{border-color:var(--accent);color:var(--accent)}
+.result{margin-top:1.1rem;padding:1.1rem;background:var(--accent-dim);border:1px solid rgba(34,197,94,.25);border-radius:var(--rs)}
+.result .big{font-size:28px;font-weight:700;letter-spacing:-.5px;color:var(--accent);word-break:break-all}
+.result .small{font-size:12px;color:var(--text2);margin-top:4px}
+.meta{font-size:11px;color:var(--text2);margin-top:.75rem;line-height:1.6}
+.status{padding:9px 13px;border-radius:var(--rs);font-size:12px;margin-top:.75rem;display:none;line-height:1.5}
+.status.err{display:block;background:rgba(248,113,113,.1);color:var(--error);border:1px solid rgba(248,113,113,.2)}
+.status.warn{display:block;background:rgba(251,191,36,.08);color:var(--warn);border:1px solid rgba(251,191,36,.2)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:left}
+th{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:.6rem}
+.chip{height:28px;padding:0 10px;border-radius:99px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:11px;cursor:pointer;font-family:inherit}
+.chip:hover{color:var(--text);border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="brand-mark">💱</div><div><div class="brand-name">Currency Master</div><div class="brand-sub">Tools Master · Eagle Marketing — taxas diárias, 150+ moedas, com o Escudo cabo-verdiano</div></div></div>
+
+  <div class="card">
+    <div class="card-title">Converter</div>
+    <div class="conv">
+      <div class="field"><label>Valor e moeda de origem</label>
+        <div style="display:flex;gap:6px"><input type="number" id="amt" value="100" min="0" step="any" inputmode="decimal" style="flex:1.3"><select id="from" style="flex:1"></select></div>
+      </div>
+      <button class="swap" id="swap" title="Trocar" aria-label="Trocar moedas">⇄</button>
+      <div class="field"><label>Moeda de destino</label><select id="to"></select></div>
+    </div>
+    <div class="chips" id="quick"></div>
+    <div class="result" id="result"><div class="big" id="res-big">—</div><div class="small" id="res-small"></div></div>
+    <div class="meta" id="meta">A carregar taxas…</div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Escudo (CVE) face às principais moedas</div>
+    <table><thead><tr><th>Moeda</th><th style="text-align:right">1 unidade = CVE</th><th style="text-align:right">1 000 CVE =</th></tr></thead><tbody id="cve-table"></tbody></table>
+    <div class="meta">O Escudo tem paridade fixa com o Euro: <b>1 EUR = 110,265 CVE</b> (acordo de cooperação cambial Cabo Verde–Portugal). As restantes taxas variam diariamente.</div>
+  </div>
+</div>
+
+<script>
+/* Taxas: currency-api (fawazahmed0, grátis, sem chave, CORS) — listada em github.com/public-apis/public-apis.
+   Guarda a última resposta em localStorage para funcionar sem internet. */
+const SOURCES = [
+  b => `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${b}.json`,
+  b => `https://latest.currency-api.pages.dev/v1/currencies/${b}.json`,
+];
+const MAIN = ['eur','usd','brl','gbp','chf','cad','cny','aoa','xof','mzn','stn','gmd'];
+const NAMES = {cve:'Escudo cabo-verdiano',eur:'Euro',usd:'Dólar americano',brl:'Real brasileiro',gbp:'Libra esterlina',chf:'Franco suíço',cad:'Dólar canadiano',cny:'Yuan chinês',aoa:'Kwanza angolano',xof:'Franco CFA (BCEAO)',mzn:'Metical moçambicano',stn:'Dobra (São Tomé)',gmd:'Dalasi (Gâmbia)',jpy:'Iene',sek:'Coroa sueca',nok:'Coroa norueguesa',dkk:'Coroa dinamarquesa',aud:'Dólar australiano',inr:'Rupia indiana',zar:'Rand sul-africano',ngn:'Naira',mad:'Dirham marroquino',xaf:'Franco CFA (BEAC)',btc:'Bitcoin'};
+const FIXED_EUR_CVE = 110.265;
+let rates = null, rateDate = '', offline = false, currencyList = null;
+
+const $ = id => document.getElementById(id);
+const fmt = (v, cur) => { try { return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: cur.toUpperCase(), maximumFractionDigits: v < 1 ? 6 : 2 }).format(v); } catch (e) { return v.toLocaleString('pt-PT', { maximumFractionDigits: 6 }) + ' ' + cur.toUpperCase(); } };
+function showStatus(msg, type) { const s = $('status'); s.className = 'status ' + type; s.textContent = msg; }
+
+async function fetchJSON(makeUrl, base) {
+  let lastErr;
+  for (const mk of SOURCES) {
+    try { const r = await fetch(makeUrl(mk, base)); if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); }
+    catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error('sem resposta');
+}
+
+async function loadRates() {
+  try {
+    const d = await fetchJSON((mk, b) => mk(b), 'eur');
+    if (!d.eur || !d.eur.cve) throw new Error('resposta sem taxas');
+    rates = d.eur; rateDate = d.date; offline = false;
+    try { localStorage.setItem('cm_rates', JSON.stringify({ date: d.date, eur: d.eur })); } catch (e) { console.warn('cache de taxas não guardada', e); }
+    try { currencyList = await (await fetch(SOURCES[0]('').replace('/currencies/.json', '/currencies.json'))).json(); } catch (e) { console.warn('lista de nomes indisponível', e); }
+  } catch (e) {
+    let cached = null; try { cached = JSON.parse(localStorage.getItem('cm_rates') || 'null'); } catch (x) { console.warn(x); }
+    if (cached) { rates = cached.eur; rateDate = cached.date; offline = true; showStatus('Sem ligação às taxas (' + e.message + '). A usar as últimas taxas guardadas, de ' + cached.date + '.', 'warn'); }
+    else { rates = { eur: 1, cve: FIXED_EUR_CVE }; rateDate = ''; offline = true; showStatus('Não foi possível obter taxas (' + e.message + '). Só está disponível EUR ↔ CVE (paridade fixa).', 'err'); }
+  }
+  if (rates.cve && Math.abs(rates.cve - FIXED_EUR_CVE) > 0.5) console.warn('Taxa EUR/CVE da fonte difere da paridade oficial:', rates.cve);
+  rates.cve = FIXED_EUR_CVE; // paridade oficial fixa
+  fillSelects(); render(); renderTable();
+}
+
+function label(code) { return code.toUpperCase() + ' — ' + (NAMES[code] || currencyList?.[code] || code.toUpperCase()); }
+function fillSelects() {
+  const codes = Object.keys(rates).filter(c => /^[a-z]{3}$/.test(c));
+  const ordered = ['cve', ...MAIN, ...codes.filter(c => c !== 'cve' && !MAIN.includes(c)).sort()].filter((c, i, a) => codes.includes(c) && a.indexOf(c) === i);
+  for (const id of ['from', 'to']) {
+    const sel = $(id), prev = sel.value; sel.innerHTML = '';
+    ordered.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = label(c); sel.appendChild(o); });
+    sel.value = prev && ordered.includes(prev) ? prev : (id === 'from' ? 'eur' : 'cve');
+  }
+  const q = $('quick'); q.innerHTML = '';
+  [['eur', 'cve'], ['usd', 'cve'], ['brl', 'cve'], ['cve', 'eur'], ['cve', 'usd']].filter(([a, b]) => rates[a] && rates[b]).forEach(([a, b]) => {
+    const btn = document.createElement('button'); btn.className = 'chip'; btn.textContent = a.toUpperCase() + ' → ' + b.toUpperCase();
+    btn.onclick = () => { $('from').value = a; $('to').value = b; render(); }; q.appendChild(btn);
+  });
+}
+function convert(v, from, to) { return v / rates[from] * rates[to]; }
+function render() {
+  if (!rates) return;
+  const v = parseFloat($('amt').value), from = $('from').value, to = $('to').value;
+  if (!isFinite(v) || v < 0) { $('res-big').textContent = '—'; $('res-small').textContent = 'Indica um valor válido.'; return; }
+  const out = convert(v, from, to);
+  $('res-big').textContent = fmt(out, to);
+  $('res-small').textContent = fmt(v, from) + ' · 1 ' + from.toUpperCase() + ' = ' + convert(1, from, to).toLocaleString('pt-PT', { maximumFractionDigits: 6 }) + ' ' + to.toUpperCase();
+  $('meta').textContent = (rateDate ? 'Taxas de ' + rateDate : 'Taxas indisponíveis') + (offline ? ' (guardadas)' : '') + ' · fonte: currency-api (fawazahmed0). Valores indicativos — para operações bancárias confirma a taxa do teu banco.';
+}
+function renderTable() {
+  const tb = $('cve-table'); tb.innerHTML = '';
+  MAIN.filter(c => rates[c]).forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td></td><td class="num"></td><td class="num"></td>';
+    tr.children[0].textContent = label(c);
+    tr.children[1].textContent = convert(1, c, 'cve').toLocaleString('pt-PT', { maximumFractionDigits: 4 });
+    tr.children[2].textContent = fmt(convert(1000, 'cve', c), c);
+    tb.appendChild(tr);
+  });
+}
+$('amt').addEventListener('input', render);
+$('from').addEventListener('change', render);
+$('to').addEventListener('change', render);
+$('swap').addEventListener('click', () => { const a = $('from').value; $('from').value = $('to').value; $('to').value = a; render(); });
+loadRates();
+</script>
+</body>
+</html>
