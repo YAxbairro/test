@@ -26,6 +26,7 @@
 9. Padrão visual **altíssimo**: tipografia elegante, paleta profissional, nível designer sénior.
 10. Envia **links clicáveis** sempre que existirem.
 11. **Segredos (API keys, NIF, credenciais) só em `.env`** — nunca no código nem em commits.
+12. **Depois de intervenções longas, termina sempre com um resumo curto** (o que foi feito, o que falta, próximo passo) — o Yax não tem tempo para ler tudo.
 
 ## 4. OBJETIVO ATUAL: GERAR DINHEIRO
 Preciso de receita **rápida**. Prioriza sempre:
