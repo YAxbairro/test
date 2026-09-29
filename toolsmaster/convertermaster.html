@@ -842,11 +842,11 @@ async function doDocConvert(prefix,file){
     st(prefix,'A converter localmente...','loading');
     let body='';
     if(ext==='docx'){
-      await loadScript('vendor/mammoth.browser.min.js');
+      await loadScript('vendor/mammoth.browser.min.js').catch(()=>loadScript('https://cdn.jsdelivr.net/npm/mammoth@1.13.0/mammoth.browser.min.js'));
       const res=await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()});body=res.value;
       if(!body.trim())throw new Error('o documento parece estar vazio');
     }else{
-      await loadScript('vendor/xlsx.full.min.js');
+      await loadScript('vendor/xlsx.full.min.js').catch(()=>loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'));
       const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});
       body=wb.SheetNames.map(n=>'<h2>'+n.replace(/</g,'&lt;')+'</h2>'+XLSX.utils.sheet_to_html(wb.Sheets[n],{header:'',footer:''})).join('<div style="page-break-after:always"></div>');
     }
@@ -863,7 +863,7 @@ async function doDocConvert(prefix,file){
     st(prefix,'✓ Documento aberto numa nova janela. Escolhe «Guardar como PDF» para gravar. (Conversão local: formatação simplificada — para fidelidade total usa a chave Cloudmersive.)','ok');
   }catch(e){w.close();st(prefix,'✗ '+e.message,'err');}
 }
-function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector('script[src="'+src+'"]'))return res();const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('não foi possível carregar '+src));document.head.appendChild(s);});}
+function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector('script[src="'+src+'"][data-ok]'))return res();const s=document.createElement('script');s.src=src;s.onload=()=>{s.dataset.ok='1';res();};s.onerror=()=>{s.remove();rej(new Error('não foi possível carregar '+src));};document.head.appendChild(s);});}
 
 // DROP EVENTS
 document.querySelectorAll('.drop-zone').forEach(dz=>{
