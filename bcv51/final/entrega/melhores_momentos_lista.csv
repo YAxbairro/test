@@ -1,0 +1,268 @@
+clip,estado,inicio_no_clip,posicao_na_timeline
+C0911,bom,0.3s,0.0s
+C0912,bom,0.3s,3.0s
+C0913,bom,0.3s,6.0s
+C0914,bom,0.3s,9.0s
+C0915,bom,1.0s,12.0s
+C0916,no video final,2.0s,15.0s
+C0917,bom,0.3s,18.0s
+C0918,bom,0.3s,21.0s
+C0919,bom,1.0s,24.0s
+C0920,bom,0.3s,27.0s
+C0921,bom,1.0s,30.0s
+C0922,bom,2.0s,33.0s
+C0923,bom,0.3s,36.0s
+C0924,bom,2.0s,39.0s
+C0925,bom,0.3s,42.0s
+C0926,bom,5.0s,45.0s
+C0927,bom,4.0s,48.0s
+C0928,bom,0.3s,51.1s
+C0929,bom,2.0s,54.1s
+C0930,bom,0.3s,57.1s
+C0932,bom,0.3s,60.1s
+C0934,bom,0.3s,63.1s
+C0935,bom,2.0s,66.1s
+C0936,bom,3.0s,69.1s
+C0938,bom,0.3s,72.1s
+C0939,bom,0.3s,75.1s
+C0940,no video final,2.0s,78.1s
+C0941,no video final,2.0s,81.1s
+C0942,bom,0.3s,84.1s
+C0943,bom,0.3s,87.1s
+C0944,bom,0.3s,90.1s
+C0945,no video final,2.0s,93.1s
+C0946,bom,1.0s,96.1s
+C0947,bom,0.3s,99.1s
+C0948,no video final,1.0s,101.9s
+C0949,no video final,2.0s,104.9s
+C0950,bom,0.3s,107.9s
+C0951,bom,3.0s,110.9s
+C0952,bom,0.3s,113.9s
+C0953,bom,0.3s,116.9s
+C0954,bom,1.0s,119.9s
+C0955,bom,1.0s,122.9s
+C0956,bom,2.0s,125.9s
+C0957,bom,4.0s,128.9s
+C0958,bom,5.0s,131.9s
+C0959,no video final,0.3s,134.9s
+C0960,bom,2.0s,137.9s
+C0961,bom,1.0s,140.9s
+C0962,bom,0.3s,143.9s
+C0963,bom,0.3s,146.9s
+C0964,bom,2.0s,149.9s
+C0965,bom,1.0s,152.9s
+C0966,bom,0.3s,155.9s
+C0967,bom,0.3s,158.7s
+C0968,bom,5.0s,160.4s
+C0969,bom,4.0s,163.4s
+C0970,no video final,0.3s,166.4s
+C0971,bom,0.3s,169.4s
+C0972,bom,0.3s,172.4s
+C0973,bom,0.3s,175.4s
+C0983,bom,0.3s,178.4s
+C0985,no video final,0.3s,179.7s
+C0986,bom,0.3s,182.7s
+C0987,no video final,1.0s,183.4s
+C0988,bom,1.0s,186.4s
+C0989,no video final,0.3s,189.4s
+C0990,bom,0.3s,192.2s
+C0991,no video final,0.3s,195.2s
+C0992,no video final,4.0s,198.2s
+C0993,no video final,1.0s,201.2s
+C0994,bom,0.3s,204.2s
+C0995,bom,0.3s,206.0s
+C0996,bom,2.0s,207.7s
+C0997,bom,0.3s,210.7s
+C0998,bom,3.0s,213.7s
+C0999,bom,1.0s,216.7s
+C1000,bom,1.0s,219.7s
+C1003,bom,0.3s,222.7s
+C1004,bom,0.3s,224.5s
+C1005,no video final,0.3s,227.2s
+C1006,bom,0.3s,230.2s
+C1007,bom,0.3s,233.0s
+C1008,bom,2.0s,236.0s
+C1009,bom,2.0s,239.0s
+C1010,bom,1.0s,242.0s
+C1012,bom,0.3s,245.0s
+C1013,no video final,4.0s,248.0s
+C1014,bom,0.3s,251.0s
+C1015,bom,0.3s,253.3s
+C1016,bom,0.3s,256.3s
+C1018,no video final,0.3s,259.3s
+C1019,bom,0.3s,261.5s
+C1020,bom,0.3s,264.5s
+C1021,bom,1.0s,267.3s
+C1022,bom,0.3s,270.3s
+C1023,bom,0.3s,272.5s
+C1024,bom,0.3s,275.5s
+C1025,rejeitado (treme),,
+C1026,no video final,1.0s,276.3s
+C1027,bom,0.3s,279.3s
+C1028,bom,3.0s,280.0s
+C1029,bom,0.3s,283.0s
+C1031,bom,0.3s,285.8s
+C1033,no video final,3.0s,288.5s
+C1034,bom,0.3s,291.5s
+C1035,bom,1.0s,294.5s
+C1036,bom,0.3s,297.5s
+C1037,rejeitado (treme),,
+C1038,bom,1.0s,300.6s
+C1039,no video final,3.0s,303.6s
+C1040,rejeitado (treme),,
+C1041,bom,3.0s,306.6s
+C1042,rejeitado (treme),,
+C1043,bom,0.3s,309.6s
+C1044,no video final,1.0s,312.3s
+C1045,bom,0.3s,315.3s
+C1046,rejeitado (treme),,
+C1047,bom,0.3s,318.3s
+C1048,rejeitado (treme),,
+C1049,bom,1.0s,321.3s
+C1050,bom,2.0s,324.3s
+C1051,bom,0.3s,327.3s
+C1052,no video final,3.0s,329.6s
+C1053,no video final,1.0s,332.6s
+C1054,no video final,1.0s,335.6s
+C1055,rejeitado (treme),,
+C1056,bom,0.3s,338.6s
+C1057,bom,2.0s,341.6s
+C1058,bom,0.3s,344.6s
+C1059,bom,0.3s,347.6s
+C1060,bom,0.3s,350.6s
+C1061,no video final,0.3s,353.6s
+C1062,bom,6.0s,356.6s
+C1063,bom,0.3s,359.6s
+C1064,bom,0.3s,361.9s
+C1065,bom,1.0s,364.9s
+C1066,rejeitado (treme),,
+C1067,bom,0.3s,367.9s
+C1068,bom,1.0s,369.1s
+C1070,bom,2.0s,372.1s
+C1071,no video final,0.3s,375.1s
+C1072,bom,2.0s,376.4s
+C1073,bom,1.0s,379.4s
+C1075,bom,0.3s,382.4s
+C1076,bom,1.0s,385.4s
+C1079,bom,0.3s,388.4s
+C1080,bom,0.3s,391.4s
+C1081,rejeitado (treme),,
+C1082,rejeitado (treme),,
+C1083,bom,0.3s,394.4s
+C1084,rejeitado (treme),,
+C1085,bom,0.3s,397.4s
+C1086,rejeitado (treme),,
+C1087,rejeitado (treme),,
+C1088,bom,0.3s,400.4s
+C1089,rejeitado (treme),,
+C1090,bom,0.3s,403.4s
+C1091,bom,1.0s,405.7s
+C1092,bom,0.3s,408.7s
+C1093,rejeitado (treme),,
+C1094,bom,1.0s,411.7s
+C1095,bom,2.0s,414.7s
+C1096,bom,0.3s,417.7s
+C1097,bom,0.3s,419.4s
+C1098,bom,1.0s,420.7s
+C1099,no video final,0.3s,423.7s
+C1101,no video final,0.3s,426.7s
+C1102,bom,2.0s,429.7s
+C1103,no video final,1.0s,432.7s
+C1104,bom,0.3s,435.7s
+C1105,bom,0.3s,438.7s
+C1107,bom,0.3s,440.9s
+C1109,bom,0.3s,443.9s
+C1110,bom,1.0s,446.9s
+C1112,bom,0.3s,449.9s
+C1113,rejeitado (treme),,
+C1114,bom,2.0s,451.7s
+C1115,no video final,2.0s,454.7s
+C1116,bom,1.0s,457.7s
+C1117,bom,0.3s,460.7s
+C1136,bom,1.0s,463.7s
+C1137,no video final,0.3s,466.7s
+C1139,bom,0.3s,469.7s
+C1140,bom,1.0s,472.7s
+C1141,bom,0.3s,475.7s
+C1142,bom,0.3s,478.7s
+C1143,bom,0.3s,481.5s
+C1144,bom,0.3s,484.5s
+C1145,no video final,0.3s,487.5s
+C1146,bom,0.3s,490.5s
+C1147,bom,0.3s,491.7s
+C1148,bom,5.0s,494.7s
+C1149,no video final,0.3s,497.7s
+C1150,bom,0.3s,500.8s
+C1151,bom,0.3s,503.8s
+C1152,bom,0.3s,506.8s
+C1153,no video final,0.3s,509.8s
+C1154,bom,0.3s,512.5s
+C1155,bom,0.3s,513.3s
+C1156,bom,0.3s,514.5s
+C1157,no video final,0.3s,517.5s
+C1158,bom,1.0s,520.5s
+C1159,bom,0.3s,523.5s
+C1160,bom,4.0s,526.3s
+C1161,bom,0.3s,529.3s
+C1162,bom,0.3s,531.5s
+C1163,bom,0.3s,533.8s
+C1164,bom,0.3s,535.5s
+C1165,bom,0.3s,537.8s
+C1166,bom,0.3s,540.8s
+C1167,bom,1.0s,541.5s
+C1168,bom,0.3s,544.5s
+C1169,bom,0.3s,547.5s
+C1170,no video final,0.3s,548.8s
+C1172,no video final,2.0s,551.8s
+C1173,rejeitado (treme),,
+C1174,rejeitado (treme),,
+C1175,bom,1.0s,554.8s
+C1176,no video final,2.0s,557.8s
+C1177,bom,4.0s,560.8s
+C1178,bom,0.3s,563.8s
+C1179,no video final,4.0s,566.1s
+C1180,bom,11.0s,569.1s
+C1181,bom,0.3s,572.1s
+C1182,no video final,0.3s,575.1s
+C1183,no video final,11.0s,576.3s
+C1184,bom,0.3s,579.3s
+C1185,bom,2.0s,580.1s
+C1186,no video final,5.0s,583.1s
+C1187,bom,0.3s,586.1s
+C1188,bom,1.0s,589.1s
+C1189,bom,2.0s,592.1s
+C1190,bom,1.0s,595.1s
+C1191,bom,0.3s,598.1s
+C1192,bom,15.0s,601.1s
+C1193,no video final,0.3s,604.1s
+C1194,bom,0.3s,607.1s
+C1196,no video final,1.0s,608.9s
+C1197,no video final,0.3s,611.9s
+C1198,bom,0.3s,614.9s
+C1199,bom,1.0s,615.6s
+C1200,bom,1.0s,618.6s
+C1201,bom,0.3s,621.6s
+C1202,no video final,0.3s,624.6s
+C1203,bom,0.3s,627.6s
+C1204,no video final,0.3s,630.6s
+C1205,bom,2.0s,633.6s
+C1206,no video final,1.0s,636.6s
+C1208,bom,0.3s,639.6s
+C1209,no video final,0.3s,641.4s
+C1210,rejeitado (treme),,
+C1211,bom,0.3s,644.1s
+C1212,bom,2.0s,646.4s
+C1213,bom,9.0s,649.4s
+C1214,no video final,1.0s,652.4s
+C1216,no video final,1.0s,655.4s
+C1217,bom,1.0s,658.4s
+C1218,rejeitado (treme),,
+C1219,no video final,7.0s,661.4s
+C1220,bom,1.0s,664.4s
+C1221,bom,10.0s,667.4s
+C1222,bom,3.0s,670.4s
+C1223,no video final,12.0s,673.4s
+C1224,no video final,12.0s,676.4s
+C1225,bom,3.0s,679.4s
+C1226,rejeitado (treme),,
+C1227,rejeitado (treme),,

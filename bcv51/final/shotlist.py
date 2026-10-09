@@ -15,11 +15,11 @@ INTRO = [  # batidas 0-33: calmo, dissolves, push-ins
 MAIN = [  # batidas 33-154: drop, cortes no ritmo
     # chegadas e recepcao
     ("C0987", 4, 2.0, None), ("C1005", 2, None, None), ("C0991", 2, None, None),
-    ("C0989", 2, 0.0, None), ("C1026", 2, 0.5, None), ("C1013", 2, 0.0, None),
+    ("C0989", 2, 0.0, None), ("C1026", 2, 2.0, None), ("C1013", 2, 0.0, None),
     ("C0985", 2, None, None), ("C0993", 2, None, None), ("C0992", 2, None, None),
     ("C1048", 2, None, None),
     # convivio e comida
-    ("C1040", 2, None, None), ("C1033", 2, None, None), ("C1044", 2, None, None),
+    ("C1039", 2, None, None), ("C1033", 2, None, None), ("C1044", 2, None, None),
     ("C0940", 2, None, None), ("C1172", 2, None, None), ("C1061", 2, 0.5, None),
     ("C1176", 4, 1.0, None), ("C1103", 2, None, None),
     # animacao: DJ, MC, banda
@@ -35,7 +35,7 @@ MAIN = [  # batidas 33-154: drop, cortes no ritmo
     ("C1219", 2, None, None), ("C1223", 2, None, None), ("C1209", 2, None, None),
     ("C1216", 2, None, None), ("C1224", 4, None, None),
     # fecho
-    ("C1170", 2, None, None), ("C1210", 2, None, None), ("C1046", 2, None, None),
+    ("C1170", 2, None, None), ("C1210", 2, None, None), ("C1071", 2, 0.3, None),
     ("C1018", 2, None, None), ("C1202", 4, None, None), ("C1145", 4, None, "push"),
     ("C0916", 4, None, "push"), ("C1053", 5, None, "push"),
 ]
