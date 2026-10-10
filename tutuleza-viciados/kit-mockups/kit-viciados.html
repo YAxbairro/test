@@ -1,0 +1,399 @@
+<title>Kit Viciados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow reading column, sticky chapter bar on top, each prompt a card with copy + done toggle */
+:root{
+  --bg:#f1f1ee; --surface:#ffffff; --fg:#111111; --muted:#5d5d58; --line:#d9d9d3;
+  --ink:#111111; --on-ink:#f6f6f2; --code-bg:#f6f6f3; --done:#2f7d4f; --done-bg:#e3f1e8;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f0f0e; --surface:#181817; --fg:#eeeeea; --muted:#a3a39c; --line:#2c2c2a;
+  --ink:#eeeeea; --on-ink:#111111; --code-bg:#121211; --done:#7cc79a; --done-bg:#1b2b21; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f0f0e; --surface:#181817; --fg:#eeeeea; --muted:#a3a39c; --line:#2c2c2a;
+  --ink:#eeeeea; --on-ink:#111111; --code-bg:#121211; --done:#7cc79a; --done-bg:#1b2b21; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
+header.top{display:flex;gap:16px;align-items:center;padding-block:28px 20px}
+header.top img{width:76px;height:76px;border-radius:14px;background:#fff;flex:none}
+h1{font:900 clamp(34px,8vw,52px)/.95 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0}
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+nav.bar .row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font:600 13px var(--body);white-space:nowrap}
+nav.bar a b{font-family:var(--display);font-size:15px;margin-right:4px}
+nav.bar a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.progress{font:500 12px var(--mono);color:var(--muted);margin-top:8px;font-variant-numeric:tabular-nums}
+section{padding-top:36px;scroll-margin-top:70px}
+.chap{display:flex;align-items:baseline;gap:12px;border-bottom:3px solid var(--ink);padding-bottom:6px}
+.chap .n{font:900 44px/1 var(--display)}
+.chap h2{font:900 30px/1 var(--display);text-transform:uppercase;margin:0}
+.intro{color:var(--muted);margin:12px 0 16px;max-width:65ch}
+.cards{display:grid;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card.done{border-color:var(--done)}
+.card summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px}
+.card summary::-webkit-details-marker{display:none}
+.code{font:700 15px var(--display);background:var(--ink);color:var(--on-ink);border-radius:6px;padding:3px 8px;min-width:44px;text-align:center}
+.card.done .code{background:var(--done);color:var(--surface)}
+.ttl{min-width:0;overflow-wrap:anywhere}
+.intro,.rule,.steps li div{min-width:0;overflow-wrap:break-word}
+.ttl strong{display:block;font-weight:600}
+.ttl span{display:block;color:var(--muted);font-size:13px}
+.chev{color:var(--muted);transition:transform .15s}
+details[open] .chev{transform:rotate(90deg)}
+.body{border-top:1px solid var(--line);padding:12px 14px 14px;display:grid;gap:10px}
+.att{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.att em{font-style:normal;color:var(--muted);margin-right:2px}
+.att span{border:1px dashed var(--muted);border-radius:6px;padding:2px 8px}
+pre{margin:0;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font:12.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+.overlay{font-size:13px}
+.overlay b{font-family:var(--display);font-size:18px;letter-spacing:.02em}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{font:600 13px var(--body);border-radius:8px;padding:8px 14px;cursor:pointer;border:1px solid var(--ink)}
+.copy{background:var(--ink);color:var(--on-ink)}
+.mark{background:transparent;color:var(--fg)}
+.card.done .mark{background:var(--done-bg);color:var(--done);border-color:var(--done)}
+.steps{display:grid;gap:10px;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start}
+.steps li::before{counter-increment:s;content:counter(s);font:900 22px/1 var(--display);background:var(--ink);color:var(--on-ink);border-radius:6px;text-align:center;padding:4px 0}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;margin-top:14px}
+.rule{border-left:3px solid var(--ink);padding:4px 0 4px 10px;font-size:14px}
+.rule b{display:block;font-family:var(--display);font-size:17px;text-transform:uppercase}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:8px 16px;border-radius:999px;font:600 13px var(--body)}
+.top-link{display:inline-block;margin-top:12px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){.chev{transition:none}html{scroll-behavior:auto}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap" id="top">
+  <header class="top">
+    <img src="data:image/jpeg;base64,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" alt="Logo Tutuleza Viciados: gorila com atleta no supino">
+    <div>
+      <h1>Kit Viciados</h1>
+      <p class="sub">Comandos de mockups e campanha · Tutuleza Viciados Fitness Group</p>
+    </div>
+  </header>
+
+  <nav class="bar" aria-label="Capítulos">
+    <div class="row" id="navrow"></div>
+    <div class="progress" id="progress"></div>
+  </nav>
+
+  <section id="comecar">
+    <div class="chap"><span class="n">0</span><h2>Começar aqui</h2></div>
+    <p class="intro">Cada comando tem um código (P1, R5, M3, C2). Abre, vê o que anexar, carrega em <b>Copiar</b> e cola no ChatGPT ou no Gemini. Depois marca como <b>Feito</b>, e o progresso fica guardado neste telemóvel.</p>
+    <ol class="steps">
+      <li><div><b>Produto (P)</b>: a garrafa com o logo. É a base de tudo o que vem a seguir.</div></li>
+      <li><div><b>Roupa (R)</b>: mockups de cada peça sem modelo, para loja e catálogo.</div></li>
+      <li><div><b>Modelos (M)</b>: fotos com os atletas a usar as peças.</div></li>
+      <li><div><b>Campanha (C)</b>: imagens finais da campanha "Tira o peso da cabeça", com a frase para pôr por cima.</div></li>
+    </ol>
+    <div class="rules">
+      <div class="rule"><b>Anexa sempre o logo</b>Ficheiro <code>logo-final.jpg</code>. Sem ele, o modelo inventa outro.</div>
+      <div class="rule"><b>Preto e branco</b>Roupa preta com logo branco, ou roupa branca com logo preto. Nada mais.</div>
+      <div class="rule"><b>Logo pequeno</b>Peito esquerdo, nuca ou anca. A marca grande fica só nas costas e nos hoodies.</div>
+      <div class="rule"><b>Mesmo chat</b>Faz cada grupo (P, R, M, C) no mesmo chat, para manter caras e peças iguais.</div>
+      <div class="rule"><b>Texto em pós</b>As frases da campanha põe-nas no Canva ou no CapCut. A IA erra letras.</div>
+      <div class="rule"><b>Guarda com o código</b>Grava como <code>R5_v2.png</code>. Assim nunca te perdes.</div>
+    </div>
+  </section>
+
+  <div id="chapters"></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const LOGO = "logo-final.jpg (gorila com atleta no supino)";
+const BRAND = "Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.";
+
+const CH = [
+ {id:"produto", n:"1", t:"Produto", tag:"P",
+  intro:"A garrafa-haltere. Primeiro tiras o 'H2PUMP' e metes o logo (P1). As outras imagens usam essa garrafa já com a marca.",
+  items:[
+  {c:"P1", t:"Garrafa com a marca", s:"Mesma garrafa, só muda a marca · 9:16", a:["foto da garrafa original", LOGO],
+   p:{task:"Product rebrand. Keep the product 100% identical, only change the branding.",brand:BRAND,
+   keep_exactly:["dumbbell bottle shape and proportions","hexagonal heads","knurled grip","black flip-top cap","smoky translucent black plastic","concrete wall background, rubber gym floor, lighting, camera angle"],
+   remove:"the embossed text 'H2PUMP'",
+   add:"the gorilla logo, small (about 30% of the face width), debossed tone-on-tone into the front face of the top hexagonal head; tiny 'TUTULEZA VICIADOS' engraved on the bottom head, exact spelling",
+   style:"premium product photo, photoreal, 85mm, soft key light, subtle rim light, fine condensation droplets",
+   format:"vertical 9:16, 1080x1920",
+   avoid:["changing the shape","adding colors","stickers or big labels","misspelled text"]}},
+  {c:"P2", t:"Packshot loja online", s:"Fundo branco, para site e catálogo · 1:1", a:["imagem P1", LOGO],
+   p:{task:"E-commerce packshot of the branded bottle from the reference.",brand:BRAND,
+   scene:"pure white seamless background, soft natural shadow under the product",
+   views:"front view, perfectly centered, product fills 70% of the frame",
+   style:"clean commercial photo, sharp, true colors, no reflections on the background",
+   format:"square 1:1, 2048x2048",avoid:["props","text","changing the bottle"]}},
+  {c:"P3", t:"Hero com splash", s:"Imagem de impacto para anúncios · 9:16", a:["imagem P1", LOGO],
+   p:{task:"Dramatic hero shot of the branded bottle from the reference.",brand:BRAND,
+   scene:"pitch-black studio, the bottle standing on wet black rubber floor",
+   action:"cold water splashing around the bottle frozen in time, ice cubes and droplets suspended in the air",
+   lighting:"two hard white rim lights from behind left and right, edges of the bottle glowing, logo catching the light",
+   style:"high-speed product photography, photoreal, high contrast black and white feel",
+   composition:"bottle in the lower center, empty dark space at the top for text",
+   format:"vertical 9:16, 1080x1920",avoid:["colored lights","changing the bottle","text"]}},
+  {c:"P4", t:"Flat lay de ginásio", s:"Garrafa com acessórios, vista de cima · 4:5", a:["imagem P1", LOGO],
+   p:{task:"Top-down flat lay featuring the branded bottle from the reference.",brand:BRAND,
+   items:["the branded dumbbell bottle in the center","black lifting straps","black gym towel with small white gorilla logo","black cap with small white gorilla logo","chalk block with chalk dust","phone with earphones"],
+   surface:"black rubber gym floor with light chalk marks",
+   lighting:"soft overhead light, gentle shadows",
+   style:"clean editorial flat lay, organized, lots of negative space",
+   format:"portrait 4:5, 1080x1350",avoid:["clutter","other brands","colored objects"]}}
+ ]},
+ {id:"roupa", n:"2", t:"Roupa", tag:"R",
+  intro:"Mockups de cada peça sem modelo (ghost mannequin ou flat lay), para loja, catálogo e para depois vestires nos modelos. Gera a frente e, quando faz sentido, as costas.",
+  items:[
+  {c:"R1", t:"T-shirt preta", s:"Peça base da coleção", a:[LOGO],
+   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
+   garment:"matte black athletic fit t-shirt, premium heavyweight cotton, slightly dropped shoulders",
+   logo_front:"small white gorilla logo on the left chest, about 7 cm wide, screen print",
+   logo_back:"medium white gorilla logo centered between the shoulder blades with 'TUTULEZA VICIADOS' small underneath",
+   background:"light grey seamless studio",style:"photoreal fabric texture, soft studio light, e-commerce quality",
+   format:"landscape 3:2",avoid:["extra text","wrinkles","colored details"]}},
+  {c:"R2", t:"T-shirt oversized branca", s:"Versão clara, logo preto", a:[LOGO],
+   p:{task:"Apparel mockup, flat lay, front and back side by side.",brand:BRAND,
+   garment:"off-white oversized boxy t-shirt, heavy cotton, wide neck rib",
+   logo_front:"small black gorilla logo on the center chest",
+   logo_back:"large black gorilla logo across the upper back, wordmark 'VICIADOS' under it in bold condensed letters",
+   background:"concrete floor, soft daylight",style:"streetwear lookbook flat lay, photoreal",
+   format:"landscape 3:2",avoid:["colors other than black and off-white","misspelled text"]}},
+  {c:"R3", t:"Regata / camisola de alças", s:"Para treino de musculação", a:[LOGO],
+   p:{task:"Apparel mockup, ghost mannequin, front view.",brand:BRAND,
+   garment:"black stringer tank top with deep armholes, gym bodybuilding style",
+   logo:"white gorilla logo medium size on the center chest",
+   background:"dark grey seamless studio",style:"photoreal, rim light showing the fabric edges",
+   format:"portrait 4:5",avoid:["extra text","colored trims"]}},
+  {c:"R4", t:"Camisola de compressão", s:"Manga comprida, justa", a:[LOGO],
+   p:{task:"Apparel mockup, ghost mannequin, 3/4 front view.",brand:BRAND,
+   garment:"black long-sleeve compression shirt, technical fabric with subtle matte texture, flat seams",
+   logo:"small white gorilla logo on the left chest; 'TUTULEZA VICIADOS' small vertical print along the left forearm",
+   background:"light grey seamless studio",style:"photoreal sportswear catalog, sharp seams",
+   format:"portrait 4:5",avoid:["shiny plastic look","extra logos"]}},
+  {c:"R5", t:"Hoodie preto", s:"Peça estrela da marca", a:[LOGO],
+   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
+   garment:"matte black oversized heavyweight hoodie, double-layer hood, kangaroo pocket, thick ribbed cuffs",
+   logo_front:"white gorilla logo embroidered on the center chest, medium size, visible stitch texture",
+   logo_back:"large white gorilla logo across the back with 'TUTULEZA VICIADOS' arched under it",
+   sleeve:"small 'VICIADOS' print on the left sleeve near the cuff",
+   background:"light grey seamless studio",style:"premium streetwear e-commerce, photoreal fabric",
+   format:"landscape 3:2",avoid:["drawstring logos","colored stitches"]}},
+  {c:"R6", t:"Leggings", s:"Femininas, cintura subida", a:[LOGO],
+   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
+   garment:"black high-waist sculpting leggings, matte squat-proof fabric, no front seam, contour seam on the back",
+   logo:"small white gorilla logo on the back waistband center; tiny 'VICIADOS' on the left hip",
+   background:"light grey seamless studio",style:"photoreal activewear catalog",
+   format:"landscape 3:2",avoid:["see-through fabric","colored lines"]}},
+  {c:"R7", t:"Top desportivo", s:"Feminino, suporte médio", a:[LOGO],
+   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
+   garment:"black sports bra, medium support, wide underband, racerback straps",
+   logo:"small white gorilla logo on the center of the underband front; 'TUTULEZA VICIADOS' small on the back strap junction",
+   background:"light grey seamless studio",style:"photoreal activewear catalog",
+   format:"landscape 3:2",avoid:["padding seams visible","extra logos"]}},
+  {c:"R8", t:"Calções de homem", s:"Treino, 7 polegadas", a:[LOGO],
+   p:{task:"Apparel mockup, flat lay.",brand:BRAND,
+   garment:"black training shorts, 7-inch inseam, lightweight woven fabric, elastic waistband with flat white drawcord, side slits",
+   logo:"small white gorilla logo on the lower left leg",
+   background:"dark concrete surface",style:"photoreal flat lay, soft overhead light",
+   format:"portrait 4:5",avoid:["stripes","colored details"]}},
+  {c:"R9", t:"Biker shorts", s:"Femininos, cintura subida", a:[LOGO],
+   p:{task:"Apparel mockup, ghost mannequin, 3/4 view.",brand:BRAND,
+   garment:"black high-waist biker shorts, mid-thigh length, matte sculpting fabric",
+   logo:"small white gorilla logo on the left thigh hem",
+   background:"light grey seamless studio",style:"photoreal activewear catalog",
+   format:"portrait 4:5",avoid:["shiny fabric","extra text"]}},
+  {c:"R10", t:"Biquíni", s:"Linha praia, desportivo", a:[LOGO],
+   p:{task:"Swimwear product mockup, flat lay, top and bottom.",brand:BRAND,
+   garment:"black athletic bikini: sporty scoop top with wide straps and a mid-rise bottom with full coverage, matte recycled swim fabric",
+   logo:"tiny white gorilla logo on the top's center band and on the left hip of the bottom",
+   background:"black volcanic sand with a few smooth stones",style:"photoreal swimwear catalog, warm daylight",
+   format:"portrait 4:5",avoid:["patterns","colored straps","extra logos"]}},
+  {c:"R11", t:"Boné", s:"Acessório", a:[LOGO],
+   p:{task:"Product mockup, 3/4 front view.",brand:BRAND,
+   product:"black six-panel cap, curved brim, structured front, metal back buckle",
+   logo:"white gorilla logo embroidered 3D on the front panel, medium size; 'VICIADOS' small embroidery on the back above the strap",
+   background:"light grey seamless studio",style:"photoreal product photo, embroidery detail sharp",
+   format:"square 1:1",avoid:["flat brim","colored stitching"]}},
+  {c:"R12", t:"Saco de ginásio", s:"Duffel bag", a:[LOGO],
+   p:{task:"Product mockup, 3/4 view.",brand:BRAND,
+   product:"black duffel gym bag, matte water-resistant fabric, separate shoe compartment, black webbing handles and shoulder strap",
+   logo:"white gorilla logo printed on the side panel; 'TUTULEZA VICIADOS' small on the strap",
+   background:"rubber gym floor, blurred dumbbell rack behind",style:"photoreal product photo, moody light",
+   format:"portrait 4:5",avoid:["shiny plastic","extra logos"]}},
+  {c:"R13", t:"Pack acessórios", s:"Toalha, meias, shaker, munhequeiras", a:[LOGO, "imagem P1"],
+   p:{task:"Product group shot of brand accessories.",brand:BRAND,
+   items:["black gym towel with small white gorilla logo in the corner","white crew socks with small black gorilla logo on the side","black protein shaker with white gorilla logo","black wrist wraps with small white logo","the branded dumbbell bottle from the reference"],
+   arrangement:"neatly grouped on a black plinth, staggered heights",
+   background:"light grey studio",style:"photoreal catalog group shot",
+   format:"portrait 4:5",avoid:["clutter","colored items"]}},
+  {c:"R14", t:"Coleção completa", s:"Capa do catálogo, todas as peças", a:[LOGO, "imagens R1 a R13"],
+   p:{task:"Full collection flat lay for the catalog cover.",brand:BRAND,
+   items:"all pieces from the references: black t-shirt, white oversized t-shirt, tank top, compression shirt, hoodie, leggings, sports bra, men's shorts, biker shorts, bikini, cap, duffel bag, accessories, dumbbell bottle",
+   arrangement:"organized grid, folded neatly, logos visible, generous spacing",
+   background:"black matte surface",style:"premium editorial flat lay, top-down, soft even light",
+   composition:"empty band at the top for the title 'DROP 01'",
+   format:"portrait 4:5, 1080x1350",avoid:["pieces overlapping logos","colored items"]}}
+ ]},
+ {id:"modelos", n:"3", t:"Modelos", tag:"M",
+  intro:"Fotos com os atletas. Se já criaste o atleta e a atleta antes, anexa essas fichas. Se não, gera primeiro M0. Anexa sempre o mockup da peça (R) para a roupa sair igual.",
+  items:[
+  {c:"M0", t:"Fichas dos atletas", s:"Ele e ela, para manter as caras", a:[LOGO],
+   p:{task:"Two photoreal character reference sheets (front, 3/4, close-up face) on neutral grey.",
+   male:"Cape Verdean man, 28, athletic muscular build, dark skin, short twisted hair, short beard, calm intense eyes",
+   female:"Cape Verdean woman, 26, toned athletic build, deep brown skin, long braids tied high, confident expression",
+   wardrobe:"plain black training clothes with the small white gorilla logo on the chest",brand:BRAND,
+   style:"photoreal, 85mm, soft studio light, sharp skin texture, no retouch plastic look",
+   format:"landscape 16:9"}},
+  {c:"M1", t:"Lookbook homem", s:"T-shirt + calções, estúdio", a:[LOGO,"ficha do atleta (M0)","R1","R8"],
+   p:{task:"Studio lookbook photo. Keep the athlete's face and the garments identical to the references.",brand:BRAND,
+   model:"the male athlete from the reference",outfit:"black t-shirt (R1) and black shorts (R8) from references, black training shoes",
+   pose:"standing, arms relaxed, slight turn, looking at the camera, serious",
+   background:"light grey seamless studio",lighting:"soft key light, white rim light",
+   style:"premium sportswear catalog, photoreal, 85mm",format:"portrait 4:5",avoid:["changing the logo","extra accessories"]}},
+  {c:"M2", t:"Lookbook mulher", s:"Top + leggings, estúdio", a:[LOGO,"ficha da atleta (M0)","R7","R6"],
+   p:{task:"Studio lookbook photo. Keep the athlete's face and the garments identical to the references.",brand:BRAND,
+   model:"the female athlete from the reference",outfit:"black sports bra (R7) and black leggings (R6) from references, black training shoes",
+   pose:"confident stance, one hand on the hip, looking at the camera",
+   background:"light grey seamless studio",lighting:"soft key light, white rim light",
+   style:"premium activewear catalog, photoreal, 85mm",format:"portrait 4:5",avoid:["changing the logo","sheer fabric"]}},
+  {c:"M3", t:"Hoodies na rua", s:"Os dois, noite na Praia", a:[LOGO,"fichas M0","R5","R11"],
+   p:{task:"Urban streetwear photo. Keep faces and garments identical to the references.",brand:BRAND,
+   models:"the male and female athletes from the references, side by side",
+   outfit:"both in the black hoodie (R5); he wears the black cap (R11)",
+   scene:"night street in Praia, Cape Verde, wet asphalt, warm street lamps, soft bokeh",
+   pose:"walking toward the camera, hoods down, relaxed confidence",
+   style:"cinematic street photography, photoreal, 35mm, slight film grain",format:"portrait 4:5",avoid:["neon colors","extra logos"]}},
+  {c:"M4", t:"Biquíni na praia", s:"Atleta, praia vulcânica", a:[LOGO,"ficha da atleta (M0)","R10","P1"],
+   p:{task:"Athletic swimwear campaign photo. Keep face and garments identical to the references.",brand:BRAND,
+   model:"the female athlete from the reference",outfit:"the black athletic bikini (R10)",
+   scene:"black volcanic sand beach in Cape Verde, golden late afternoon, Atlantic waves",
+   action:"walking out of the water holding the branded dumbbell bottle (P1), natural confident expression",
+   style:"sporty editorial, tasteful, photoreal, 50mm",format:"portrait 4:5",avoid:["suggestive poses","colored swimwear"]}},
+  {c:"M5", t:"Supino no ginásio", s:"Homem, regata, liga ao logo", a:[LOGO,"ficha do atleta (M0)","R3"],
+   p:{task:"Gym training photo that echoes the logo. Keep face and garment identical to the references.",brand:BRAND,
+   model:"the male athlete from the reference",outfit:"black tank top (R3), black shorts",
+   action:"lying on a flat bench pressing a loaded barbell, arms fully extended, plates on both sides",
+   camera:"shot from directly behind his head, looking down along his body, symmetric composition: barbell across the top of the frame, plates on each side",
+   scene:"dark industrial gym, single hard overhead light, chalk dust in the air",
+   style:"cinematic black-and-white sports photo, photoreal, high contrast",format:"portrait 4:5",avoid:["bent barbell","extra people"]}},
+  {c:"M6", t:"Saída do ginásio", s:"Acessórios em uso", a:[LOGO,"ficha do atleta (M0)","R5","R11","R12","P1"],
+   p:{task:"Lifestyle photo. Keep face and products identical to the references.",brand:BRAND,
+   model:"the male athlete from the reference",
+   outfit:"black hoodie (R5) and cap (R11), duffel bag (R12) on the shoulder, branded bottle (P1) in hand",
+   scene:"leaving the gym at sunrise, concrete entrance, warm low sun",
+   pose:"mid-stride, looking ahead, small satisfied smile",
+   style:"lifestyle editorial, photoreal, 35mm",format:"portrait 4:5",avoid:["extra logos","colored clothes"]}}
+ ]},
+ {id:"campanha", n:"4", t:"Campanha", tag:"C",
+  intro:"Campanha \"Tira o peso da cabeça\". Seis imagens finais. Cada uma tem a frase para pôr por cima no Canva ou no CapCut, e o prompt deixa espaço livre para ela. Gera em 4:5 para o feed e repete em 9:16 para stories e reels.",
+  items:[
+  {c:"C1", t:"Key visual", s:"A imagem principal da campanha", o:"TIRA O PESO DA CABEÇA.", a:[LOGO,"ficha do atleta (M0)","R3"],
+   p:{task:"Key visual of the campaign. Keep face and garment identical to the references.",brand:BRAND,
+   concept:"the image recreates the logo in real life: a lifter on a bench press seen head-on, barbell across the frame like the gorilla's brow, plates left and right like its ears",
+   model:"the male athlete from the reference in the black tank top (R3)",
+   camera:"perfectly symmetric, shot from the foot of the bench, low and centered, barbell spanning the full width",
+   scene:"pitch-black gym, one hard light from above, chalk dust glowing",
+   style:"cinematic black-and-white, photoreal, high contrast",
+   composition:"empty black area in the bottom third for the headline",format:"portrait 4:5, 1080x1350",avoid:["colors","text"]}},
+  {c:"C2", t:"Retrato de suor", s:"Close-up, intensidade", o:"VICIADOS. NUNCA SATISFEITOS.", a:[LOGO,"ficha do atleta (M0)","R1"],
+   p:{task:"Intense close-up portrait. Keep the face identical to the reference.",brand:BRAND,
+   model:"the male athlete from the reference, black t-shirt (R1) with the logo visible at the bottom edge",
+   expression:"just finished a heavy set, breathing hard, sweat running down the face, eyes locked on the lens",
+   lighting:"single hard side light, deep shadows",style:"black-and-white editorial portrait, photoreal, 85mm",
+   composition:"face on the right half, empty dark space on the left for text",format:"portrait 4:5",avoid:["text","smile"]}},
+  {c:"C3", t:"Corrida na praia", s:"Ela, nascer do sol", o:"O TEU VÍCIO É A TUA FORÇA.", a:[LOGO,"ficha da atleta (M0)","R7","R9"],
+   p:{task:"Action sports photo. Keep face and garments identical to the references.",brand:BRAND,
+   model:"the female athlete from the reference, sports bra (R7) and biker shorts (R9)",
+   action:"sprinting along black volcanic sand at sunrise, sand kicked up behind, braids flying",
+   camera:"low angle tracking shot, fast shutter freezing motion",
+   style:"cinematic sports photo, warm sunrise backlight, photoreal",
+   composition:"athlete in the lower half, sky at the top kept clean for text",format:"portrait 4:5",avoid:["text","other people"]}},
+  {c:"C4", t:"Produto herói", s:"A garrafa como estrela", o:"HIDRATA O MONSTRO.", a:[LOGO,"imagem P1"],
+   p:{task:"Hero product ad. Keep the bottle identical to the reference.",brand:BRAND,
+   scene:"the branded dumbbell bottle (P1) on a gym floor, a huge soft shadow behind it on the concrete wall shaped like the gorilla head from the logo",
+   lighting:"one hard spotlight low and in front, creating the shadow; water droplets on the bottle",
+   style:"premium advertising photo, photoreal, monochrome",
+   composition:"bottle centered low, shadow filling the upper frame, space for text at the bottom",format:"portrait 4:5",avoid:["text","colors"]}},
+  {c:"C5", t:"Viciados Team", s:"Comunidade", o:"NINGUÉM TREINA SOZINHO.", a:[LOGO,"fichas M0","R1","R5","R6"],
+   p:{task:"Community group photo. Keep the two lead faces and the garments identical to the references.",brand:BRAND,
+   people:"the male and female athletes in front, 8 to 10 diverse Cape Verdean athletes behind, everyone in black or white Tutuleza Viciados clothes",
+   scene:"rooftop in Praia, Cape Verde, golden hour, city and ocean behind",
+   action:"group just finished training, arms around each other, laughing and shouting, sweaty",
+   style:"documentary sports photo, photoreal, 24mm, warm backlight",
+   composition:"group in the lower two thirds, sky free for text",format:"portrait 4:5",avoid:["merged faces","colored clothes","text"]}},
+  {c:"C6", t:"Lançamento Drop 01", s:"Anúncio da coleção", o:"DROP 01 · JÁ DISPONÍVEL", a:[LOGO,"R1","R2","R5","R6","R7","R11","P1"],
+   p:{task:"Launch image: premium showroom with the collection.",brand:BRAND,
+   scene:"minimal black showroom, brushed steel rail with the hoodie, t-shirts, leggings and sports bra from the references on hangers, cap and branded bottle on a black plinth",
+   lighting:"warm white spotlights on each piece, the rest in shadow",
+   style:"luxury retail interior photo, photoreal, symmetric, 24mm",
+   composition:"large blank black wall at the top for the headline and logo",format:"portrait 4:5",avoid:["people","colored items","text"]}}
+ ]}
+];
+
+const KEY = "kitviciados_done";
+let done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {} };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const total = CH.reduce((n,c)=>n+c.items.length,0);
+
+function navHTML(){
+  const links = [`<a href="#comecar"><b>0</b>Começar</a>`].concat(CH.map(c=>{
+    const d = c.items.filter(i=>done[i.c]).length;
+    return `<a href="#${c.id}"><b>${c.n}</b>${c.t} · ${d}/${c.items.length}</a>`;
+  }));
+  document.getElementById("navrow").innerHTML = links.join("");
+  const d = Object.keys(done).filter(k=>done[k]).length;
+  document.getElementById("progress").textContent = `${d} de ${total} imagens feitas`;
+}
+
+document.getElementById("chapters").innerHTML = CH.map(ch => `
+  <section id="${ch.id}">
+    <div class="chap"><span class="n">${ch.n}</span><h2>${ch.t}</h2></div>
+    <p class="intro">${esc(ch.intro)}</p>
+    <div class="cards">${ch.items.map(it => `
+      <details class="card${done[it.c]?" done":""}" id="${it.c}">
+        <summary><span class="code">${it.c}</span><span class="ttl"><strong>${esc(it.t)}</strong><span>${esc(it.s)}</span></span><span class="chev" aria-hidden="true">›</span></summary>
+        <div class="body">
+          <div class="att"><em>Anexar:</em>${it.a.map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+          ${it.o?`<div class="overlay">Frase para pôr por cima: <b>${esc(it.o)}</b></div>`:""}
+          <pre>${esc(JSON.stringify(it.p,null,2))}</pre>
+          <div class="actions">
+            <button class="copy" type="button" data-c="${it.c}">Copiar comando</button>
+            <button class="mark" type="button" data-m="${it.c}">${done[it.c]?"✓ Feito":"Marcar como feito"}</button>
+          </div>
+        </div>
+      </details>`).join("")}
+    </div>
+    <a class="top-link" href="#top">↑ Voltar ao início</a>
+  </section>`).join("");
+
+const byCode = {}; CH.forEach(c=>c.items.forEach(i=>byCode[i.c]=i));
+const toast = document.getElementById("toast"); let tt;
+function say(m){ toast.textContent=m; toast.hidden=false; clearTimeout(tt); tt=setTimeout(()=>toast.hidden=true,1600); }
+
+document.addEventListener("click", e => {
+  const cb = e.target.closest("button.copy");
+  if (cb) {
+    const txt = JSON.stringify(byCode[cb.dataset.c].p, null, 2);
+    const pre = cb.closest(".body").querySelector("pre");
+    const fallback = () => { const r=document.createRange(); r.selectNodeContents(pre); const s=getSelection(); s.removeAllRanges(); s.addRange(r); say("Texto selecionado. Copia manualmente."); };
+    try { navigator.clipboard.writeText(txt).then(()=>say(cb.dataset.c+" copiado"), fallback); } catch(err) { fallback(); }
+    return;
+  }
+  const mb = e.target.closest("button.mark");
+  if (mb) {
+    const c = mb.dataset.m; done[c] = !done[c]; save();
+    const card = document.getElementById(c);
+    card.classList.toggle("done", !!done[c]);
+    mb.textContent = done[c] ? "✓ Feito" : "Marcar como feito";
+    navHTML();
+  }
+});
+navHTML();
+</script>
