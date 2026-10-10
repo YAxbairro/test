@@ -37,18 +37,21 @@ section{padding-top:36px;scroll-margin-top:70px}
 .cards{display:grid;gap:12px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .card.done{border-color:var(--done)}
-.card summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px}
-.card summary::-webkit-details-marker{display:none}
+.head{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:12px 14px}
 .code{font:700 15px var(--display);background:var(--ink);color:var(--on-ink);border-radius:6px;padding:3px 8px;min-width:44px;text-align:center}
 .card.done .code{background:var(--done);color:var(--surface)}
 .ttl{min-width:0;overflow-wrap:anywhere}
 .intro,.rule,.steps li div{min-width:0;overflow-wrap:break-word}
 .ttl strong{display:block;font-weight:600}
 .ttl span{display:block;color:var(--muted);font-size:13px}
-.chev{color:var(--muted);transition:transform .15s}
-details[open] .chev{transform:rotate(90deg)}
+
 .body{border-top:1px solid var(--line);padding:12px 14px 14px;display:grid;gap:10px}
 .att{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.step2 em,.overlay em{font-style:normal;color:var(--muted)}
+.codebox{position:relative}
+.codebox .copy{position:absolute;top:8px;right:8px;padding:6px 12px}
+.codebox pre{padding-top:44px}
+.mark{justify-self:start}
 .att em{font-style:normal;color:var(--muted);margin-right:2px}
 .att span{border:1px dashed var(--muted);border-radius:6px;padding:2px 8px}
 pre{margin:0;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font:12.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
@@ -67,7 +70,7 @@ button{font:600 13px var(--body);border-radius:8px;padding:8px 14px;cursor:point
 .rule b{display:block;font-family:var(--display);font-size:17px;text-transform:uppercase}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:8px 16px;border-radius:999px;font:600 13px var(--body)}
 .top-link{display:inline-block;margin-top:12px;font-size:13px;color:var(--muted)}
-@media (prefers-reduced-motion: reduce){.chev{transition:none}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
 html{scroll-behavior:smooth}
 </style>
 
@@ -81,8 +84,8 @@ html{scroll-behavior:smooth}
   </header>
 
   <nav class="bar" aria-label="Capítulos">
-    <div class="row" id="navrow"></div>
-    <div class="progress" id="progress"></div>
+    <div class="row" id="navrow"><a href="#comecar"><b>0</b>Começar</a><a href="#produto"><b>1</b>Produto</a><a href="#roupa"><b>2</b>Roupa</a><a href="#modelos"><b>3</b>Modelos</a><a href="#campanha"><b>4</b>Campanha</a></div>
+    <div class="progress" id="progress">31 comandos</div>
   </nav>
 
   <section id="comecar">
@@ -104,296 +107,778 @@ html{scroll-behavior:smooth}
     </div>
   </section>
 
-  <div id="chapters"></div>
+  <div id="chapters">
+  <section id="produto">
+    <div class="chap"><span class="n">1</span><h2>Produto</h2></div>
+    <p class="intro">A garrafa-haltere. Primeiro tiras o 'H2PUMP' e metes o logo (P1). As outras imagens usam essa garrafa já com a marca.</p>
+    <div class="cards">
+      <article class="card" id="P1">
+        <div class="head"><span class="code">P1</span><span class="ttl"><strong>Garrafa com a marca</strong><span>Mesma garrafa, só muda a marca · 9:16</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>foto da garrafa original</span><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Product rebrand. Keep the product 100% identical, only change the branding.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;keep_exactly&quot;: [
+    &quot;dumbbell bottle shape and proportions&quot;,
+    &quot;hexagonal heads&quot;,
+    &quot;knurled grip&quot;,
+    &quot;black flip-top cap&quot;,
+    &quot;smoky translucent black plastic&quot;,
+    &quot;concrete wall background, rubber gym floor, lighting, camera angle&quot;
+  ],
+  &quot;remove&quot;: &quot;the embossed text 'H2PUMP'&quot;,
+  &quot;add&quot;: &quot;the gorilla logo, small (about 30% of the face width), debossed tone-on-tone into the front face of the top hexagonal head; tiny 'TUTULEZA VICIADOS' engraved on the bottom head, exact spelling&quot;,
+  &quot;style&quot;: &quot;premium product photo, photoreal, 85mm, soft key light, subtle rim light, fine condensation droplets&quot;,
+  &quot;format&quot;: &quot;vertical 9:16, 1080x1920&quot;,
+  &quot;avoid&quot;: [
+    &quot;changing the shape&quot;,
+    &quot;adding colors&quot;,
+    &quot;stickers or big labels&quot;,
+    &quot;misspelled text&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="P1">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="P2">
+        <div class="head"><span class="code">P2</span><span class="ttl"><strong>Packshot loja online</strong><span>Fundo branco, para site e catálogo · 1:1</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>imagem P1</span><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;E-commerce packshot of the branded bottle from the reference.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;scene&quot;: &quot;pure white seamless background, soft natural shadow under the product&quot;,
+  &quot;views&quot;: &quot;front view, perfectly centered, product fills 70% of the frame&quot;,
+  &quot;style&quot;: &quot;clean commercial photo, sharp, true colors, no reflections on the background&quot;,
+  &quot;format&quot;: &quot;square 1:1, 2048x2048&quot;,
+  &quot;avoid&quot;: [
+    &quot;props&quot;,
+    &quot;text&quot;,
+    &quot;changing the bottle&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="P2">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="P3">
+        <div class="head"><span class="code">P3</span><span class="ttl"><strong>Hero com splash</strong><span>Imagem de impacto para anúncios · 9:16</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>imagem P1</span><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Dramatic hero shot of the branded bottle from the reference.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;scene&quot;: &quot;pitch-black studio, the bottle standing on wet black rubber floor&quot;,
+  &quot;action&quot;: &quot;cold water splashing around the bottle frozen in time, ice cubes and droplets suspended in the air&quot;,
+  &quot;lighting&quot;: &quot;two hard white rim lights from behind left and right, edges of the bottle glowing, logo catching the light&quot;,
+  &quot;style&quot;: &quot;high-speed product photography, photoreal, high contrast black and white feel&quot;,
+  &quot;composition&quot;: &quot;bottle in the lower center, empty dark space at the top for text&quot;,
+  &quot;format&quot;: &quot;vertical 9:16, 1080x1920&quot;,
+  &quot;avoid&quot;: [
+    &quot;colored lights&quot;,
+    &quot;changing the bottle&quot;,
+    &quot;text&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="P3">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="P4">
+        <div class="head"><span class="code">P4</span><span class="ttl"><strong>Flat lay de ginásio</strong><span>Garrafa com acessórios, vista de cima · 4:5</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>imagem P1</span><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Top-down flat lay featuring the branded bottle from the reference.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;items&quot;: [
+    &quot;the branded dumbbell bottle in the center&quot;,
+    &quot;black lifting straps&quot;,
+    &quot;black gym towel with small white gorilla logo&quot;,
+    &quot;black cap with small white gorilla logo&quot;,
+    &quot;chalk block with chalk dust&quot;,
+    &quot;phone with earphones&quot;
+  ],
+  &quot;surface&quot;: &quot;black rubber gym floor with light chalk marks&quot;,
+  &quot;lighting&quot;: &quot;soft overhead light, gentle shadows&quot;,
+  &quot;style&quot;: &quot;clean editorial flat lay, organized, lots of negative space&quot;,
+  &quot;format&quot;: &quot;portrait 4:5, 1080x1350&quot;,
+  &quot;avoid&quot;: [
+    &quot;clutter&quot;,
+    &quot;other brands&quot;,
+    &quot;colored objects&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="P4">Marcar como feito</button>
+        </div>
+      </article>
+    </div>
+    <a class="top-link" href="#top">↑ Voltar ao início</a>
+  </section>
+  <section id="roupa">
+    <div class="chap"><span class="n">2</span><h2>Roupa</h2></div>
+    <p class="intro">Mockups de cada peça sem modelo (ghost mannequin ou flat lay), para loja, catálogo e para depois vestires nos modelos. Gera a frente e, quando faz sentido, as costas.</p>
+    <div class="cards">
+      <article class="card" id="R1">
+        <div class="head"><span class="code">R1</span><span class="ttl"><strong>T-shirt preta</strong><span>Peça base da coleção</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, ghost mannequin, front and back side by side.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;matte black athletic fit t-shirt, premium heavyweight cotton, slightly dropped shoulders&quot;,
+  &quot;logo_front&quot;: &quot;small white gorilla logo on the left chest, about 7 cm wide, screen print&quot;,
+  &quot;logo_back&quot;: &quot;medium white gorilla logo centered between the shoulder blades with 'TUTULEZA VICIADOS' small underneath&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;style&quot;: &quot;photoreal fabric texture, soft studio light, e-commerce quality&quot;,
+  &quot;format&quot;: &quot;landscape 3:2&quot;,
+  &quot;avoid&quot;: [
+    &quot;extra text&quot;,
+    &quot;wrinkles&quot;,
+    &quot;colored details&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R1">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R2">
+        <div class="head"><span class="code">R2</span><span class="ttl"><strong>T-shirt oversized branca</strong><span>Versão clara, logo preto</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, flat lay, front and back side by side.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;off-white oversized boxy t-shirt, heavy cotton, wide neck rib&quot;,
+  &quot;logo_front&quot;: &quot;small black gorilla logo on the center chest&quot;,
+  &quot;logo_back&quot;: &quot;large black gorilla logo across the upper back, wordmark 'VICIADOS' under it in bold condensed letters&quot;,
+  &quot;background&quot;: &quot;concrete floor, soft daylight&quot;,
+  &quot;style&quot;: &quot;streetwear lookbook flat lay, photoreal&quot;,
+  &quot;format&quot;: &quot;landscape 3:2&quot;,
+  &quot;avoid&quot;: [
+    &quot;colors other than black and off-white&quot;,
+    &quot;misspelled text&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R2">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R3">
+        <div class="head"><span class="code">R3</span><span class="ttl"><strong>Regata / camisola de alças</strong><span>Para treino de musculação</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, ghost mannequin, front view.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;black stringer tank top with deep armholes, gym bodybuilding style&quot;,
+  &quot;logo&quot;: &quot;white gorilla logo medium size on the center chest&quot;,
+  &quot;background&quot;: &quot;dark grey seamless studio&quot;,
+  &quot;style&quot;: &quot;photoreal, rim light showing the fabric edges&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;extra text&quot;,
+    &quot;colored trims&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R3">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R4">
+        <div class="head"><span class="code">R4</span><span class="ttl"><strong>Camisola de compressão</strong><span>Manga comprida, justa</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, ghost mannequin, 3/4 front view.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;black long-sleeve compression shirt, technical fabric with subtle matte texture, flat seams&quot;,
+  &quot;logo&quot;: &quot;small white gorilla logo on the left chest; 'TUTULEZA VICIADOS' small vertical print along the left forearm&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;style&quot;: &quot;photoreal sportswear catalog, sharp seams&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;shiny plastic look&quot;,
+    &quot;extra logos&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R4">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R5">
+        <div class="head"><span class="code">R5</span><span class="ttl"><strong>Hoodie preto</strong><span>Peça estrela da marca</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, ghost mannequin, front and back side by side.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;matte black oversized heavyweight hoodie, double-layer hood, kangaroo pocket, thick ribbed cuffs&quot;,
+  &quot;logo_front&quot;: &quot;white gorilla logo embroidered on the center chest, medium size, visible stitch texture&quot;,
+  &quot;logo_back&quot;: &quot;large white gorilla logo across the back with 'TUTULEZA VICIADOS' arched under it&quot;,
+  &quot;sleeve&quot;: &quot;small 'VICIADOS' print on the left sleeve near the cuff&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;style&quot;: &quot;premium streetwear e-commerce, photoreal fabric&quot;,
+  &quot;format&quot;: &quot;landscape 3:2&quot;,
+  &quot;avoid&quot;: [
+    &quot;drawstring logos&quot;,
+    &quot;colored stitches&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R5">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R6">
+        <div class="head"><span class="code">R6</span><span class="ttl"><strong>Leggings</strong><span>Femininas, cintura subida</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, ghost mannequin, front and back side by side.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;black high-waist sculpting leggings, matte squat-proof fabric, no front seam, contour seam on the back&quot;,
+  &quot;logo&quot;: &quot;small white gorilla logo on the back waistband center; tiny 'VICIADOS' on the left hip&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;style&quot;: &quot;photoreal activewear catalog&quot;,
+  &quot;format&quot;: &quot;landscape 3:2&quot;,
+  &quot;avoid&quot;: [
+    &quot;see-through fabric&quot;,
+    &quot;colored lines&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R6">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R7">
+        <div class="head"><span class="code">R7</span><span class="ttl"><strong>Top desportivo</strong><span>Feminino, suporte médio</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, ghost mannequin, front and back side by side.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;black sports bra, medium support, wide underband, racerback straps&quot;,
+  &quot;logo&quot;: &quot;small white gorilla logo on the center of the underband front; 'TUTULEZA VICIADOS' small on the back strap junction&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;style&quot;: &quot;photoreal activewear catalog&quot;,
+  &quot;format&quot;: &quot;landscape 3:2&quot;,
+  &quot;avoid&quot;: [
+    &quot;padding seams visible&quot;,
+    &quot;extra logos&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R7">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R8">
+        <div class="head"><span class="code">R8</span><span class="ttl"><strong>Calções de homem</strong><span>Treino, 7 polegadas</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, flat lay.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;black training shorts, 7-inch inseam, lightweight woven fabric, elastic waistband with flat white drawcord, side slits&quot;,
+  &quot;logo&quot;: &quot;small white gorilla logo on the lower left leg&quot;,
+  &quot;background&quot;: &quot;dark concrete surface&quot;,
+  &quot;style&quot;: &quot;photoreal flat lay, soft overhead light&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;stripes&quot;,
+    &quot;colored details&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R8">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R9">
+        <div class="head"><span class="code">R9</span><span class="ttl"><strong>Biker shorts</strong><span>Femininos, cintura subida</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Apparel mockup, ghost mannequin, 3/4 view.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;black high-waist biker shorts, mid-thigh length, matte sculpting fabric&quot;,
+  &quot;logo&quot;: &quot;small white gorilla logo on the left thigh hem&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;style&quot;: &quot;photoreal activewear catalog&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;shiny fabric&quot;,
+    &quot;extra text&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R9">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R10">
+        <div class="head"><span class="code">R10</span><span class="ttl"><strong>Biquíni</strong><span>Linha praia, desportivo</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Swimwear product mockup, flat lay, top and bottom.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;garment&quot;: &quot;black athletic bikini: sporty scoop top with wide straps and a mid-rise bottom with full coverage, matte recycled swim fabric&quot;,
+  &quot;logo&quot;: &quot;tiny white gorilla logo on the top's center band and on the left hip of the bottom&quot;,
+  &quot;background&quot;: &quot;black volcanic sand with a few smooth stones&quot;,
+  &quot;style&quot;: &quot;photoreal swimwear catalog, warm daylight&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;patterns&quot;,
+    &quot;colored straps&quot;,
+    &quot;extra logos&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R10">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R11">
+        <div class="head"><span class="code">R11</span><span class="ttl"><strong>Boné</strong><span>Acessório</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Product mockup, 3/4 front view.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;product&quot;: &quot;black six-panel cap, curved brim, structured front, metal back buckle&quot;,
+  &quot;logo&quot;: &quot;white gorilla logo embroidered 3D on the front panel, medium size; 'VICIADOS' small embroidery on the back above the strap&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;style&quot;: &quot;photoreal product photo, embroidery detail sharp&quot;,
+  &quot;format&quot;: &quot;square 1:1&quot;,
+  &quot;avoid&quot;: [
+    &quot;flat brim&quot;,
+    &quot;colored stitching&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R11">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R12">
+        <div class="head"><span class="code">R12</span><span class="ttl"><strong>Saco de ginásio</strong><span>Duffel bag</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Product mockup, 3/4 view.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;product&quot;: &quot;black duffel gym bag, matte water-resistant fabric, separate shoe compartment, black webbing handles and shoulder strap&quot;,
+  &quot;logo&quot;: &quot;white gorilla logo printed on the side panel; 'TUTULEZA VICIADOS' small on the strap&quot;,
+  &quot;background&quot;: &quot;rubber gym floor, blurred dumbbell rack behind&quot;,
+  &quot;style&quot;: &quot;photoreal product photo, moody light&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;shiny plastic&quot;,
+    &quot;extra logos&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R12">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R13">
+        <div class="head"><span class="code">R13</span><span class="ttl"><strong>Pack acessórios</strong><span>Toalha, meias, shaker, munhequeiras</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>imagem P1</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Product group shot of brand accessories.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;items&quot;: [
+    &quot;black gym towel with small white gorilla logo in the corner&quot;,
+    &quot;white crew socks with small black gorilla logo on the side&quot;,
+    &quot;black protein shaker with white gorilla logo&quot;,
+    &quot;black wrist wraps with small white logo&quot;,
+    &quot;the branded dumbbell bottle from the reference&quot;
+  ],
+  &quot;arrangement&quot;: &quot;neatly grouped on a black plinth, staggered heights&quot;,
+  &quot;background&quot;: &quot;light grey studio&quot;,
+  &quot;style&quot;: &quot;photoreal catalog group shot&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;clutter&quot;,
+    &quot;colored items&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R13">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="R14">
+        <div class="head"><span class="code">R14</span><span class="ttl"><strong>Coleção completa</strong><span>Capa do catálogo, todas as peças</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>imagens R1 a R13</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Full collection flat lay for the catalog cover.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;items&quot;: &quot;all pieces from the references: black t-shirt, white oversized t-shirt, tank top, compression shirt, hoodie, leggings, sports bra, men's shorts, biker shorts, bikini, cap, duffel bag, accessories, dumbbell bottle&quot;,
+  &quot;arrangement&quot;: &quot;organized grid, folded neatly, logos visible, generous spacing&quot;,
+  &quot;background&quot;: &quot;black matte surface&quot;,
+  &quot;style&quot;: &quot;premium editorial flat lay, top-down, soft even light&quot;,
+  &quot;composition&quot;: &quot;empty band at the top for the title 'DROP 01'&quot;,
+  &quot;format&quot;: &quot;portrait 4:5, 1080x1350&quot;,
+  &quot;avoid&quot;: [
+    &quot;pieces overlapping logos&quot;,
+    &quot;colored items&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="R14">Marcar como feito</button>
+        </div>
+      </article>
+    </div>
+    <a class="top-link" href="#top">↑ Voltar ao início</a>
+  </section>
+  <section id="modelos">
+    <div class="chap"><span class="n">3</span><h2>Modelos</h2></div>
+    <p class="intro">Fotos com os atletas. Se já criaste o atleta e a atleta antes, anexa essas fichas. Se não, gera primeiro M0. Anexa sempre o mockup da peça (R) para a roupa sair igual.</p>
+    <div class="cards">
+      <article class="card" id="M0">
+        <div class="head"><span class="code">M0</span><span class="ttl"><strong>Fichas dos atletas</strong><span>Ele e ela, para manter as caras</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Two photoreal character reference sheets (front, 3/4, close-up face) on neutral grey.&quot;,
+  &quot;male&quot;: &quot;Cape Verdean man, 28, athletic muscular build, dark skin, short twisted hair, short beard, calm intense eyes&quot;,
+  &quot;female&quot;: &quot;Cape Verdean woman, 26, toned athletic build, deep brown skin, long braids tied high, confident expression&quot;,
+  &quot;wardrobe&quot;: &quot;plain black training clothes with the small white gorilla logo on the chest&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;style&quot;: &quot;photoreal, 85mm, soft studio light, sharp skin texture, no retouch plastic look&quot;,
+  &quot;format&quot;: &quot;landscape 16:9&quot;
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="M0">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="M1">
+        <div class="head"><span class="code">M1</span><span class="ttl"><strong>Lookbook homem</strong><span>T-shirt + calções, estúdio</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha do atleta (M0)</span><span>R1</span><span>R8</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Studio lookbook photo. Keep the athlete's face and the garments identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;model&quot;: &quot;the male athlete from the reference&quot;,
+  &quot;outfit&quot;: &quot;black t-shirt (R1) and black shorts (R8) from references, black training shoes&quot;,
+  &quot;pose&quot;: &quot;standing, arms relaxed, slight turn, looking at the camera, serious&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;lighting&quot;: &quot;soft key light, white rim light&quot;,
+  &quot;style&quot;: &quot;premium sportswear catalog, photoreal, 85mm&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;changing the logo&quot;,
+    &quot;extra accessories&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="M1">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="M2">
+        <div class="head"><span class="code">M2</span><span class="ttl"><strong>Lookbook mulher</strong><span>Top + leggings, estúdio</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha da atleta (M0)</span><span>R7</span><span>R6</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Studio lookbook photo. Keep the athlete's face and the garments identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;model&quot;: &quot;the female athlete from the reference&quot;,
+  &quot;outfit&quot;: &quot;black sports bra (R7) and black leggings (R6) from references, black training shoes&quot;,
+  &quot;pose&quot;: &quot;confident stance, one hand on the hip, looking at the camera&quot;,
+  &quot;background&quot;: &quot;light grey seamless studio&quot;,
+  &quot;lighting&quot;: &quot;soft key light, white rim light&quot;,
+  &quot;style&quot;: &quot;premium activewear catalog, photoreal, 85mm&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;changing the logo&quot;,
+    &quot;sheer fabric&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="M2">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="M3">
+        <div class="head"><span class="code">M3</span><span class="ttl"><strong>Hoodies na rua</strong><span>Os dois, noite na Praia</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>fichas M0</span><span>R5</span><span>R11</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Urban streetwear photo. Keep faces and garments identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;models&quot;: &quot;the male and female athletes from the references, side by side&quot;,
+  &quot;outfit&quot;: &quot;both in the black hoodie (R5); he wears the black cap (R11)&quot;,
+  &quot;scene&quot;: &quot;night street in Praia, Cape Verde, wet asphalt, warm street lamps, soft bokeh&quot;,
+  &quot;pose&quot;: &quot;walking toward the camera, hoods down, relaxed confidence&quot;,
+  &quot;style&quot;: &quot;cinematic street photography, photoreal, 35mm, slight film grain&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;neon colors&quot;,
+    &quot;extra logos&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="M3">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="M4">
+        <div class="head"><span class="code">M4</span><span class="ttl"><strong>Biquíni na praia</strong><span>Atleta, praia vulcânica</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha da atleta (M0)</span><span>R10</span><span>P1</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Athletic swimwear campaign photo. Keep face and garments identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;model&quot;: &quot;the female athlete from the reference&quot;,
+  &quot;outfit&quot;: &quot;the black athletic bikini (R10)&quot;,
+  &quot;scene&quot;: &quot;black volcanic sand beach in Cape Verde, golden late afternoon, Atlantic waves&quot;,
+  &quot;action&quot;: &quot;walking out of the water holding the branded dumbbell bottle (P1), natural confident expression&quot;,
+  &quot;style&quot;: &quot;sporty editorial, tasteful, photoreal, 50mm&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;suggestive poses&quot;,
+    &quot;colored swimwear&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="M4">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="M5">
+        <div class="head"><span class="code">M5</span><span class="ttl"><strong>Supino no ginásio</strong><span>Homem, regata, liga ao logo</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha do atleta (M0)</span><span>R3</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Gym training photo that echoes the logo. Keep face and garment identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;model&quot;: &quot;the male athlete from the reference&quot;,
+  &quot;outfit&quot;: &quot;black tank top (R3), black shorts&quot;,
+  &quot;action&quot;: &quot;lying on a flat bench pressing a loaded barbell, arms fully extended, plates on both sides&quot;,
+  &quot;camera&quot;: &quot;shot from directly behind his head, looking down along his body, symmetric composition: barbell across the top of the frame, plates on each side&quot;,
+  &quot;scene&quot;: &quot;dark industrial gym, single hard overhead light, chalk dust in the air&quot;,
+  &quot;style&quot;: &quot;cinematic black-and-white sports photo, photoreal, high contrast&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;bent barbell&quot;,
+    &quot;extra people&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="M5">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="M6">
+        <div class="head"><span class="code">M6</span><span class="ttl"><strong>Saída do ginásio</strong><span>Acessórios em uso</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha do atleta (M0)</span><span>R5</span><span>R11</span><span>R12</span><span>P1</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Lifestyle photo. Keep face and products identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;model&quot;: &quot;the male athlete from the reference&quot;,
+  &quot;outfit&quot;: &quot;black hoodie (R5) and cap (R11), duffel bag (R12) on the shoulder, branded bottle (P1) in hand&quot;,
+  &quot;scene&quot;: &quot;leaving the gym at sunrise, concrete entrance, warm low sun&quot;,
+  &quot;pose&quot;: &quot;mid-stride, looking ahead, small satisfied smile&quot;,
+  &quot;style&quot;: &quot;lifestyle editorial, photoreal, 35mm&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;extra logos&quot;,
+    &quot;colored clothes&quot;
+  ]
+}</code></pre></div>
+          
+          <button class="mark" type="button" data-m="M6">Marcar como feito</button>
+        </div>
+      </article>
+    </div>
+    <a class="top-link" href="#top">↑ Voltar ao início</a>
+  </section>
+  <section id="campanha">
+    <div class="chap"><span class="n">4</span><h2>Campanha</h2></div>
+    <p class="intro">Campanha &quot;Tira o peso da cabeça&quot;. Seis imagens finais. Cada uma tem a frase para pôr por cima no Canva ou no CapCut, e o prompt deixa espaço livre para ela. Gera em 4:5 para o feed e repete em 9:16 para stories e reels.</p>
+    <div class="cards">
+      <article class="card" id="C1">
+        <div class="head"><span class="code">C1</span><span class="ttl"><strong>Key visual</strong><span>A imagem principal da campanha</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha do atleta (M0)</span><span>R3</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Key visual of the campaign. Keep face and garment identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;concept&quot;: &quot;the image recreates the logo in real life: a lifter on a bench press seen head-on, barbell across the frame like the gorilla's brow, plates left and right like its ears&quot;,
+  &quot;model&quot;: &quot;the male athlete from the reference in the black tank top (R3)&quot;,
+  &quot;camera&quot;: &quot;perfectly symmetric, shot from the foot of the bench, low and centered, barbell spanning the full width&quot;,
+  &quot;scene&quot;: &quot;pitch-black gym, one hard light from above, chalk dust glowing&quot;,
+  &quot;style&quot;: &quot;cinematic black-and-white, photoreal, high contrast&quot;,
+  &quot;composition&quot;: &quot;empty black area in the bottom third for the headline&quot;,
+  &quot;format&quot;: &quot;portrait 4:5, 1080x1350&quot;,
+  &quot;avoid&quot;: [
+    &quot;colors&quot;,
+    &quot;text&quot;
+  ]
+}</code></pre></div>
+          <div class="overlay"><em>3. Frase para pôr por cima (Canva):</em> <b>TIRA O PESO DA CABEÇA.</b></div>
+          <button class="mark" type="button" data-m="C1">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="C2">
+        <div class="head"><span class="code">C2</span><span class="ttl"><strong>Retrato de suor</strong><span>Close-up, intensidade</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha do atleta (M0)</span><span>R1</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Intense close-up portrait. Keep the face identical to the reference.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;model&quot;: &quot;the male athlete from the reference, black t-shirt (R1) with the logo visible at the bottom edge&quot;,
+  &quot;expression&quot;: &quot;just finished a heavy set, breathing hard, sweat running down the face, eyes locked on the lens&quot;,
+  &quot;lighting&quot;: &quot;single hard side light, deep shadows&quot;,
+  &quot;style&quot;: &quot;black-and-white editorial portrait, photoreal, 85mm&quot;,
+  &quot;composition&quot;: &quot;face on the right half, empty dark space on the left for text&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;text&quot;,
+    &quot;smile&quot;
+  ]
+}</code></pre></div>
+          <div class="overlay"><em>3. Frase para pôr por cima (Canva):</em> <b>VICIADOS. NUNCA SATISFEITOS.</b></div>
+          <button class="mark" type="button" data-m="C2">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="C3">
+        <div class="head"><span class="code">C3</span><span class="ttl"><strong>Corrida na praia</strong><span>Ela, nascer do sol</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>ficha da atleta (M0)</span><span>R7</span><span>R9</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Action sports photo. Keep face and garments identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;model&quot;: &quot;the female athlete from the reference, sports bra (R7) and biker shorts (R9)&quot;,
+  &quot;action&quot;: &quot;sprinting along black volcanic sand at sunrise, sand kicked up behind, braids flying&quot;,
+  &quot;camera&quot;: &quot;low angle tracking shot, fast shutter freezing motion&quot;,
+  &quot;style&quot;: &quot;cinematic sports photo, warm sunrise backlight, photoreal&quot;,
+  &quot;composition&quot;: &quot;athlete in the lower half, sky at the top kept clean for text&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;text&quot;,
+    &quot;other people&quot;
+  ]
+}</code></pre></div>
+          <div class="overlay"><em>3. Frase para pôr por cima (Canva):</em> <b>O TEU VÍCIO É A TUA FORÇA.</b></div>
+          <button class="mark" type="button" data-m="C3">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="C4">
+        <div class="head"><span class="code">C4</span><span class="ttl"><strong>Produto herói</strong><span>A garrafa como estrela</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>imagem P1</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Hero product ad. Keep the bottle identical to the reference.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;scene&quot;: &quot;the branded dumbbell bottle (P1) on a gym floor, a huge soft shadow behind it on the concrete wall shaped like the gorilla head from the logo&quot;,
+  &quot;lighting&quot;: &quot;one hard spotlight low and in front, creating the shadow; water droplets on the bottle&quot;,
+  &quot;style&quot;: &quot;premium advertising photo, photoreal, monochrome&quot;,
+  &quot;composition&quot;: &quot;bottle centered low, shadow filling the upper frame, space for text at the bottom&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;text&quot;,
+    &quot;colors&quot;
+  ]
+}</code></pre></div>
+          <div class="overlay"><em>3. Frase para pôr por cima (Canva):</em> <b>HIDRATA O MONSTRO.</b></div>
+          <button class="mark" type="button" data-m="C4">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="C5">
+        <div class="head"><span class="code">C5</span><span class="ttl"><strong>Viciados Team</strong><span>Comunidade</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>fichas M0</span><span>R1</span><span>R5</span><span>R6</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Community group photo. Keep the two lead faces and the garments identical to the references.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;people&quot;: &quot;the male and female athletes in front, 8 to 10 diverse Cape Verdean athletes behind, everyone in black or white Tutuleza Viciados clothes&quot;,
+  &quot;scene&quot;: &quot;rooftop in Praia, Cape Verde, golden hour, city and ocean behind&quot;,
+  &quot;action&quot;: &quot;group just finished training, arms around each other, laughing and shouting, sweaty&quot;,
+  &quot;style&quot;: &quot;documentary sports photo, photoreal, 24mm, warm backlight&quot;,
+  &quot;composition&quot;: &quot;group in the lower two thirds, sky free for text&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;merged faces&quot;,
+    &quot;colored clothes&quot;,
+    &quot;text&quot;
+  ]
+}</code></pre></div>
+          <div class="overlay"><em>3. Frase para pôr por cima (Canva):</em> <b>NINGUÉM TREINA SOZINHO.</b></div>
+          <button class="mark" type="button" data-m="C5">Marcar como feito</button>
+        </div>
+      </article>
+      <article class="card" id="C6">
+        <div class="head"><span class="code">C6</span><span class="ttl"><strong>Lançamento Drop 01</strong><span>Anúncio da coleção</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>R1</span><span>R2</span><span>R5</span><span>R6</span><span>R7</span><span>R11</span><span>P1</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>{
+  &quot;task&quot;: &quot;Launch image: premium showroom with the collection.&quot;,
+  &quot;brand&quot;: &quot;Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.&quot;,
+  &quot;scene&quot;: &quot;minimal black showroom, brushed steel rail with the hoodie, t-shirts, leggings and sports bra from the references on hangers, cap and branded bottle on a black plinth&quot;,
+  &quot;lighting&quot;: &quot;warm white spotlights on each piece, the rest in shadow&quot;,
+  &quot;style&quot;: &quot;luxury retail interior photo, photoreal, symmetric, 24mm&quot;,
+  &quot;composition&quot;: &quot;large blank black wall at the top for the headline and logo&quot;,
+  &quot;format&quot;: &quot;portrait 4:5&quot;,
+  &quot;avoid&quot;: [
+    &quot;people&quot;,
+    &quot;colored items&quot;,
+    &quot;text&quot;
+  ]
+}</code></pre></div>
+          <div class="overlay"><em>3. Frase para pôr por cima (Canva):</em> <b>DROP 01 · JÁ DISPONÍVEL</b></div>
+          <button class="mark" type="button" data-m="C6">Marcar como feito</button>
+        </div>
+      </article>
+    </div>
+    <a class="top-link" href="#top">↑ Voltar ao início</a>
+  </section></div>
 </div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
-const LOGO = "logo-final.jpg (gorila com atleta no supino)";
-const BRAND = "Brand: TUTULEZA VICIADOS — premium black-and-white fitness apparel from Cape Verde. Use ONLY the attached gorilla logo, unchanged (same lines, same proportions). Never invent another logo or add other brands.";
-
-const CH = [
- {id:"produto", n:"1", t:"Produto", tag:"P",
-  intro:"A garrafa-haltere. Primeiro tiras o 'H2PUMP' e metes o logo (P1). As outras imagens usam essa garrafa já com a marca.",
-  items:[
-  {c:"P1", t:"Garrafa com a marca", s:"Mesma garrafa, só muda a marca · 9:16", a:["foto da garrafa original", LOGO],
-   p:{task:"Product rebrand. Keep the product 100% identical, only change the branding.",brand:BRAND,
-   keep_exactly:["dumbbell bottle shape and proportions","hexagonal heads","knurled grip","black flip-top cap","smoky translucent black plastic","concrete wall background, rubber gym floor, lighting, camera angle"],
-   remove:"the embossed text 'H2PUMP'",
-   add:"the gorilla logo, small (about 30% of the face width), debossed tone-on-tone into the front face of the top hexagonal head; tiny 'TUTULEZA VICIADOS' engraved on the bottom head, exact spelling",
-   style:"premium product photo, photoreal, 85mm, soft key light, subtle rim light, fine condensation droplets",
-   format:"vertical 9:16, 1080x1920",
-   avoid:["changing the shape","adding colors","stickers or big labels","misspelled text"]}},
-  {c:"P2", t:"Packshot loja online", s:"Fundo branco, para site e catálogo · 1:1", a:["imagem P1", LOGO],
-   p:{task:"E-commerce packshot of the branded bottle from the reference.",brand:BRAND,
-   scene:"pure white seamless background, soft natural shadow under the product",
-   views:"front view, perfectly centered, product fills 70% of the frame",
-   style:"clean commercial photo, sharp, true colors, no reflections on the background",
-   format:"square 1:1, 2048x2048",avoid:["props","text","changing the bottle"]}},
-  {c:"P3", t:"Hero com splash", s:"Imagem de impacto para anúncios · 9:16", a:["imagem P1", LOGO],
-   p:{task:"Dramatic hero shot of the branded bottle from the reference.",brand:BRAND,
-   scene:"pitch-black studio, the bottle standing on wet black rubber floor",
-   action:"cold water splashing around the bottle frozen in time, ice cubes and droplets suspended in the air",
-   lighting:"two hard white rim lights from behind left and right, edges of the bottle glowing, logo catching the light",
-   style:"high-speed product photography, photoreal, high contrast black and white feel",
-   composition:"bottle in the lower center, empty dark space at the top for text",
-   format:"vertical 9:16, 1080x1920",avoid:["colored lights","changing the bottle","text"]}},
-  {c:"P4", t:"Flat lay de ginásio", s:"Garrafa com acessórios, vista de cima · 4:5", a:["imagem P1", LOGO],
-   p:{task:"Top-down flat lay featuring the branded bottle from the reference.",brand:BRAND,
-   items:["the branded dumbbell bottle in the center","black lifting straps","black gym towel with small white gorilla logo","black cap with small white gorilla logo","chalk block with chalk dust","phone with earphones"],
-   surface:"black rubber gym floor with light chalk marks",
-   lighting:"soft overhead light, gentle shadows",
-   style:"clean editorial flat lay, organized, lots of negative space",
-   format:"portrait 4:5, 1080x1350",avoid:["clutter","other brands","colored objects"]}}
- ]},
- {id:"roupa", n:"2", t:"Roupa", tag:"R",
-  intro:"Mockups de cada peça sem modelo (ghost mannequin ou flat lay), para loja, catálogo e para depois vestires nos modelos. Gera a frente e, quando faz sentido, as costas.",
-  items:[
-  {c:"R1", t:"T-shirt preta", s:"Peça base da coleção", a:[LOGO],
-   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
-   garment:"matte black athletic fit t-shirt, premium heavyweight cotton, slightly dropped shoulders",
-   logo_front:"small white gorilla logo on the left chest, about 7 cm wide, screen print",
-   logo_back:"medium white gorilla logo centered between the shoulder blades with 'TUTULEZA VICIADOS' small underneath",
-   background:"light grey seamless studio",style:"photoreal fabric texture, soft studio light, e-commerce quality",
-   format:"landscape 3:2",avoid:["extra text","wrinkles","colored details"]}},
-  {c:"R2", t:"T-shirt oversized branca", s:"Versão clara, logo preto", a:[LOGO],
-   p:{task:"Apparel mockup, flat lay, front and back side by side.",brand:BRAND,
-   garment:"off-white oversized boxy t-shirt, heavy cotton, wide neck rib",
-   logo_front:"small black gorilla logo on the center chest",
-   logo_back:"large black gorilla logo across the upper back, wordmark 'VICIADOS' under it in bold condensed letters",
-   background:"concrete floor, soft daylight",style:"streetwear lookbook flat lay, photoreal",
-   format:"landscape 3:2",avoid:["colors other than black and off-white","misspelled text"]}},
-  {c:"R3", t:"Regata / camisola de alças", s:"Para treino de musculação", a:[LOGO],
-   p:{task:"Apparel mockup, ghost mannequin, front view.",brand:BRAND,
-   garment:"black stringer tank top with deep armholes, gym bodybuilding style",
-   logo:"white gorilla logo medium size on the center chest",
-   background:"dark grey seamless studio",style:"photoreal, rim light showing the fabric edges",
-   format:"portrait 4:5",avoid:["extra text","colored trims"]}},
-  {c:"R4", t:"Camisola de compressão", s:"Manga comprida, justa", a:[LOGO],
-   p:{task:"Apparel mockup, ghost mannequin, 3/4 front view.",brand:BRAND,
-   garment:"black long-sleeve compression shirt, technical fabric with subtle matte texture, flat seams",
-   logo:"small white gorilla logo on the left chest; 'TUTULEZA VICIADOS' small vertical print along the left forearm",
-   background:"light grey seamless studio",style:"photoreal sportswear catalog, sharp seams",
-   format:"portrait 4:5",avoid:["shiny plastic look","extra logos"]}},
-  {c:"R5", t:"Hoodie preto", s:"Peça estrela da marca", a:[LOGO],
-   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
-   garment:"matte black oversized heavyweight hoodie, double-layer hood, kangaroo pocket, thick ribbed cuffs",
-   logo_front:"white gorilla logo embroidered on the center chest, medium size, visible stitch texture",
-   logo_back:"large white gorilla logo across the back with 'TUTULEZA VICIADOS' arched under it",
-   sleeve:"small 'VICIADOS' print on the left sleeve near the cuff",
-   background:"light grey seamless studio",style:"premium streetwear e-commerce, photoreal fabric",
-   format:"landscape 3:2",avoid:["drawstring logos","colored stitches"]}},
-  {c:"R6", t:"Leggings", s:"Femininas, cintura subida", a:[LOGO],
-   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
-   garment:"black high-waist sculpting leggings, matte squat-proof fabric, no front seam, contour seam on the back",
-   logo:"small white gorilla logo on the back waistband center; tiny 'VICIADOS' on the left hip",
-   background:"light grey seamless studio",style:"photoreal activewear catalog",
-   format:"landscape 3:2",avoid:["see-through fabric","colored lines"]}},
-  {c:"R7", t:"Top desportivo", s:"Feminino, suporte médio", a:[LOGO],
-   p:{task:"Apparel mockup, ghost mannequin, front and back side by side.",brand:BRAND,
-   garment:"black sports bra, medium support, wide underband, racerback straps",
-   logo:"small white gorilla logo on the center of the underband front; 'TUTULEZA VICIADOS' small on the back strap junction",
-   background:"light grey seamless studio",style:"photoreal activewear catalog",
-   format:"landscape 3:2",avoid:["padding seams visible","extra logos"]}},
-  {c:"R8", t:"Calções de homem", s:"Treino, 7 polegadas", a:[LOGO],
-   p:{task:"Apparel mockup, flat lay.",brand:BRAND,
-   garment:"black training shorts, 7-inch inseam, lightweight woven fabric, elastic waistband with flat white drawcord, side slits",
-   logo:"small white gorilla logo on the lower left leg",
-   background:"dark concrete surface",style:"photoreal flat lay, soft overhead light",
-   format:"portrait 4:5",avoid:["stripes","colored details"]}},
-  {c:"R9", t:"Biker shorts", s:"Femininos, cintura subida", a:[LOGO],
-   p:{task:"Apparel mockup, ghost mannequin, 3/4 view.",brand:BRAND,
-   garment:"black high-waist biker shorts, mid-thigh length, matte sculpting fabric",
-   logo:"small white gorilla logo on the left thigh hem",
-   background:"light grey seamless studio",style:"photoreal activewear catalog",
-   format:"portrait 4:5",avoid:["shiny fabric","extra text"]}},
-  {c:"R10", t:"Biquíni", s:"Linha praia, desportivo", a:[LOGO],
-   p:{task:"Swimwear product mockup, flat lay, top and bottom.",brand:BRAND,
-   garment:"black athletic bikini: sporty scoop top with wide straps and a mid-rise bottom with full coverage, matte recycled swim fabric",
-   logo:"tiny white gorilla logo on the top's center band and on the left hip of the bottom",
-   background:"black volcanic sand with a few smooth stones",style:"photoreal swimwear catalog, warm daylight",
-   format:"portrait 4:5",avoid:["patterns","colored straps","extra logos"]}},
-  {c:"R11", t:"Boné", s:"Acessório", a:[LOGO],
-   p:{task:"Product mockup, 3/4 front view.",brand:BRAND,
-   product:"black six-panel cap, curved brim, structured front, metal back buckle",
-   logo:"white gorilla logo embroidered 3D on the front panel, medium size; 'VICIADOS' small embroidery on the back above the strap",
-   background:"light grey seamless studio",style:"photoreal product photo, embroidery detail sharp",
-   format:"square 1:1",avoid:["flat brim","colored stitching"]}},
-  {c:"R12", t:"Saco de ginásio", s:"Duffel bag", a:[LOGO],
-   p:{task:"Product mockup, 3/4 view.",brand:BRAND,
-   product:"black duffel gym bag, matte water-resistant fabric, separate shoe compartment, black webbing handles and shoulder strap",
-   logo:"white gorilla logo printed on the side panel; 'TUTULEZA VICIADOS' small on the strap",
-   background:"rubber gym floor, blurred dumbbell rack behind",style:"photoreal product photo, moody light",
-   format:"portrait 4:5",avoid:["shiny plastic","extra logos"]}},
-  {c:"R13", t:"Pack acessórios", s:"Toalha, meias, shaker, munhequeiras", a:[LOGO, "imagem P1"],
-   p:{task:"Product group shot of brand accessories.",brand:BRAND,
-   items:["black gym towel with small white gorilla logo in the corner","white crew socks with small black gorilla logo on the side","black protein shaker with white gorilla logo","black wrist wraps with small white logo","the branded dumbbell bottle from the reference"],
-   arrangement:"neatly grouped on a black plinth, staggered heights",
-   background:"light grey studio",style:"photoreal catalog group shot",
-   format:"portrait 4:5",avoid:["clutter","colored items"]}},
-  {c:"R14", t:"Coleção completa", s:"Capa do catálogo, todas as peças", a:[LOGO, "imagens R1 a R13"],
-   p:{task:"Full collection flat lay for the catalog cover.",brand:BRAND,
-   items:"all pieces from the references: black t-shirt, white oversized t-shirt, tank top, compression shirt, hoodie, leggings, sports bra, men's shorts, biker shorts, bikini, cap, duffel bag, accessories, dumbbell bottle",
-   arrangement:"organized grid, folded neatly, logos visible, generous spacing",
-   background:"black matte surface",style:"premium editorial flat lay, top-down, soft even light",
-   composition:"empty band at the top for the title 'DROP 01'",
-   format:"portrait 4:5, 1080x1350",avoid:["pieces overlapping logos","colored items"]}}
- ]},
- {id:"modelos", n:"3", t:"Modelos", tag:"M",
-  intro:"Fotos com os atletas. Se já criaste o atleta e a atleta antes, anexa essas fichas. Se não, gera primeiro M0. Anexa sempre o mockup da peça (R) para a roupa sair igual.",
-  items:[
-  {c:"M0", t:"Fichas dos atletas", s:"Ele e ela, para manter as caras", a:[LOGO],
-   p:{task:"Two photoreal character reference sheets (front, 3/4, close-up face) on neutral grey.",
-   male:"Cape Verdean man, 28, athletic muscular build, dark skin, short twisted hair, short beard, calm intense eyes",
-   female:"Cape Verdean woman, 26, toned athletic build, deep brown skin, long braids tied high, confident expression",
-   wardrobe:"plain black training clothes with the small white gorilla logo on the chest",brand:BRAND,
-   style:"photoreal, 85mm, soft studio light, sharp skin texture, no retouch plastic look",
-   format:"landscape 16:9"}},
-  {c:"M1", t:"Lookbook homem", s:"T-shirt + calções, estúdio", a:[LOGO,"ficha do atleta (M0)","R1","R8"],
-   p:{task:"Studio lookbook photo. Keep the athlete's face and the garments identical to the references.",brand:BRAND,
-   model:"the male athlete from the reference",outfit:"black t-shirt (R1) and black shorts (R8) from references, black training shoes",
-   pose:"standing, arms relaxed, slight turn, looking at the camera, serious",
-   background:"light grey seamless studio",lighting:"soft key light, white rim light",
-   style:"premium sportswear catalog, photoreal, 85mm",format:"portrait 4:5",avoid:["changing the logo","extra accessories"]}},
-  {c:"M2", t:"Lookbook mulher", s:"Top + leggings, estúdio", a:[LOGO,"ficha da atleta (M0)","R7","R6"],
-   p:{task:"Studio lookbook photo. Keep the athlete's face and the garments identical to the references.",brand:BRAND,
-   model:"the female athlete from the reference",outfit:"black sports bra (R7) and black leggings (R6) from references, black training shoes",
-   pose:"confident stance, one hand on the hip, looking at the camera",
-   background:"light grey seamless studio",lighting:"soft key light, white rim light",
-   style:"premium activewear catalog, photoreal, 85mm",format:"portrait 4:5",avoid:["changing the logo","sheer fabric"]}},
-  {c:"M3", t:"Hoodies na rua", s:"Os dois, noite na Praia", a:[LOGO,"fichas M0","R5","R11"],
-   p:{task:"Urban streetwear photo. Keep faces and garments identical to the references.",brand:BRAND,
-   models:"the male and female athletes from the references, side by side",
-   outfit:"both in the black hoodie (R5); he wears the black cap (R11)",
-   scene:"night street in Praia, Cape Verde, wet asphalt, warm street lamps, soft bokeh",
-   pose:"walking toward the camera, hoods down, relaxed confidence",
-   style:"cinematic street photography, photoreal, 35mm, slight film grain",format:"portrait 4:5",avoid:["neon colors","extra logos"]}},
-  {c:"M4", t:"Biquíni na praia", s:"Atleta, praia vulcânica", a:[LOGO,"ficha da atleta (M0)","R10","P1"],
-   p:{task:"Athletic swimwear campaign photo. Keep face and garments identical to the references.",brand:BRAND,
-   model:"the female athlete from the reference",outfit:"the black athletic bikini (R10)",
-   scene:"black volcanic sand beach in Cape Verde, golden late afternoon, Atlantic waves",
-   action:"walking out of the water holding the branded dumbbell bottle (P1), natural confident expression",
-   style:"sporty editorial, tasteful, photoreal, 50mm",format:"portrait 4:5",avoid:["suggestive poses","colored swimwear"]}},
-  {c:"M5", t:"Supino no ginásio", s:"Homem, regata, liga ao logo", a:[LOGO,"ficha do atleta (M0)","R3"],
-   p:{task:"Gym training photo that echoes the logo. Keep face and garment identical to the references.",brand:BRAND,
-   model:"the male athlete from the reference",outfit:"black tank top (R3), black shorts",
-   action:"lying on a flat bench pressing a loaded barbell, arms fully extended, plates on both sides",
-   camera:"shot from directly behind his head, looking down along his body, symmetric composition: barbell across the top of the frame, plates on each side",
-   scene:"dark industrial gym, single hard overhead light, chalk dust in the air",
-   style:"cinematic black-and-white sports photo, photoreal, high contrast",format:"portrait 4:5",avoid:["bent barbell","extra people"]}},
-  {c:"M6", t:"Saída do ginásio", s:"Acessórios em uso", a:[LOGO,"ficha do atleta (M0)","R5","R11","R12","P1"],
-   p:{task:"Lifestyle photo. Keep face and products identical to the references.",brand:BRAND,
-   model:"the male athlete from the reference",
-   outfit:"black hoodie (R5) and cap (R11), duffel bag (R12) on the shoulder, branded bottle (P1) in hand",
-   scene:"leaving the gym at sunrise, concrete entrance, warm low sun",
-   pose:"mid-stride, looking ahead, small satisfied smile",
-   style:"lifestyle editorial, photoreal, 35mm",format:"portrait 4:5",avoid:["extra logos","colored clothes"]}}
- ]},
- {id:"campanha", n:"4", t:"Campanha", tag:"C",
-  intro:"Campanha \"Tira o peso da cabeça\". Seis imagens finais. Cada uma tem a frase para pôr por cima no Canva ou no CapCut, e o prompt deixa espaço livre para ela. Gera em 4:5 para o feed e repete em 9:16 para stories e reels.",
-  items:[
-  {c:"C1", t:"Key visual", s:"A imagem principal da campanha", o:"TIRA O PESO DA CABEÇA.", a:[LOGO,"ficha do atleta (M0)","R3"],
-   p:{task:"Key visual of the campaign. Keep face and garment identical to the references.",brand:BRAND,
-   concept:"the image recreates the logo in real life: a lifter on a bench press seen head-on, barbell across the frame like the gorilla's brow, plates left and right like its ears",
-   model:"the male athlete from the reference in the black tank top (R3)",
-   camera:"perfectly symmetric, shot from the foot of the bench, low and centered, barbell spanning the full width",
-   scene:"pitch-black gym, one hard light from above, chalk dust glowing",
-   style:"cinematic black-and-white, photoreal, high contrast",
-   composition:"empty black area in the bottom third for the headline",format:"portrait 4:5, 1080x1350",avoid:["colors","text"]}},
-  {c:"C2", t:"Retrato de suor", s:"Close-up, intensidade", o:"VICIADOS. NUNCA SATISFEITOS.", a:[LOGO,"ficha do atleta (M0)","R1"],
-   p:{task:"Intense close-up portrait. Keep the face identical to the reference.",brand:BRAND,
-   model:"the male athlete from the reference, black t-shirt (R1) with the logo visible at the bottom edge",
-   expression:"just finished a heavy set, breathing hard, sweat running down the face, eyes locked on the lens",
-   lighting:"single hard side light, deep shadows",style:"black-and-white editorial portrait, photoreal, 85mm",
-   composition:"face on the right half, empty dark space on the left for text",format:"portrait 4:5",avoid:["text","smile"]}},
-  {c:"C3", t:"Corrida na praia", s:"Ela, nascer do sol", o:"O TEU VÍCIO É A TUA FORÇA.", a:[LOGO,"ficha da atleta (M0)","R7","R9"],
-   p:{task:"Action sports photo. Keep face and garments identical to the references.",brand:BRAND,
-   model:"the female athlete from the reference, sports bra (R7) and biker shorts (R9)",
-   action:"sprinting along black volcanic sand at sunrise, sand kicked up behind, braids flying",
-   camera:"low angle tracking shot, fast shutter freezing motion",
-   style:"cinematic sports photo, warm sunrise backlight, photoreal",
-   composition:"athlete in the lower half, sky at the top kept clean for text",format:"portrait 4:5",avoid:["text","other people"]}},
-  {c:"C4", t:"Produto herói", s:"A garrafa como estrela", o:"HIDRATA O MONSTRO.", a:[LOGO,"imagem P1"],
-   p:{task:"Hero product ad. Keep the bottle identical to the reference.",brand:BRAND,
-   scene:"the branded dumbbell bottle (P1) on a gym floor, a huge soft shadow behind it on the concrete wall shaped like the gorilla head from the logo",
-   lighting:"one hard spotlight low and in front, creating the shadow; water droplets on the bottle",
-   style:"premium advertising photo, photoreal, monochrome",
-   composition:"bottle centered low, shadow filling the upper frame, space for text at the bottom",format:"portrait 4:5",avoid:["text","colors"]}},
-  {c:"C5", t:"Viciados Team", s:"Comunidade", o:"NINGUÉM TREINA SOZINHO.", a:[LOGO,"fichas M0","R1","R5","R6"],
-   p:{task:"Community group photo. Keep the two lead faces and the garments identical to the references.",brand:BRAND,
-   people:"the male and female athletes in front, 8 to 10 diverse Cape Verdean athletes behind, everyone in black or white Tutuleza Viciados clothes",
-   scene:"rooftop in Praia, Cape Verde, golden hour, city and ocean behind",
-   action:"group just finished training, arms around each other, laughing and shouting, sweaty",
-   style:"documentary sports photo, photoreal, 24mm, warm backlight",
-   composition:"group in the lower two thirds, sky free for text",format:"portrait 4:5",avoid:["merged faces","colored clothes","text"]}},
-  {c:"C6", t:"Lançamento Drop 01", s:"Anúncio da coleção", o:"DROP 01 · JÁ DISPONÍVEL", a:[LOGO,"R1","R2","R5","R6","R7","R11","P1"],
-   p:{task:"Launch image: premium showroom with the collection.",brand:BRAND,
-   scene:"minimal black showroom, brushed steel rail with the hoodie, t-shirts, leggings and sports bra from the references on hangers, cap and branded bottle on a black plinth",
-   lighting:"warm white spotlights on each piece, the rest in shadow",
-   style:"luxury retail interior photo, photoreal, symmetric, 24mm",
-   composition:"large blank black wall at the top for the headline and logo",format:"portrait 4:5",avoid:["people","colored items","text"]}}
- ]}
-];
-
-const KEY = "kitviciados_done";
-let done = {};
-try { done = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) {}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {} };
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const total = CH.reduce((n,c)=>n+c.items.length,0);
-
-function navHTML(){
-  const links = [`<a href="#comecar"><b>0</b>Começar</a>`].concat(CH.map(c=>{
-    const d = c.items.filter(i=>done[i.c]).length;
-    return `<a href="#${c.id}"><b>${c.n}</b>${c.t} · ${d}/${c.items.length}</a>`;
-  }));
-  document.getElementById("navrow").innerHTML = links.join("");
-  const d = Object.keys(done).filter(k=>done[k]).length;
-  document.getElementById("progress").textContent = `${d} de ${total} imagens feitas`;
-}
-
-document.getElementById("chapters").innerHTML = CH.map(ch => `
-  <section id="${ch.id}">
-    <div class="chap"><span class="n">${ch.n}</span><h2>${ch.t}</h2></div>
-    <p class="intro">${esc(ch.intro)}</p>
-    <div class="cards">${ch.items.map(it => `
-      <details class="card${done[it.c]?" done":""}" id="${it.c}">
-        <summary><span class="code">${it.c}</span><span class="ttl"><strong>${esc(it.t)}</strong><span>${esc(it.s)}</span></span><span class="chev" aria-hidden="true">›</span></summary>
-        <div class="body">
-          <div class="att"><em>Anexar:</em>${it.a.map(x=>`<span>${esc(x)}</span>`).join("")}</div>
-          ${it.o?`<div class="overlay">Frase para pôr por cima: <b>${esc(it.o)}</b></div>`:""}
-          <pre>${esc(JSON.stringify(it.p,null,2))}</pre>
-          <div class="actions">
-            <button class="copy" type="button" data-c="${it.c}">Copiar comando</button>
-            <button class="mark" type="button" data-m="${it.c}">${done[it.c]?"✓ Feito":"Marcar como feito"}</button>
-          </div>
-        </div>
-      </details>`).join("")}
-    </div>
-    <a class="top-link" href="#top">↑ Voltar ao início</a>
-  </section>`).join("");
-
-const byCode = {}; CH.forEach(c=>c.items.forEach(i=>byCode[i.c]=i));
-const toast = document.getElementById("toast"); let tt;
-function say(m){ toast.textContent=m; toast.hidden=false; clearTimeout(tt); tt=setTimeout(()=>toast.hidden=true,1600); }
-
-document.addEventListener("click", e => {
-  const cb = e.target.closest("button.copy");
-  if (cb) {
-    const txt = JSON.stringify(byCode[cb.dataset.c].p, null, 2);
-    const pre = cb.closest(".body").querySelector("pre");
-    const fallback = () => { const r=document.createRange(); r.selectNodeContents(pre); const s=getSelection(); s.removeAllRanges(); s.addRange(r); say("Texto selecionado. Copia manualmente."); };
-    try { navigator.clipboard.writeText(txt).then(()=>say(cb.dataset.c+" copiado"), fallback); } catch(err) { fallback(); }
-    return;
-  }
-  const mb = e.target.closest("button.mark");
-  if (mb) {
-    const c = mb.dataset.m; done[c] = !done[c]; save();
-    const card = document.getElementById(c);
-    card.classList.toggle("done", !!done[c]);
-    mb.textContent = done[c] ? "✓ Feito" : "Marcar como feito";
-    navHTML();
-  }
+const KEY="kitviciados_done";let done={};
+try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
+const toast=document.getElementById("toast");let tt;
+function say(m){toast.textContent=m;toast.hidden=false;clearTimeout(tt);tt=setTimeout(()=>toast.hidden=true,1600)}
+function paint(){document.querySelectorAll("button.mark").forEach(b=>{const c=b.dataset.m;b.textContent=done[c]?"✓ Feito":"Marcar como feito";document.getElementById(c).classList.toggle("done",!!done[c])});
+const d=Object.keys(done).filter(k=>done[k]).length;document.getElementById("progress").textContent=d+" de 31 imagens feitas"}
+document.addEventListener("click",e=>{
+ const cb=e.target.closest("button.copy");
+ if(cb){const pre=cb.parentNode.querySelector("pre");const txt=pre.textContent;
+  const fb=()=>{const r=document.createRange();r.selectNodeContents(pre);const sl=getSelection();sl.removeAllRanges();sl.addRange(r);say("Selecionado: carrega em Copiar no menu")};
+  try{navigator.clipboard.writeText(txt).then(()=>{cb.textContent="Copiado ✓";setTimeout(()=>cb.textContent="Copiar",1500)},fb)}catch(err){fb()}return}
+ const mb=e.target.closest("button.mark");if(mb){const c=mb.dataset.m;done[c]=!done[c];save();paint()}
 });
-navHTML();
+paint();
 </script>
