@@ -8,46 +8,41 @@ Ordem: **1. Logo → 2. Produto → 3. Atletas com o produto → (depois) vídeo
 
 ---
 
-## 1. LOGO — Gorila + atleta no supino
+## 1. LOGO — Gorila + atleta no supino (v2, minimalista)
 
-**Anexar:** o logo atual do gorila.
+**Base pronta:** `logo/logo-conceito.svg` / `logo/logo-conceito.png`, desenhado em vetor e já resolvido.
+É **um só desenho**: cada peça do gorila É uma peça do supino, nada está "posto por cima".
 
-### Conceito (como as duas leituras convivem)
-- **De longe vê-se o gorila.** A cabeça frontal mantém a mesma forma de escudo/diamante, o mesmo olhar sério e o mesmo nariz.
-- **A barra de supino atravessa a testa** na horizontal e **os discos nas pontas SÃO as orelhas**.
-- **O atleta deitado no banco forma a sobrancelha do gorila.** O corpo dele é a linha grossa da testa (em espaço negativo branco) e os **dois braços sobem até à barra**. Está literalmente a tirar o peso de dentro da cabeça.
-- **A barba fica simples:** 3 pontas geométricas limpas no queixo, sem pelo serrilhado.
+| Gorila | Supino (visto de frente, dos pés do banco) |
+|---|---|
+| Orelhas | Discos de peso (a barra entra no furo do centro) |
+| Sobrancelha / testa | A barra |
+| Laterais da zona dos olhos | Os braços esticados a segurar a barra |
+| Bochechas / focinho branco | Ombros e tronco do atleta |
+| Nariz | O banco visto de frente (o peito do atleta por cima) |
+| Narinas | O espaço entre as pernas do banco |
 
-### Comando (copiar tudo)
+**Recomendação:** usa este SVG como logo final (ou pede a um designer para afinar curvas em 30 min). Os geradores de imagem não fazem bem logos de "duplo sentido" e acabam a meter elementos soltos uns por cima dos outros, como aconteceu na imagem que te deram.
+
+### Comando para o ChatGPT / Gemini (anexa o `logo-conceito.png`)
 ```json
 {
-  "task": "Redesign the attached gorilla logo. Keep its identity, add a hidden second reading.",
-  "reference_image": "attached gorilla head logo — keep the same front-facing pose, shield/diamond head silhouette, serious stare, nose shape and bold black-and-white flat style",
-  "concept": "The gorilla is lifting the weight out of his own head. Two images in one: at first glance a gorilla face, at second glance a person lying on a bench pressing a barbell.",
-  "design_rules": {
-    "ears": "Replace both ears with stylized barbell weight plates seen from the side: thick black discs with a white inner ring and a small center hole. They stay exactly where the ears are, same size, symmetric.",
-    "barbell": "A straight horizontal barbell bar runs across the upper forehead and connects the two plate-ears.",
-    "lifter": "Inside the forehead, in white negative space, a minimal side-view silhouette of a person lying flat on a weight bench, arms extended straight up holding the bar. The person's body and the bench together form the gorilla's heavy brow ridge, directly above the eyes.",
-    "eyes": "Keep the angry, focused gorilla eyes right under the bench/brow line.",
-    "beard": "Simplify the chin fur into 3 clean sharp geometric points. No jagged strands, no texture.",
-    "hierarchy": "The gorilla face dominates (about 70% of the read). The lifter is clearly visible but secondary, readable at a second glance."
-  },
-  "style": "flat vector mascot logo, solid black on pure white, bold uniform stroke weight, negative space, symmetric, no gradients, no shadows, no 3D, no texture",
-  "legibility": "Must remain readable at 32px (app icon) and embroidered on clothing — few shapes, big gaps, no thin lines.",
-  "output": "single logo centered on pure white background, square 1:1, high resolution",
-  "do_not": ["add text or letters", "add a full body gorilla", "add color", "make it cartoonish or cute", "add realistic fur", "put the plates anywhere other than the ears"]
+  "task": "Refine the attached logo. It is already the correct concept — DO NOT add, move or remove any element. Only polish curves and proportions.",
+  "concept": "One single mark that is both a gorilla face and a front view of a bench press. Every gorilla feature IS a gym element: ears = weight plates, brow = barbell, sides of the eye area = the lifter's raised arms, white muzzle = the lifter's shoulders and torso, nose = the bench seen head-on, nostrils = the gap between the bench legs.",
+  "keep_exactly": ["front-facing symmetric view", "the plates as ears with the bar going into their centre holes", "the bar as the brow line", "the two arms rising from the muzzle to the bar", "the bench-shaped nose with two legs", "the two angry eye slits", "the simple frown mouth", "the slightly peaked gorilla head"],
+  "style": "ultra minimal flat vector logo, solid black on pure white, only 2 colors, no gradients, no shading, no outlines-inside-outlines, no fur, no texture, no extra lines",
+  "polish": "smoother curves, perfectly symmetric, consistent spacing between shapes, slightly heavier gorilla brow and jaw so it reads as a gorilla, not a monkey",
+  "must_read_at": "32px app icon and embroidered on a t-shirt",
+  "output": "logo centered on pure white, 1:1, 2048x2048",
+  "do_not": ["add a second gorilla face, ears or barbell on top", "draw a person in side view", "add a realistic body", "add text", "add more detail than the reference"]
 }
 ```
 
-### Variações (gera depois de aprovar a base)
-- **Versão negativa:** *"Same logo, inverted: white gorilla on pure black background."*
-- **Logo + nome:** *"Place the logo above the wordmark 'TUTULEZA VICIADOS' in a heavy condensed sans-serif, all caps, with 'FITNESS GROUP' small and wide-spaced underneath. Exact spelling. Black on white."*
-- **Ícone de app/Instagram:** *"Logo only, centered in a black circle, white gorilla, generous padding."*
+**Se ainda complicar:** escreve só *"Same drawing as the attached image, just cleaner vector curves. Change nothing else."*
 
-**Se o modelo não acertar à primeira**, corrige numa mensagem curta e manda **uma coisa de cada vez**:
-- *"The lifter is not visible — make the person on the bench and the raised arms clearer in white inside the forehead."*
-- *"The ears must look like weight plates: round discs with an inner ring and a center hole."*
-- *"Too much detail — reduce to fewer, bolder shapes."*
+### Variações
+- **Negativo:** *"Same logo, inverted: white on pure black."*
+- **Com nome:** *"Logo above the wordmark 'TUTULEZA VICIADOS' in heavy condensed sans-serif, all caps, 'FITNESS GROUP' small and wide-spaced underneath. Exact spelling. Black on white."*
 
 ---
 

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fff"/>
+  <!-- head -->
+  <path fill="#000" d="M200 50 C226 54 300 82 316 168 L320 250 C320 304 262 342 200 366 C138 342 80 304 80 250 L84 168 C100 82 174 54 200 50 Z"/>
+  <!-- ears = weight plates (bar passes through the centre hole) -->
+  <circle cx="74" cy="170" r="46" fill="#000"/>
+  <circle cx="326" cy="170" r="46" fill="#000"/>
+  <circle cx="74" cy="170" r="27" fill="none" stroke="#fff" stroke-width="7"/>
+  <circle cx="326" cy="170" r="27" fill="none" stroke="#fff" stroke-width="7"/>
+  <!-- bar = brow -->
+  <rect x="60" y="164" width="280" height="12" rx="6" fill="#fff"/>
+  <!-- face: arms rise from the shoulders (cheeks) to the bar, slightly wider grip -->
+  <path fill="#fff" d="
+    M128 170 L148 170 L158 222
+    Q200 236 242 222
+    L252 170 L272 170 L262 230
+    C284 242 292 272 278 298
+    C262 324 232 336 200 338
+    C168 336 138 324 122 298
+    C108 272 116 242 138 230 Z"/>
+  <!-- angry eyes in the shadow under the brow -->
+  <path fill="#fff" d="M168 192 L192 202 L170 208 Z"/>
+  <path fill="#fff" d="M232 192 L208 202 L230 208 Z"/>
+  <!-- nose = lifter's chest on the bench, seen head-on; bench legs = nostrils -->
+  <path fill="#000" d="
+    M184 246 Q200 236 216 246 L218 254 L236 254 Q242 254 242 260 L242 268
+    L236 268 L236 290 L222 290 L222 268 L178 268 L178 290 L164 290 L164 268
+    L158 268 L158 260 Q158 254 164 254 L182 254 Z"/>
+  <!-- mouth -->
+  <path fill="none" stroke="#000" stroke-width="9" stroke-linecap="round" d="M172 314 Q200 304 228 314"/>
+</svg>
