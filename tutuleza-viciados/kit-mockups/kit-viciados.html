@@ -85,7 +85,7 @@ html{scroll-behavior:smooth}
 
   <nav class="bar" aria-label="Capítulos">
     <div class="row" id="navrow"><a href="#comecar"><b>0</b>Começar</a><a href="#produto"><b>1</b>Produto</a><a href="#roupa"><b>2</b>Roupa</a><a href="#modelos"><b>3</b>Modelos</a><a href="#campanha"><b>4</b>Campanha</a></div>
-    <div class="progress" id="progress">31 comandos</div>
+    <div class="progress" id="progress">32 comandos</div>
   </nav>
 
   <section id="comecar">
@@ -226,6 +226,51 @@ html{scroll-behavior:smooth}
     <div class="chap"><span class="n">2</span><h2>Roupa</h2></div>
     <p class="intro">Mockups de cada peça sem modelo (ghost mannequin ou flat lay), para loja, catálogo e para depois vestires nos modelos. Gera a frente e, quando faz sentido, as costas.</p>
     <div class="cards">
+      <article class="card" id="R1B">
+        <div class="head"><span class="code">R1B</span><span class="ttl"><strong>T-shirt oversized: pintura nas costas</strong><span>Discos nos ombros, gorila no meio, texto em baixo · 9:16</span></span></div>
+        <div class="body">
+          <div class="att"><em>1. Anexar:</em><span>logo-final.jpg (gorila com atleta no supino)</span><span>foto de referência (homem de costas no ginásio), opcional</span></div>
+          <div class="step2"><em>2. Copiar e colar este comando:</em></div>
+          <div class="codebox"><button class="copy" type="button">Copiar</button><pre><code>Create a photorealistic product mockup of an OVERSIZED BLACK T-SHIRT seen from the BACK, worn by a male model.
+
+ATTACHED IMAGES
+- Image 1 = the brand logo (gorilla face with a barbell). Follow its design exactly: the barbell runs straight across the gorilla's forehead, the weight plates ARE the gorilla's ears, and a small person lying on a bench pressing the bar sits inside the forehead. Do not invent a different gorilla.
+- Image 2 (if attached) = scene reference. Keep the same shot: man standing with his back to the camera, concrete gym wall, black pull-up rig, soft studio light. Only the shirt print changes.
+
+WHAT THE BACK PRINT MUST LOOK LIKE
+It is NOT a simple flat logo print. It is a large ARTWORK, like a black-and-white painting made directly on the fabric:
+- hand-painted with visible brush strokes, dry-brush texture, ink splashes and soft grey airbrush shading
+- the gorilla is painted with depth and volume (light hitting the brow, nose and cheeks, dark shadows around the eyes), but it keeps the exact shapes of the logo
+- colors: only white, light grey and dark grey ink on the black fabric
+- the ink looks soaked into the cotton, slightly worn, like a premium vintage streetwear piece
+
+LAYOUT OF THE ARTWORK ON THE BACK (from top to bottom)
+1. SHOULDERS: the two weight plates (the gorilla's ears) sit ON THE SHOULDERS, one on each side, right where the back meets the sleeves. They wrap slightly over the shoulder seams.
+2. UPPER BACK: the barbell is one straight horizontal line across the upper back, from one shoulder plate to the other, just under the collar.
+3. MIDDLE BACK: directly under the barbell, the gorilla face hangs down and fills the center of the back: forehead with the small bench-press figure, angry eyes, nose, closed mouth, chin. The chin ends around the lower ribs.
+4. LOWER BACK: under the chin, the brand name in big bold condensed capital letters on two lines:
+   TUTULEZA
+   VICIADOS
+5. Under the brand name, a smaller single line in clean capital letters:
+   DEAR SELF, DON'T FOCUS ON YOUR NEGATIVITY.
+
+The whole artwork is about 45 cm wide (it covers almost the full width of the back) and runs from the shoulders down to just above the hem.
+
+TEXT RULES (very important)
+- Write exactly: "TUTULEZA VICIADOS" and "DEAR SELF, DON'T FOCUS ON YOUR NEGATIVITY."
+- No other words, no typos, no extra letters.
+
+T-SHIRT
+Oversized boxy fit, dropped shoulders, wide short sleeves, heavyweight 280 gsm black cotton, thick ribbed collar. Natural folds and fabric texture visible.
+
+PHOTO STYLE
+Photorealistic fashion e-commerce photo, 50mm lens, soft key light, sharp fabric and ink texture, vertical 9:16.
+
+AVOID
+Thin outline-only drawing, an empty gorilla face, a different gorilla, the plates floating away from the shoulders, colors, misspelled text, extra slogans.</code></pre></div>
+          <button class="mark" type="button" data-m="R1B">Marcar como feito</button>
+        </div>
+      </article>
       <article class="card" id="R1">
         <div class="head"><span class="code">R1</span><span class="ttl"><strong>T-shirt preta</strong><span>Peça base da coleção</span></span></div>
         <div class="body">
@@ -872,7 +917,7 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
 const toast=document.getElementById("toast");let tt;
 function say(m){toast.textContent=m;toast.hidden=false;clearTimeout(tt);tt=setTimeout(()=>toast.hidden=true,1600)}
 function paint(){document.querySelectorAll("button.mark").forEach(b=>{const c=b.dataset.m;b.textContent=done[c]?"✓ Feito":"Marcar como feito";document.getElementById(c).classList.toggle("done",!!done[c])});
-const d=Object.keys(done).filter(k=>done[k]).length;document.getElementById("progress").textContent=d+" de 31 imagens feitas"}
+const d=Object.keys(done).filter(k=>done[k]).length;document.getElementById("progress").textContent=d+" de 32 imagens feitas"}
 document.addEventListener("click",e=>{
  const cb=e.target.closest("button.copy");
  if(cb){const pre=cb.parentNode.querySelector("pre");const txt=pre.textContent;

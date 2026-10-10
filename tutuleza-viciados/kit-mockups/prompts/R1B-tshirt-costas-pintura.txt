@@ -1,0 +1,37 @@
+Create a photorealistic product mockup of an OVERSIZED BLACK T-SHIRT seen from the BACK, worn by a male model.
+
+ATTACHED IMAGES
+- Image 1 = the brand logo (gorilla face with a barbell). Follow its design exactly: the barbell runs straight across the gorilla's forehead, the weight plates ARE the gorilla's ears, and a small person lying on a bench pressing the bar sits inside the forehead. Do not invent a different gorilla.
+- Image 2 (if attached) = scene reference. Keep the same shot: man standing with his back to the camera, concrete gym wall, black pull-up rig, soft studio light. Only the shirt print changes.
+
+WHAT THE BACK PRINT MUST LOOK LIKE
+It is NOT a simple flat logo print. It is a large ARTWORK, like a black-and-white painting made directly on the fabric:
+- hand-painted with visible brush strokes, dry-brush texture, ink splashes and soft grey airbrush shading
+- the gorilla is painted with depth and volume (light hitting the brow, nose and cheeks, dark shadows around the eyes), but it keeps the exact shapes of the logo
+- colors: only white, light grey and dark grey ink on the black fabric
+- the ink looks soaked into the cotton, slightly worn, like a premium vintage streetwear piece
+
+LAYOUT OF THE ARTWORK ON THE BACK (from top to bottom)
+1. SHOULDERS: the two weight plates (the gorilla's ears) sit ON THE SHOULDERS, one on each side, right where the back meets the sleeves. They wrap slightly over the shoulder seams.
+2. UPPER BACK: the barbell is one straight horizontal line across the upper back, from one shoulder plate to the other, just under the collar.
+3. MIDDLE BACK: directly under the barbell, the gorilla face hangs down and fills the center of the back: forehead with the small bench-press figure, angry eyes, nose, closed mouth, chin. The chin ends around the lower ribs.
+4. LOWER BACK: under the chin, the brand name in big bold condensed capital letters on two lines:
+   TUTULEZA
+   VICIADOS
+5. Under the brand name, a smaller single line in clean capital letters:
+   DEAR SELF, DON'T FOCUS ON YOUR NEGATIVITY.
+
+The whole artwork is about 45 cm wide (it covers almost the full width of the back) and runs from the shoulders down to just above the hem.
+
+TEXT RULES (very important)
+- Write exactly: "TUTULEZA VICIADOS" and "DEAR SELF, DON'T FOCUS ON YOUR NEGATIVITY."
+- No other words, no typos, no extra letters.
+
+T-SHIRT
+Oversized boxy fit, dropped shoulders, wide short sleeves, heavyweight 280 gsm black cotton, thick ribbed collar. Natural folds and fabric texture visible.
+
+PHOTO STYLE
+Photorealistic fashion e-commerce photo, 50mm lens, soft key light, sharp fabric and ink texture, vertical 9:16.
+
+AVOID
+Thin outline-only drawing, an empty gorilla face, a different gorilla, the plates floating away from the shoulders, colors, misspelled text, extra slogans.
