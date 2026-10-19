@@ -1,0 +1,344 @@
+<title>Prancha Menu Real</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Anton&family=Archivo:wght@500;700&display=swap">
+<style>
+/* Layout: estúdio — folha de aprovação com 3 direções lado a lado, depois voz, guião e formulário de escolhas */
+:root{
+  --bg:#f3f4f2; --panel:#ffffff; --ink:#15181b; --muted:#5d6670; --line:#d9ddd8; --accent:#0e6e6a; --accent-ink:#ffffff; --sel:#e3f1ef;
+  --f-ui:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111416;--panel:#191d20;--ink:#e9ece9;--muted:#9aa4ab;--line:#2c3236;--accent:#4fc2b9;--accent-ink:#0b1513;--sel:#1b2b2a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111416;--panel:#191d20;--ink:#e9ece9;--muted:#9aa4ab;--line:#2c3236;--accent:#4fc2b9;--accent-ink:#0b1513;--sel:#1b2b2a;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:56px}
+header{display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(28px,4.4vw,44px);line-height:1.08;margin:0;text-wrap:balance;font-weight:700;letter-spacing:-.01em}
+h2{font-size:22px;margin:0;text-wrap:balance}
+h3{font-size:17px;margin:0}
+p{margin:0}
+.lead{max-width:68ch;color:var(--muted);font-size:16px}
+section{display:flex;flex-direction:column;gap:18px}
+.sec-head{display:flex;flex-direction:column;gap:6px;max-width:72ch}
+.sec-head p{color:var(--muted)}
+
+/* Direções */
+.dirs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:980px){.dirs{grid-template-columns:1fr}}
+.dir{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.dir-body{padding:18px;display:flex;flex-direction:column;gap:12px}
+.dir-tag{font-family:var(--f-mono);font-size:12px;color:var(--accent)}
+.dir p{color:var(--muted);font-size:14px}
+.swatches{display:flex;gap:6px}
+.sw{flex:1;height:26px;border-radius:5px;border:1px solid rgba(0,0,0,.08)}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
+.meta dt{font-family:var(--f-mono);color:var(--muted);font-size:12px}
+.meta dd{margin:0}
+
+/* Quadro 16:9 animado — cada direção define as suas cores (mundo próprio, independente do tema) */
+.frame{position:relative;aspect-ratio:16/9;max-width:100%;overflow:hidden;isolation:isolate}
+.frame .t{position:absolute;left:7%;top:16%;z-index:3}
+.frame .tag{position:absolute;left:7%;bottom:12%;z-index:3;font-size:clamp(11px,1.15vw,13px)}
+.phone{position:absolute;right:7%;top:12%;width:27%;aspect-ratio:9/18;border-radius:14px;z-index:2;overflow:hidden;animation:rise 6s ease-in-out infinite}
+.plate{position:absolute;left:50%;top:30%;width:78%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%}
+.plate::before,.plate::after{content:"";position:absolute;border-radius:50%}
+.badge{position:absolute;left:8%;top:56%;font-size:8px;padding:2px 6px;border-radius:20px;font-family:var(--f-mono);animation:pop 6s ease-in-out infinite}
+.line{position:absolute;left:8%;height:4px;border-radius:3px;opacity:.6}
+.l1{top:66%;width:70%}.l2{top:72%;width:50%}.l3{top:78%;width:60%}
+.btn{position:absolute;left:8%;right:8%;bottom:6%;height:11%;border-radius:8px;animation:tap 6s ease-in-out infinite}
+.qr{position:absolute;z-index:1;width:13%;aspect-ratio:1;border-radius:4px;animation:scan 6s ease-in-out infinite}
+
+@keyframes rise{0%,8%{transform:translateY(14%);opacity:0}18%,88%{transform:translateY(0);opacity:1}100%{transform:translateY(-4%);opacity:0}}
+@keyframes pop{0%,30%{transform:scale(0);opacity:0}38%,88%{transform:scale(1);opacity:1}100%{opacity:0}}
+@keyframes tap{0%,60%{filter:none}66%{filter:brightness(1.4)}72%,100%{filter:none}}
+@keyframes scan{0%,4%{opacity:0}8%,16%{opacity:1}22%,100%{opacity:0}}
+@keyframes inA{0%,6%{opacity:0;transform:translateY(10px)}16%,90%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes inB{0%,4%{clip-path:inset(0 100% 0 0)}16%,90%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 0);opacity:0}}
+@keyframes inC{0%,4%{transform:translateX(-110%)}14%,90%{transform:none}100%{transform:none;opacity:0}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:.9}}
+@keyframes wave{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* A — Noite no Quintal */
+.fa{background:radial-gradient(120% 90% at 20% 110%,#5a2a12 0%,#1e1210 45%,#0f0b0a 100%);color:#f6e7d2}
+.fa::before{content:"";position:absolute;inset:0;background:radial-gradient(40% 50% at 78% 30%,rgba(255,170,80,.35),transparent 70%);animation:glow 4s ease-in-out infinite;z-index:0}
+.fa .t{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:clamp(26px,3.6vw,42px);line-height:1;animation:inA 6s ease-in-out infinite}
+.fa .t i{display:block;font-weight:500;font-size:.45em;color:#e9a95c;margin-top:6px}
+.fa .tag{font-family:"Hanken Grotesk",sans-serif;color:#cfb89c;letter-spacing:.06em}
+.fa .phone{background:#1b1412;border:2px solid #3a2a22}
+.fa .plate{background:#efe6da}.fa .plate::before{inset:22%;background:radial-gradient(circle at 40% 40%,#c5662e,#7a3013)}.fa .plate::after{inset:40% 18% 30% 46%;background:#4e8a3c}
+.fa .badge{background:#e9a95c;color:#1b1412}
+.fa .line{background:#5a4436}.fa .btn{background:#e9a95c}
+.fa .qr{left:44%;top:58%;background:repeating-conic-gradient(#f6e7d2 0 25%,#1e1210 0 50%) 0 0/20% 20%}
+
+/* B — Atlântico */
+.fb{background:linear-gradient(180deg,#e8f2f5 0%,#cfe5ec 62%,#f1e6cf 62%,#efe2c6 100%);color:#0b3a4a}
+.fb::after{content:"";position:absolute;left:0;top:57%;width:200%;height:10%;background:repeating-radial-gradient(circle at 10px -6px,transparent 0 12px,rgba(11,58,74,.18) 13px 14px,transparent 15px 26px);animation:wave 8s linear infinite;z-index:0}
+.fb .t{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(26px,3.6vw,42px);line-height:.95;letter-spacing:-.02em;animation:inB 6s cubic-bezier(.7,0,.2,1) infinite}
+.fb .t i{display:block;font-style:normal;font-weight:500;font-size:.42em;color:#1f7d8c;margin-top:8px;letter-spacing:0}
+.fb .tag{font-family:"Hanken Grotesk",sans-serif;color:#2c5a66}
+.fb .phone{background:#ffffff;border:2px solid #0b3a4a;box-shadow:0 18px 30px -18px rgba(11,58,74,.6)}
+.fb .plate{background:#f4f7f7;box-shadow:inset 0 0 0 3px #dbe7ea}.fb .plate::before{inset:24%;background:radial-gradient(circle at 45% 40%,#f0b38a,#d9774a)}.fb .plate::after{inset:30% 22% 44% 50%;background:#7fb069}
+.fb .badge{background:#0b3a4a;color:#fff}
+.fb .line{background:#cfe0e4}.fb .btn{background:#1f7d8c}
+.fb .qr{left:46%;top:66%;background:repeating-conic-gradient(#0b3a4a 0 25%,#fff 0 50%) 0 0/20% 20%}
+
+/* C — Morabeza Pop */
+.fc{background:#f7d23c;color:#111}
+.fc::before{content:"";position:absolute;left:-10%;bottom:-30%;width:70%;aspect-ratio:1;border-radius:50%;background:#e2402d;z-index:0}
+.fc::after{content:"";position:absolute;right:-6%;top:-18%;width:38%;aspect-ratio:1;background:#1b4fd1;transform:rotate(18deg);z-index:0}
+.fc .t{font-family:"Anton",Impact,sans-serif;font-size:clamp(30px,4.4vw,52px);line-height:.9;text-transform:uppercase;animation:inC 6s cubic-bezier(.8,0,.2,1) infinite}
+.fc .t i{display:inline-block;font-style:normal;font-family:"Archivo",sans-serif;font-weight:700;font-size:.3em;background:#111;color:#f7d23c;padding:3px 8px;margin-top:8px;text-transform:none}
+.fc .tag{font-family:"Archivo",sans-serif;font-weight:700;color:#fff;z-index:3}
+.fc .phone{background:#fff;border:3px solid #111;border-radius:10px}
+.fc .plate{background:#fff;box-shadow:0 0 0 3px #111}.fc .plate::before{inset:20%;background:#e2402d}.fc .plate::after{inset:34% 20% 40% 48%;background:#1b4fd1}
+.fc .badge{background:#111;color:#f7d23c}
+.fc .line{background:#111;opacity:.2}.fc .btn{background:#111}
+.fc .qr{left:45%;top:60%;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0 0/20% 20%;border:2px solid #111}
+
+@media (prefers-reduced-motion:reduce){.frame *,.frame::before,.frame::after{animation:none!important;opacity:1!important;clip-path:none!important;transform:none}.phone{transform:none}}
+
+/* Vozes */
+.voices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:720px){.voices{grid-template-columns:1fr}}
+.voice{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.voice-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.chip{font-family:var(--f-mono);font-size:11px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.rec{border-color:var(--accent);color:var(--accent)}
+.voice p{color:var(--muted);font-size:14px}
+audio{width:100%;height:36px}
+.note{font-size:13px;color:var(--muted);max-width:72ch}
+
+/* Guião */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.scene{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.scene-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tc{font-family:var(--f-mono);font-size:12px;color:var(--accent);font-variant-numeric:tabular-nums}
+.scene .vis{font-size:13px;color:var(--muted)}
+.scene blockquote{margin:0;font-size:14px;border-left:2px solid var(--accent);padding-left:10px}
+
+/* Escolhas */
+form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:22px}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+legend{font-weight:600;font-size:15px;padding:0;margin-bottom:8px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt label{display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:999px;cursor:pointer;font-size:14px;background:var(--bg)}
+.opt input:checked+label{background:var(--sel);border-color:var(--accent);color:var(--ink);font-weight:600}
+.opt input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+textarea{width:100%;min-height:80px;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+.summary{font-family:var(--f-mono);font-size:13px;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;white-space:pre-wrap;user-select:all}
+.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-weight:600;background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:10px 18px;cursor:pointer}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+#copied{font-size:13px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Menu Real · Apresentação em motion · Prancha v1</span>
+    <h1>Escolhe o visual, a voz e o guião antes de animarmos</h1>
+    <p class="lead">O vídeo vai mostrar a viagem completa: o QR na mesa, a foto real do prato, o pedido, a cozinha, a conta e a delivery. Marca as tuas escolhas no fim da página e copia o resumo para a conversa.</p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <h2>1. Direção visual</h2>
+      <p>Cada quadro mostra o mesmo momento: o título entra e o telemóvel abre o prato com o selo “Foto Real”.</p>
+    </div>
+    <div class="dirs">
+      <article class="dir">
+        <div class="frame fa" aria-label="Pré-visualização da direção A">
+          <div class="t">Menu Real<i>Vê o prato real antes de pedir.</i></div>
+          <div class="qr"></div>
+          <div class="phone"><div class="plate"></div><span class="badge">📷 FOTO REAL</span><span class="line l1"></span><span class="line l2"></span><span class="line l3"></span><span class="btn"></span></div>
+          <div class="tag">PRAIA · CABO VERDE</div>
+        </div>
+        <div class="dir-body">
+          <span class="dir-tag">A</span>
+          <h3>Noite no Quintal</h3>
+          <p>Sala à noite, luz quente de velas e palco, tons de madeira e brasa. Elegante e premium, perto do ambiente de música ao vivo do Quintal.</p>
+          <div class="swatches"><span class="sw" style="background:#0f0b0a"></span><span class="sw" style="background:#5a2a12"></span><span class="sw" style="background:#e9a95c"></span><span class="sw" style="background:#f6e7d2"></span><span class="sw" style="background:#4e8a3c"></span></div>
+          <dl class="meta"><dt>Letra</dt><dd>Fraunces (serifada) + Hanken Grotesk</dd><dt>Movimento</dt><dd>Lento, fades e brilhos suaves</dd><dt>Serve para</dt><dd>Restaurantes premium e hotéis</dd></dl>
+        </div>
+      </article>
+
+      <article class="dir">
+        <div class="frame fb" aria-label="Pré-visualização da direção B">
+          <div class="t">Menu Real<i>Vê o prato real antes de pedir.</i></div>
+          <div class="qr"></div>
+          <div class="phone"><div class="plate"></div><span class="badge">📷 FOTO REAL</span><span class="line l1"></span><span class="line l2"></span><span class="line l3"></span><span class="btn"></span></div>
+          <div class="tag">PRAIA · CABO VERDE</div>
+        </div>
+        <div class="dir-body">
+          <span class="dir-tag">B</span>
+          <h3>Atlântico</h3>
+          <p>Mar e areia, muito espaço em branco, interface limpa em primeiro plano. Claro e moderno, fácil de perceber à primeira vista.</p>
+          <div class="swatches"><span class="sw" style="background:#0b3a4a"></span><span class="sw" style="background:#1f7d8c"></span><span class="sw" style="background:#cfe5ec"></span><span class="sw" style="background:#efe2c6"></span><span class="sw" style="background:#d9774a"></span></div>
+          <dl class="meta"><dt>Letra</dt><dd>Bricolage Grotesque + Hanken Grotesk</dd><dt>Movimento</dt><dd>Revelações em cortina, ondas em fundo</dd><dt>Serve para</dt><dd>Turismo, praia, público amplo</dd></dl>
+        </div>
+      </article>
+
+      <article class="dir">
+        <div class="frame fc" aria-label="Pré-visualização da direção C">
+          <div class="t">Menu<br>Real<br><i>Vê o prato real antes de pedir.</i></div>
+          <div class="qr"></div>
+          <div class="phone"><div class="plate"></div><span class="badge">📷 FOTO REAL</span><span class="line l1"></span><span class="line l2"></span><span class="line l3"></span><span class="btn"></span></div>
+          <div class="tag">PRAIA · CABO VERDE</div>
+        </div>
+        <div class="dir-body">
+          <span class="dir-tag">C</span>
+          <h3>Morabeza Pop</h3>
+          <p>Cartaz de festival: blocos de cor fortes, letras grandes, cortes rápidos ao ritmo da música. Jovem e com energia, ideal para redes sociais.</p>
+          <div class="swatches"><span class="sw" style="background:#f7d23c"></span><span class="sw" style="background:#e2402d"></span><span class="sw" style="background:#1b4fd1"></span><span class="sw" style="background:#111111"></span><span class="sw" style="background:#ffffff"></span></div>
+          <dl class="meta"><dt>Letra</dt><dd>Anton (condensada) + Archivo</dd><dt>Movimento</dt><dd>Rápido, cortes secos, deslizes</dd><dt>Serve para</dt><dd>Instagram, TikTok, lounges</dd></dl>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>2. Voz da narração</h2>
+      <p>Amostras originais de cada voz (não é ainda o nosso texto). Depois de escolheres, gero a narração completa com o guião abaixo.</p>
+    </div>
+    <div class="voices">
+      <div class="voice">
+        <div class="voice-top"><h3>Matlasse</h3><span class="chip rec">sotaque africano · recomendada</span></div>
+        <p>Masculina, jovem, calorosa e confiante. É a mais próxima do português falado em Cabo Verde.</p>
+        <audio controls preload="none" src="audio/matlasse.mp3"></audio>
+      </div>
+      <div class="voice">
+        <div class="voice-top"><h3>Marta</h3><span class="chip">português europeu · feminina</span></div>
+        <p>Feminina, calorosa e segura, ritmo firme. Soa profissional e próxima.</p>
+        <audio controls preload="none" src="audio/marta.mp3"></audio>
+      </div>
+      <div class="voice">
+        <div class="voice-top"><h3>Thiago</h3><span class="chip">português europeu · masculina</span></div>
+        <p>Masculina, jovem, grave e tranquila. Mais cinematográfica.</p>
+        <audio controls preload="none" src="audio/thiago.mp3"></audio>
+      </div>
+      <div class="voice">
+        <div class="voice-top"><h3>Adilson</h3><span class="chip">português europeu · neutra</span></div>
+        <p>Masculina, clara e neutra. Estilo apresentação corporativa.</p>
+        <audio controls preload="none" src="audio/adilson.mp3"></audio>
+      </div>
+    </div>
+    <p class="note">Também é possível criar uma voz nova com sotaque cabo-verdiano a partir de uma descrição, ou usar a tua própria voz gravada.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>3. Guião (versão de 2 minutos)</h2>
+      <p>Onze cenas pela ordem em que o cliente vive a experiência. O texto é um primeiro rascunho da narração.</p>
+    </div>
+    <div class="board">
+      <div class="scene"><div class="scene-h"><h3>Gancho</h3><span class="tc">0:00</span></div><p class="vis">Menu só com texto. O prato chega e não se parece com o que imaginámos.</p><blockquote>Já pediste um prato… e chegou outra coisa?</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>O problema</h3><span class="tc">0:10</span></div><p class="vis">Menu sem fotos, imagens “ilustrativas”, quatro línguas apertadas, mão no ar à espera do garçom.</p><blockquote>Sem fotos, sem detalhes, e muita espera. Do cardápio até à conta.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>Menu Real</h3><span class="tc">0:22</span></div><p class="vis">Entra o logótipo. A promessa aparece em duas linhas.</p><blockquote>Menu Real. Vê o prato real antes de pedir. E sem esperar.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>QR na mesa</h3><span class="tc">0:30</span></div><p class="vis">Cliente aponta a câmara ao QR. “Mesa 04” fica identificada. Escolhe o idioma: PT, EN, FR, DE.</p><blockquote>Senta-te, lê o QR da mesa e o menu abre no teu telemóvel, na tua língua. Sem instalar nada.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>Foto real</h3><span class="tc">0:42</span></div><p class="vis">Prato em grande com selo “Foto Real”. Dose, ingredientes, alergénios. Cachupa explicada ao turista.</p><blockquote>Cada foto é do prato verdadeiro, tirada no restaurante. Vês a dose, os ingredientes e o que vem no prato.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>Personalizar e pedir</h3><span class="tc">0:55</span></div><p class="vis">Ponto da carne, sem cebola, extra de queijo. Botão “Enviar pedido”.</p><blockquote>Ajusta como gostas e envia. O pedido vai direto para a cozinha, sem erros de anotação.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>Cozinha em tempo real</h3><span class="tc">1:05</span></div><p class="vis">O cartão do pedido aparece no ecrã da cozinha e o do bar ao mesmo tempo. Estados mudam; o cliente vê “Em preparo”.</p><blockquote>A cozinha recebe tudo claro e organizado. E tu acompanhas cada passo.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>Grupo e conta</h3><span class="tc">1:18</span></div><p class="vis">Três telemóveis na mesma mesa. Total por pessoa. “Pedir conta”. O garçom chega já com o TPA.</p><blockquote>Em grupo, cada um pede o seu. No fim, a conta já vem dividida. É só pedir e pagar.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>Delivery</h3><span class="tc">1:32</span></div><p class="vis">Link no Instagram, pin no mapa, ponto de referência. Estafeta do restaurante marca “Entregue”.</p><blockquote>Em casa? O mesmo menu, com entrega pelo restaurante. Marca o pin, e sem complicações de morada.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>O restaurante</h3><span class="tc">1:42</span></div><p class="vis">Painel: mesas, pedidos, vendas do dia. Preço alterado em segundos, sem riscar o menu.</p><blockquote>Para o restaurante: menos erros, mais vendas e o menu sempre atualizado.</blockquote></div>
+      <div class="scene"><div class="scene-h"><h3>Fecho</h3><span class="tc">1:52</span></div><p class="vis">Logótipo, promessa e contacto. Opcional: “Em breve no Quintal da Música”.</p><blockquote>Menu Real. O prato que vês é o prato que recebes.</blockquote></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>4. As tuas escolhas</h2>
+      <p>Marca uma opção em cada grupo. O resumo atualiza sozinho; copia-o e cola na conversa.</p>
+    </div>
+    <form id="choices" novalidate>
+      <fieldset>
+        <legend>Direção visual</legend>
+        <div class="opts">
+          <span class="opt"><input type="radio" name="visual" id="v-a" value="A · Noite no Quintal"><label for="v-a">A · Noite no Quintal</label></span>
+          <span class="opt"><input type="radio" name="visual" id="v-b" value="B · Atlântico"><label for="v-b">B · Atlântico</label></span>
+          <span class="opt"><input type="radio" name="visual" id="v-c" value="C · Morabeza Pop"><label for="v-c">C · Morabeza Pop</label></span>
+          <span class="opt"><input type="radio" name="visual" id="v-mix" value="Mistura (explico abaixo)"><label for="v-mix">Mistura</label></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Voz</legend>
+        <div class="opts">
+          <span class="opt"><input type="radio" name="voz" id="z-mat" value="Matlasse"><label for="z-mat">Matlasse</label></span>
+          <span class="opt"><input type="radio" name="voz" id="z-mar" value="Marta"><label for="z-mar">Marta</label></span>
+          <span class="opt"><input type="radio" name="voz" id="z-thi" value="Thiago"><label for="z-thi">Thiago</label></span>
+          <span class="opt"><input type="radio" name="voz" id="z-adi" value="Adilson"><label for="z-adi">Adilson</label></span>
+          <span class="opt"><input type="radio" name="voz" id="z-new" value="Criar voz cabo-verdiana nova"><label for="z-new">Criar voz cabo-verdiana</label></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Tom da narração</legend>
+        <div class="opts">
+          <span class="opt"><input type="radio" name="tom" id="t-ins" value="Inspirador"><label for="t-ins">Inspirador</label></span>
+          <span class="opt"><input type="radio" name="tom" id="t-dir" value="Conversa direta"><label for="t-dir">Conversa direta</label></span>
+          <span class="opt"><input type="radio" name="tom" id="t-doc" value="Documental"><label for="t-doc">Documental</label></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Duração</legend>
+        <div class="opts">
+          <span class="opt"><input type="radio" name="dur" id="d-60" value="60 segundos"><label for="d-60">60 s</label></span>
+          <span class="opt"><input type="radio" name="dur" id="d-90" value="90 segundos"><label for="d-90">90 s</label></span>
+          <span class="opt"><input type="radio" name="dur" id="d-120" value="2 minutos"><label for="d-120">2 min</label></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Formato</legend>
+        <div class="opts">
+          <span class="opt"><input type="radio" name="fmt" id="f-h" value="Horizontal 16:9 (apresentar)"><label for="f-h">16:9 para apresentar</label></span>
+          <span class="opt"><input type="radio" name="fmt" id="f-v" value="Vertical 9:16 (redes)"><label for="f-v">9:16 para redes</label></span>
+          <span class="opt"><input type="radio" name="fmt" id="f-b" value="Os dois"><label for="f-b">Os dois</label></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Mostrar o nome “Quintal da Música”?</legend>
+        <div class="opts">
+          <span class="opt"><input type="radio" name="nome" id="n-s" value="Sim, a dona autorizou"><label for="n-s">Sim, a dona autorizou</label></span>
+          <span class="opt"><input type="radio" name="nome" id="n-n" value="Não, usar restaurante fictício"><label for="n-n">Não, usar restaurante fictício</label></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><label for="notas">Alterações ao guião ou outras notas</label></legend>
+        <textarea id="notas" name="notas" placeholder="Ex.: cortar a cena da delivery, mudar a frase final…"></textarea>
+      </fieldset>
+      <div class="summary" id="summary" aria-live="polite"></div>
+      <div class="actions"><button type="button" id="copy">Copiar escolhas</button><span id="copied"></span></div>
+    </form>
+  </section>
+</div>
+
+<script>
+(function(){
+  var form=document.getElementById('choices'), out=document.getElementById('summary'), msg=document.getElementById('copied');
+  var groups=[['visual','Visual'],['voz','Voz'],['tom','Tom'],['dur','Duração'],['fmt','Formato'],['nome','Nome do restaurante']];
+  var KEY='menureal-prancha-v1';
+  function text(){
+    var lines=['Menu Real · escolhas da prancha'];
+    groups.forEach(function(g){var el=form.querySelector('input[name="'+g[0]+'"]:checked');lines.push(g[1]+': '+(el?el.value:'(por escolher)'));});
+    var n=form.notas.value.trim(); if(n) lines.push('Notas: '+n);
+    return lines.join('\n');
+  }
+  function save(){try{var s={};groups.forEach(function(g){var el=form.querySelector('input[name="'+g[0]+'"]:checked');if(el)s[g[0]]=el.id;});s.notas=form.notas.value;localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  function load(){try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');Object.keys(s).forEach(function(k){if(k==='notas'){form.notas.value=s[k];}else{var el=document.getElementById(s[k]);if(el)el.checked=true;}});}catch(e){}}
+  function render(){out.textContent=text();}
+  form.addEventListener('input',function(){render();save();msg.textContent='';});
+  form.addEventListener('submit',function(e){e.preventDefault();});
+  document.getElementById('copy').addEventListener('click',function(){
+    var t=text();
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){msg.textContent='Copiado. Cola na conversa.';},fallback);}else{fallback();}
+    function fallback(){var r=document.createRange();r.selectNodeContents(out);var sel=getSelection();sel.removeAllRanges();sel.addRange(r);msg.textContent='Texto selecionado. Copia com Ctrl+C / Cmd+C.';}
+  });
+  load();render();
+})();
+</script>
