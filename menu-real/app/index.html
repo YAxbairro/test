@@ -3,6 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 /* Layout: app de telemóvel centrado (cliente) + quadro de colunas (cozinha/bar) + lista de gestão; uma só barra de topo */
 :root{
@@ -149,6 +150,33 @@ textarea{min-height:64px;resize:vertical}
 .legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
 .legend span:nth-child(1)::before{background:var(--accent)} .legend span:nth-child(2)::before{background:var(--warn)} .legend span:nth-child(3)::before{background:var(--bad)}
 .fine{font-size:12.5px;color:var(--muted)}
+.real.ilus{background:rgba(20,22,28,.72);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi small{color:var(--muted);font-size:12.5px;font-weight:600}
+.kpi b{font-size:24px;font-weight:700}
+.tables{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tbl{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:104px}
+.tbl b{font-size:16px}
+.tbl.free{background:transparent;color:var(--muted)}
+.tbl.bill{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--soft);color:var(--muted);align-self:flex-start}
+.pill.on{background:var(--accent);color:var(--accent-ink)}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:transparent;padding:10px 12px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.form{display:grid;gap:12px}
+.form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.form .g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.qrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.qr{background:#fff;color:#15181d;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.qr .code img,.qr .code canvas{width:140px!important;height:140px!important}
+.qr b{font-size:15px}
+.credits{font-size:12px;color:var(--muted);line-height:1.6}
+.credits a{color:inherit}
+.linkbtn{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline;padding:4px;align-self:center}
 /* ===== Cozinha / Bar ===== */
 .kitchen{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 .k-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
@@ -189,6 +217,7 @@ textarea{min-height:64px;resize:vertical}
     <div class="seg" role="group" aria-label="Vista da demonstração">
       <button type="button" data-view="client" aria-pressed="true">Cliente</button>
       <button type="button" data-view="kitchen" aria-pressed="false">Cozinha</button>
+      <button type="button" data-view="room" aria-pressed="false">Sala</button>
       <button type="button" data-view="manage" aria-pressed="false">Gestão</button>
     </div>
   </div>
@@ -289,16 +318,31 @@ var OPTS={
 var AL={marisco:["Marisco","Shellfish","Fruits de mer","Meeresfrüchte"],peixe:["Peixe","Fish","Poisson","Fisch"],leite:["Leite","Milk","Lait","Milch"],ovo:["Ovo","Egg","Œuf","Ei"],sulfitos:["Sulfitos","Sulphites","Sulfites","Sulfite"]};
 var LI={pt:0,en:1,fr:2,de:3};
 var T={
- pt:{prepT:"Como é preparado",nut:"Valor nutricional",perDose:"por dose · aproximado",prot:"Proteína",carb:"Hidratos",fat:"Gordura",kc:"kcal",confirm:"Informação de demonstração. Confirma alergias com o empregado.",hi:"Bem-vindo",sub:"Vê cada prato antes de pedir. O pedido vai direto para a cozinha.",mesa:"Mesa",ask:"Não sabes o que escolher?",askS:"Pergunta ao assistente: leve, típico, sem marisco, até 1.500$…",see:"Ver pedido",add:"Adicionar",ing:"Ingredientes",al:"Alergénios",none:"Nenhum indicado",kcal:"Calorias",aprox:"aprox.",time:"Tempo",min:"min",note:"Observações",noteP:"Ex.: sem cebola, molho à parte",yourOrder:"O teu pedido",name:"O teu nome",nameP:"Para a cozinha saber de quem é",send:"Enviar para a cozinha",minH:"Consumo mínimo: 1.500$ por pessoa.",sent:"Pedido enviado",track:"Os teus pedidos",bill:"Pedir a conta",billOk:"O garçom foi avisado.",st:{novo:"Recebido",preparo:"Em preparo",pronto:"Pronto",entregue:"Entregue"},photoSoon:"Foto real\nem breve",real:"Foto real",out:"Esgotado",empty:"O pedido está vazio.",choose:"Escolhe",asst:"Assistente",asstP:"Escreve a tua pergunta",asstHi:"Olá! Diz-me o que te apetece e eu sugiro pratos deste menu.",sugg:["Algo típico de Cabo Verde","Um prato leve","Sem marisco","Até 1.500$"],asstErr:"O assistente não respondeu. Tenta outra vez daqui a pouco.",asstOff:"O assistente não está disponível nesta vista.",total:"Total",tag:{tipico:"Típico",casa:"Da casa",veg:"Vegetariano"}},
- en:{prepT:"How it's made",nut:"Nutrition",perDose:"per serving · approximate",prot:"Protein",carb:"Carbs",fat:"Fat",kc:"kcal",confirm:"Demo information. Please confirm allergies with your waiter.",hi:"Welcome",sub:"See every dish before you order. Your order goes straight to the kitchen.",mesa:"Table",ask:"Not sure what to choose?",askS:"Ask the assistant: light, local, no shellfish, under 1,500$…",see:"View order",add:"Add",ing:"Ingredients",al:"Allergens",none:"None listed",kcal:"Calories",aprox:"approx.",time:"Time",min:"min",note:"Notes",noteP:"e.g. no onion, sauce on the side",yourOrder:"Your order",name:"Your name",nameP:"So the kitchen knows whose it is",send:"Send to the kitchen",minH:"Minimum spend: 1,500$ per person.",sent:"Order sent",track:"Your orders",bill:"Ask for the bill",billOk:"Your waiter has been told.",st:{novo:"Received",preparo:"Preparing",pronto:"Ready",entregue:"Served"},photoSoon:"Real photo\ncoming soon",real:"Real photo",out:"Sold out",empty:"Your order is empty.",choose:"Choose",asst:"Assistant",asstP:"Type your question",asstHi:"Hi! Tell me what you feel like and I'll suggest dishes from this menu.",sugg:["Something typical of Cape Verde","A light dish","No shellfish","Under 1,500$"],asstErr:"The assistant didn't answer. Try again in a moment.",asstOff:"The assistant isn't available in this view.",total:"Total",tag:{tipico:"Local",casa:"House",veg:"Vegetarian"}},
- fr:{prepT:"Préparation",nut:"Valeurs nutritionnelles",perDose:"par portion · approximatif",prot:"Protéines",carb:"Glucides",fat:"Lipides",kc:"kcal",confirm:"Informations de démonstration. Confirmez les allergies avec le serveur.",hi:"Bienvenue",sub:"Voyez chaque plat avant de commander. La commande part directement en cuisine.",mesa:"Table",ask:"Vous hésitez ?",askS:"Demandez à l'assistant : léger, local, sans fruits de mer…",see:"Voir la commande",add:"Ajouter",ing:"Ingrédients",al:"Allergènes",none:"Aucun indiqué",kcal:"Calories",aprox:"env.",time:"Temps",min:"min",note:"Remarques",noteP:"Ex. : sans oignon, sauce à part",yourOrder:"Votre commande",name:"Votre prénom",nameP:"Pour que la cuisine sache à qui c'est",send:"Envoyer en cuisine",minH:"Consommation minimum : 1 500$ par personne.",sent:"Commande envoyée",track:"Vos commandes",bill:"Demander l'addition",billOk:"Le serveur a été prévenu.",st:{novo:"Reçue",preparo:"En préparation",pronto:"Prête",entregue:"Servie"},photoSoon:"Vraie photo\nbientôt",real:"Vraie photo",out:"Épuisé",empty:"Votre commande est vide.",choose:"Choisissez",asst:"Assistant",asstP:"Posez votre question",asstHi:"Bonjour ! Dites-moi ce qui vous ferait plaisir et je vous propose des plats de ce menu.",sugg:["Un plat typique","Un plat léger","Sans fruits de mer","Moins de 1 500$"],asstErr:"L'assistant n'a pas répondu. Réessayez dans un instant.",asstOff:"L'assistant n'est pas disponible ici.",total:"Total",tag:{tipico:"Typique",casa:"Maison",veg:"Végétarien"}},
- de:{prepT:"Zubereitung",nut:"Nährwerte",perDose:"pro Portion · ungefähr",prot:"Eiweiß",carb:"Kohlenhydrate",fat:"Fett",kc:"kcal",confirm:"Demo-Angaben. Allergien bitte beim Kellner bestätigen.",hi:"Willkommen",sub:"Sehen Sie jedes Gericht vor der Bestellung. Die Bestellung geht direkt in die Küche.",mesa:"Tisch",ask:"Unsicher, was Sie wählen sollen?",askS:"Fragen Sie den Assistenten: leicht, typisch, ohne Meeresfrüchte…",see:"Bestellung ansehen",add:"Hinzufügen",ing:"Zutaten",al:"Allergene",none:"Keine angegeben",kcal:"Kalorien",aprox:"ca.",time:"Zeit",min:"Min.",note:"Hinweise",noteP:"z. B. ohne Zwiebeln, Soße extra",yourOrder:"Ihre Bestellung",name:"Ihr Name",nameP:"Damit die Küche weiß, für wen es ist",send:"An die Küche senden",minH:"Mindestverzehr: 1.500$ pro Person.",sent:"Bestellung gesendet",track:"Ihre Bestellungen",bill:"Rechnung bitte",billOk:"Ihr Kellner wurde informiert.",st:{novo:"Erhalten",preparo:"In Zubereitung",pronto:"Fertig",entregue:"Serviert"},photoSoon:"Echtes Foto\nfolgt",real:"Echtes Foto",out:"Ausverkauft",empty:"Ihre Bestellung ist leer.",choose:"Wählen",asst:"Assistent",asstP:"Ihre Frage",asstHi:"Hallo! Sagen Sie mir, worauf Sie Lust haben, und ich schlage Gerichte aus dieser Karte vor.",sugg:["Etwas Typisches","Ein leichtes Gericht","Ohne Meeresfrüchte","Unter 1.500$"],asstErr:"Der Assistent hat nicht geantwortet. Bitte gleich noch einmal versuchen.",asstOff:"Der Assistent ist hier nicht verfügbar.",total:"Gesamt",tag:{tipico:"Typisch",casa:"Haus",veg:"Vegetarisch"}}
+ pt:{ilus:"Ilustrativa",prepT:"Como é preparado",nut:"Valor nutricional",perDose:"por dose · aproximado",prot:"Proteína",carb:"Hidratos",fat:"Gordura",kc:"kcal",confirm:"Informação de demonstração. Confirma alergias com o empregado.",hi:"Bem-vindo",sub:"Vê cada prato antes de pedir. O pedido vai direto para a cozinha.",mesa:"Mesa",ask:"Não sabes o que escolher?",askS:"Pergunta ao assistente: leve, típico, sem marisco, até 1.500$…",see:"Ver pedido",add:"Adicionar",ing:"Ingredientes",al:"Alergénios",none:"Nenhum indicado",kcal:"Calorias",aprox:"aprox.",time:"Tempo",min:"min",note:"Observações",noteP:"Ex.: sem cebola, molho à parte",yourOrder:"O teu pedido",name:"O teu nome",nameP:"Para a cozinha saber de quem é",send:"Enviar para a cozinha",minH:"Consumo mínimo: 1.500$ por pessoa.",sent:"Pedido enviado",track:"Os teus pedidos",bill:"Pedir a conta",billOk:"O garçom foi avisado.",st:{novo:"Recebido",preparo:"Em preparo",pronto:"Pronto",entregue:"Entregue"},photoSoon:"Foto real\nem breve",real:"Foto real",out:"Esgotado",empty:"O pedido está vazio.",choose:"Escolhe",asst:"Assistente",asstP:"Escreve a tua pergunta",asstHi:"Olá! Diz-me o que te apetece e eu sugiro pratos deste menu.",sugg:["Algo típico de Cabo Verde","Um prato leve","Sem marisco","Até 1.500$"],asstErr:"O assistente não respondeu. Tenta outra vez daqui a pouco.",asstOff:"O assistente não está disponível nesta vista.",total:"Total",tag:{tipico:"Típico",casa:"Da casa",veg:"Vegetariano"}},
+ en:{ilus:"Illustrative",prepT:"How it's made",nut:"Nutrition",perDose:"per serving · approximate",prot:"Protein",carb:"Carbs",fat:"Fat",kc:"kcal",confirm:"Demo information. Please confirm allergies with your waiter.",hi:"Welcome",sub:"See every dish before you order. Your order goes straight to the kitchen.",mesa:"Table",ask:"Not sure what to choose?",askS:"Ask the assistant: light, local, no shellfish, under 1,500$…",see:"View order",add:"Add",ing:"Ingredients",al:"Allergens",none:"None listed",kcal:"Calories",aprox:"approx.",time:"Time",min:"min",note:"Notes",noteP:"e.g. no onion, sauce on the side",yourOrder:"Your order",name:"Your name",nameP:"So the kitchen knows whose it is",send:"Send to the kitchen",minH:"Minimum spend: 1,500$ per person.",sent:"Order sent",track:"Your orders",bill:"Ask for the bill",billOk:"Your waiter has been told.",st:{novo:"Received",preparo:"Preparing",pronto:"Ready",entregue:"Served"},photoSoon:"Real photo\ncoming soon",real:"Real photo",out:"Sold out",empty:"Your order is empty.",choose:"Choose",asst:"Assistant",asstP:"Type your question",asstHi:"Hi! Tell me what you feel like and I'll suggest dishes from this menu.",sugg:["Something typical of Cape Verde","A light dish","No shellfish","Under 1,500$"],asstErr:"The assistant didn't answer. Try again in a moment.",asstOff:"The assistant isn't available in this view.",total:"Total",tag:{tipico:"Local",casa:"House",veg:"Vegetarian"}},
+ fr:{ilus:"Illustration",prepT:"Préparation",nut:"Valeurs nutritionnelles",perDose:"par portion · approximatif",prot:"Protéines",carb:"Glucides",fat:"Lipides",kc:"kcal",confirm:"Informations de démonstration. Confirmez les allergies avec le serveur.",hi:"Bienvenue",sub:"Voyez chaque plat avant de commander. La commande part directement en cuisine.",mesa:"Table",ask:"Vous hésitez ?",askS:"Demandez à l'assistant : léger, local, sans fruits de mer…",see:"Voir la commande",add:"Ajouter",ing:"Ingrédients",al:"Allergènes",none:"Aucun indiqué",kcal:"Calories",aprox:"env.",time:"Temps",min:"min",note:"Remarques",noteP:"Ex. : sans oignon, sauce à part",yourOrder:"Votre commande",name:"Votre prénom",nameP:"Pour que la cuisine sache à qui c'est",send:"Envoyer en cuisine",minH:"Consommation minimum : 1 500$ par personne.",sent:"Commande envoyée",track:"Vos commandes",bill:"Demander l'addition",billOk:"Le serveur a été prévenu.",st:{novo:"Reçue",preparo:"En préparation",pronto:"Prête",entregue:"Servie"},photoSoon:"Vraie photo\nbientôt",real:"Vraie photo",out:"Épuisé",empty:"Votre commande est vide.",choose:"Choisissez",asst:"Assistant",asstP:"Posez votre question",asstHi:"Bonjour ! Dites-moi ce qui vous ferait plaisir et je vous propose des plats de ce menu.",sugg:["Un plat typique","Un plat léger","Sans fruits de mer","Moins de 1 500$"],asstErr:"L'assistant n'a pas répondu. Réessayez dans un instant.",asstOff:"L'assistant n'est pas disponible ici.",total:"Total",tag:{tipico:"Typique",casa:"Maison",veg:"Végétarien"}},
+ de:{ilus:"Beispielbild",prepT:"Zubereitung",nut:"Nährwerte",perDose:"pro Portion · ungefähr",prot:"Eiweiß",carb:"Kohlenhydrate",fat:"Fett",kc:"kcal",confirm:"Demo-Angaben. Allergien bitte beim Kellner bestätigen.",hi:"Willkommen",sub:"Sehen Sie jedes Gericht vor der Bestellung. Die Bestellung geht direkt in die Küche.",mesa:"Tisch",ask:"Unsicher, was Sie wählen sollen?",askS:"Fragen Sie den Assistenten: leicht, typisch, ohne Meeresfrüchte…",see:"Bestellung ansehen",add:"Hinzufügen",ing:"Zutaten",al:"Allergene",none:"Keine angegeben",kcal:"Kalorien",aprox:"ca.",time:"Zeit",min:"Min.",note:"Hinweise",noteP:"z. B. ohne Zwiebeln, Soße extra",yourOrder:"Ihre Bestellung",name:"Ihr Name",nameP:"Damit die Küche weiß, für wen es ist",send:"An die Küche senden",minH:"Mindestverzehr: 1.500$ pro Person.",sent:"Bestellung gesendet",track:"Ihre Bestellungen",bill:"Rechnung bitte",billOk:"Ihr Kellner wurde informiert.",st:{novo:"Erhalten",preparo:"In Zubereitung",pronto:"Fertig",entregue:"Serviert"},photoSoon:"Echtes Foto\nfolgt",real:"Echtes Foto",out:"Ausverkauft",empty:"Ihre Bestellung ist leer.",choose:"Wählen",asst:"Assistent",asstP:"Ihre Frage",asstHi:"Hallo! Sagen Sie mir, worauf Sie Lust haben, und ich schlage Gerichte aus dieser Karte vor.",sugg:["Etwas Typisches","Ein leichtes Gericht","Ohne Meeresfrüchte","Unter 1.500$"],asstErr:"Der Assistent hat nicht geantwortet. Bitte gleich noch einmal versuchen.",asstOff:"Der Assistent ist hier nicht verfügbar.",total:"Gesamt",tag:{tipico:"Typisch",casa:"Haus",veg:"Vegetarisch"}}
 };
 var ST_ORDER=["novo","preparo","pronto","entregue"];
+var BASE=JSON.parse(JSON.stringify(MENU));
+/* Imagens ilustrativas com licença aberta (Openverse), até haver foto real do restaurante */
+var PHOTOS={"sopa-legumes": {"src": "img/sopa-legumes.jpg", "title": "Tuscan Vegetable Soup", "creator": "Mr.TinDC", "page": "https://www.flickr.com/photos/7471115@N08/3165559496", "lic": "CC BY-ND 2.0"}, "sopa-peixe": {"src": "img/sopa-peixe.jpg", "title": "sweet and sour Vietnamese fish soup", "creator": "stu_spivack", "page": "https://www.flickr.com/photos/35034346243@N01/232273270", "lic": "CC BY-SA 2.0"}, "salada-mista": {"src": "img/salada-mista.jpg", "title": "The famous Mixed Salad at Salvadonica", "creator": "Salvadonica, Chianti, Tuscany", "page": "https://www.flickr.com/photos/38027316@N06/9056609117", "lic": "CC BY 2.0"}, "bife-casa": {"src": "img/bife-casa.jpg", "title": "Garlic Steak with Fries and Green Beans", "creator": "UCFFool", "page": "https://www.flickr.com/photos/36762416@N04/3832578544", "lic": "CC BY 2.0"}, "bife-portuguesa": {"src": "img/bife-portuguesa.jpg", "title": "Wagyu Rump Steak Sandwich - Cafe Sapore AUD17.50", "creator": "avlxyz", "page": "https://www.flickr.com/photos/10559879@N00/3958149754", "lic": "CC BY-SA 2.0"}, "vitela-cogumelos": {"src": "img/vitela-cogumelos.jpg", "title": "Steak & Mushroom Sauce", "creator": "Thank You (25 Millions ) views", "page": "https://www.flickr.com/photos/34128007@N04/54333736846", "lic": "CC BY 2.0"}, "grelhado-misto": {"src": "img/grelhado-misto.jpg", "title": "Piatela Kreatika - Mixed Grill - Tsindos AUD27 for 1", "creator": "avlxyz", "page": "https://www.flickr.com/photos/10559879@N00/4068185888", "lic": "CC BY-SA 2.0"}, "caipirinha": {"src": "img/caipirinha.jpg", "title": "Caipirinhas", "creator": "andybullock77", "page": "https://www.flickr.com/photos/94549249@N00/4607609510", "lic": "CC BY 2.0"}, "caipiroska": {"src": "img/caipiroska.jpg", "title": "caipiroska", "creator": "tnarik", "page": "https://www.flickr.com/photos/80075387@N00/2774127338", "lic": "CC BY-SA 2.0"}, "mojito": {"src": "img/mojito.jpg", "title": "Mojito", "creator": "TheCulinaryGeek", "page": "https://www.flickr.com/photos/72949902@N00/5084101811", "lic": "CC BY 2.0"}, "caipimaracuja": {"src": "img/caipimaracuja.jpg", "title": "mango dream", "creator": "Matthias Rhomberg", "page": "https://www.flickr.com/photos/33772123@N03/3444207913", "lic": "CC BY 2.0"}, "morango-leite": {"src": "img/morango-leite.jpg", "title": "Strawberry Milkshake", "creator": "Vancouver Bites!", "page": "https://www.flickr.com/photos/92945296@N00/4675313359", "lic": "CC BY-SA 2.0"}, "cafe": {"src": "img/cafe.jpg", "title": "Espresso", "creator": "phvolmer", "page": "https://www.flickr.com/photos/29699251@N08/3468361138", "lic": "CC BY-ND 2.0"}, "galao": {"src": "img/galao.jpg", "title": "Latte glass", "creator": "The Coffee Chronicler", "page": "https://www.flickr.com/photos/187871768@N05/52500906951", "lic": "CC BY-ND 2.0"}, "vinho-tinto": {"src": "img/vinho-tinto.jpg", "title": "Vinao Red Wine Glass by Schott Zwiesel", "creator": "Didriks", "page": "https://www.flickr.com/photos/49889671@N03/19719405372", "lic": "CC BY 2.0"}, "vinho-branco": {"src": "img/vinho-branco.jpg", "title": "iittala White Wine Glass", "creator": "Didriks", "page": "https://www.flickr.com/photos/49889671@N03/17242944939", "lic": "CC BY 2.0"}, "espumante": {"src": "img/espumante.jpg", "title": "Champagne glass", "creator": "quinn.anya", "page": "https://www.flickr.com/photos/53326337@N00/2119419690", "lic": "CC BY-SA 2.0"}, "cachupa-rica": {"src": "img/cachupa-rica.jpg", "title": "Cachupa", "creator": "oddharmonic", "page": "https://www.flickr.com/photos/42528087@N00/8483232553", "lic": "CC BY-SA 2.0"}};
+var PHOTO_ALIAS={"cabriz-tinto":"vinho-tinto","pera-doce":"vinho-tinto","penedo-gordo":"vinho-tinto","cha-fogo-tinto":"vinho-tinto","cha-fogo-branco":"vinho-branco","casal-garcia":"vinho-branco"};
+function applyOverrides(){
+ MENU.forEach(function(m,i){var b=BASE[i],o=S.items[m.id]||{};
+  m.p=b.p;m.d=b.d;m.ingL=b.ingL;m.prep=b.prep;m.mac=b.mac;m.kcal=b.kcal;
+  if(typeof o.price==="number"&&o.price>0)m.p=o.price;
+  if(o.desc)m.d={pt:o.desc,en:o.desc};
+  if(Array.isArray(o.ing)&&o.ing.length)m.ingL={pt:o.ing,en:o.ing.join(", ")};
+  if(o.prep)m.prep={pt:o.prep,en:o.prep};
+  if(o.mac&&typeof o.mac==="object"){m.mac={p:+o.mac.p||0,c:+o.mac.c||0,f:+o.mac.f||0};}
+  if(typeof o.kcal==="number"&&o.kcal>0)m.kcal=o.kcal;
+ });
+}
 
 /* ---------- Estado local ---------- */
 function ls(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem("mr-"+k));}localStorage.setItem("mr-"+k,JSON.stringify(v));}catch(e){return null;}}
-var S={view:"client",lang:ls("lang")||"pt",cat:"sopas",cart:[],guest:ls("guest")||"",gid:ls("gid")||Math.random().toString(36).slice(2,10),orders:[],requests:[],items:{},chat:[],busy:false,kstation:"todos"};
+var S={view:"client",lang:ls("lang")||"pt",cat:"sopas",cart:[],guest:ls("guest")||"",gid:ls("gid")||Math.random().toString(36).slice(2,10),orders:[],requests:[],items:{},chat:[],busy:false,kstation:"todos",settings:{tables:12},mtab:"pratos"};
 ls("gid",S.gid);
 function L(){return T[S.lang];}
 function nm(m){return m.n[S.lang]||m.n.pt;}
@@ -313,10 +357,11 @@ function soldOut(id){var it=S.items[id];return !!(it&&it.soldOut);}
 var CAM='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 var SPARK='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>';
 var X='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-function thumbHtml(m,big){var u=photo(m.id);if(u)return '<img src="'+esc(u)+'" alt="'+esc(nm(m))+'"><span class="real">'+(big?"📷 ":"")+esc(L().real)+'</span>';return '<div class="nophoto">'+CAM+'<span>'+esc(L().photoSoon).replace("\n","<br>")+'</span></div>';}
+function ilus(id){return PHOTOS[id]||PHOTOS[PHOTO_ALIAS[id]]||null;}
+function thumbHtml(m,big){var u=photo(m.id);if(u)return '<img src="'+esc(u)+'" alt="'+esc(nm(m))+'"><span class="real">'+(big?"📷 ":"")+esc(L().real)+'</span>';var il=ilus(m.id);if(il)return '<img src="'+esc(il.src)+'" alt="'+esc(nm(m))+'" loading="lazy"><span class="real ilus">'+esc(L().ilus)+'</span>';return '<div class="nophoto">'+CAM+'<span>'+esc(L().photoSoon).replace("\n","<br>")+'</span></div>';}
 
 /* ---------- Armazenamento: db partilhada, ou memória local quando não há db ---------- */
-var db=null, sample=null, assets=null, subs={};
+var db=null, sample=null, assets=null, downloads=null, subs={};
 var local={orders:[],requests:[]};
 function useLocal(){S.orders=local.orders.slice();S.requests=local.requests.slice();}
 var store={
@@ -324,13 +369,16 @@ var store={
  setStatus:function(id,st){if(db)return db.doc("orders/"+id).update({status:st,updatedAt:Date.now()});local.orders.forEach(function(o){if(o.id===id)o.status=st;});useLocal();render();return Promise.resolve();},
  addRequest:function(r){if(db)return db.collection("requests").add(r);r.id="r"+Date.now();local.requests.push(r);useLocal();render();return Promise.resolve();},
  doneRequest:function(id){if(db)return db.doc("requests/"+id).update({done:true});local.requests.forEach(function(r){if(r.id===id)r.done=true;});useLocal();render();return Promise.resolve();},
- setItem:function(id,patch){if(db)return db.doc("items/"+id).set(Object.assign({},S.items[id]||{},patch,{updatedAt:Date.now()}));S.items[id]=Object.assign({},S.items[id]||{},patch);render();return Promise.resolve();}
+ setItem:function(id,patch){var next=Object.assign({},S.items[id]||{},patch,{updatedAt:Date.now()});Object.keys(next).forEach(function(k){if(next[k]===null)delete next[k];});if(db)return db.doc("items/"+id).set(next);S.items[id]=next;applyOverrides();render();return Promise.resolve();},
+ patchOrder:function(id,patch){if(db)return db.doc("orders/"+id).update(Object.assign({updatedAt:Date.now()},patch));local.orders.forEach(function(o){if(o.id===id)Object.assign(o,patch);});useLocal();render();return Promise.resolve();},
+ setSettings:function(patch){S.settings=Object.assign({},S.settings,patch);if(db)return db.doc("settings/main").set(S.settings);render();return Promise.resolve();}
 };
 function subscribe(){
  if(!db)return;
  subs.o=db.collection("orders").orderBy("createdAt","desc").limit(200).onSnapshot(function(s){S.orders=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();},function(){});
  subs.r=db.collection("requests").orderBy("createdAt","desc").limit(50).onSnapshot(function(s){S.requests=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();},function(){});
- subs.i=db.collection("items").onSnapshot(function(s){var m={};s.docs.forEach(function(d){m[d.id]=d.data();});S.items=m;render();},function(){});
+ subs.i=db.collection("items").onSnapshot(function(s){var m={};s.docs.forEach(function(d){m[d.id]=d.data();});S.items=m;applyOverrides();render();},function(){});
+ subs.s=db.doc("settings/main").onSnapshot(function(d){if(d.exists)S.settings=Object.assign({tables:12},d.data());render();},function(){});
 }
 
 /* ---------- Render ---------- */
@@ -338,13 +386,13 @@ var app=document.getElementById("app");
 function render(){
  document.querySelectorAll(".seg button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.view===S.view));});
  document.documentElement.lang=S.view==="client"?S.lang:"pt";
- if(S.view==="client")renderClient();else if(S.view==="kitchen")renderKitchen();else renderManage();
+ if(S.view==="client")renderClient();else if(S.view==="kitchen")renderKitchen();else if(S.view==="room")renderRoom();else renderManage();
  renderCartbar();
  if(openSheet&&openSheet.refresh)openSheet.refresh();
 }
 function renderClient(){
  var l=L(), y=window.scrollY;
- var mine=S.orders.filter(function(o){return o.gid===S.gid;});
+ var mine=S.orders.filter(function(o){return o.gid===S.gid&&!o.paid&&o.status!=="cancelado";});
  var h='<div class="view"><div class="client">'+
   '<div class="hello"><div><h1>'+esc(l.hi)+'</h1><p>'+esc(l.sub)+'</p></div><span class="table-tag">'+esc(l.mesa)+' '+MESA+'</span></div>'+
   '<div class="langs" role="group" aria-label="Língua">'+["pt","en","fr","de"].map(function(k){return '<button type="button" data-lang="'+k+'" aria-pressed="'+(S.lang===k)+'">'+{pt:"Português",en:"English",fr:"Français",de:"Deutsch"}[k]+'</button>';}).join("")+'</div>'+
@@ -352,7 +400,7 @@ function renderClient(){
   (mine.length?trackHtml(mine):"")+
   '<nav class="cats" aria-label="Categorias">'+CATS.map(function(c){return '<button type="button" data-cat="'+c.id+'" aria-pressed="'+(S.cat===c.id)+'">'+esc(c.n[S.lang])+'</button>';}).join("")+'</nav>'+
   CATS.map(function(c){return '<section class="sec" id="cat-'+c.id+'"><h2>'+esc(c.n[S.lang])+'</h2>'+MENU.filter(function(m){return m.cat===c.id;}).map(itemHtml).join("")+'</section>';}).join("")+
-  '<p class="banner">Demonstração · preços do cardápio impresso; descrições e calorias são estimativas.</p>'+
+  '<p class="banner">Demonstração · preços do cardápio impresso; descrições, ingredientes e calorias são estimativas. Imagens “ilustrativas” têm licença aberta e são substituídas pelas fotos reais do restaurante.</p>'+creditsHtml()+
  '</div></div>';
  app.innerHTML=h; window.scrollTo(0,y);
 }
@@ -479,22 +527,92 @@ function ask(q){
 /* ---------- Cozinha ---------- */
 function renderKitchen(){
  var st=S.kstation;
- var list=S.orders.filter(function(o){return o.status!=="entregue"&&(st==="todos"||o.station===st);});
+ var list=S.orders.filter(function(o){return ["novo","preparo","pronto"].indexOf(o.status)>-1&&(st==="todos"||o.station===st);});
  var reqs=S.requests.filter(function(r){return !r.done;});
  var cols=[["novo","Novos","Aceitar e preparar"],["preparo","Em preparo","Marcar como pronto"],["pronto","Prontos","Marcar como entregue"]];
  var h='<div class="view"><div class="kitchen"><div class="k-head"><h1>Pedidos em tempo real</h1><div class="seg" role="group" aria-label="Posto">'+[["todos","Tudo"],["cozinha","Cozinha"],["bar","Bar"]].map(function(x){return '<button type="button" data-st="'+x[0]+'" aria-pressed="'+(st===x[0])+'">'+x[1]+'</button>';}).join("")+'</div></div>';
  if(reqs.length)h+='<div class="alerts">'+reqs.map(function(r){return '<div class="alert"><span>🧾 Mesa '+esc(r.mesa)+' pediu a conta · '+esc(r.guest||"")+' · <span class="num">'+money(r.total||0)+'</span></span><button type="button" class="ghost" data-req="'+r.id+'">Feito</button></div>';}).join("")+'</div>';
- h+='<div class="board">'+cols.map(function(c){var os=list.filter(function(o){return o.status===c[0];}).sort(function(a,b){return a.createdAt-b.createdAt;});return '<section class="col"><div class="col-h"><span>'+c[1]+'</span><span class="num">'+os.length+'</span></div>'+(os.length?os.map(function(o){return '<article class="ord"><div class="ord-h"><b>Mesa '+esc(o.mesa)+'</b><span class="station">'+(o.station==="bar"?"Bar":"Cozinha")+'</span></div><div class="who num">'+esc(o.guest)+' · '+ago(o.createdAt)+'</div><ul>'+o.items.map(function(it){return '<li><b class="num">'+it.qty+'×</b> '+esc(it.name)+((it.opts&&it.opts.length)||it.note?'<small>'+esc((it.opts||[]).join(" · "))+(it.note?(it.opts&&it.opts.length?" · ":"")+"“"+esc(it.note)+"”":"")+'</small>':'')+'</li>';}).join("")+'</ul><button type="button" class="adv" data-adv="'+o.id+'" data-next="'+ST_ORDER[ST_ORDER.indexOf(o.status)+1]+'">'+c[2]+'</button></article>';}).join(""):'<p class="empty">Sem pedidos.</p>')+'</section>';}).join("")+'</div>';
+ h+='<div class="board">'+cols.map(function(c){var os=list.filter(function(o){return o.status===c[0];}).sort(function(a,b){return a.createdAt-b.createdAt;});return '<section class="col"><div class="col-h"><span>'+c[1]+'</span><span class="num">'+os.length+'</span></div>'+(os.length?os.map(function(o){return '<article class="ord"><div class="ord-h"><b>Mesa '+esc(o.mesa)+'</b><span class="station">'+(o.station==="bar"?"Bar":"Cozinha")+'</span></div><div class="who num">'+esc(o.guest)+' · '+ago(o.createdAt)+'</div><ul>'+o.items.map(function(it){return '<li><b class="num">'+it.qty+'×</b> '+esc(it.name)+((it.opts&&it.opts.length)||it.note?'<small>'+esc((it.opts||[]).join(" · "))+(it.note?(it.opts&&it.opts.length?" · ":"")+"“"+esc(it.note)+"”":"")+'</small>':'')+'</li>';}).join("")+'</ul><button type="button" class="adv" data-adv="'+o.id+'" data-next="'+ST_ORDER[ST_ORDER.indexOf(o.status)+1]+'">'+c[2]+'</button>'+(o.status==="novo"?'<button type="button" class="linkbtn" data-cancel="'+o.id+'">Cancelar pedido</button>':'')+'</article>';}).join(""):'<p class="empty">Sem pedidos.</p>')+'</section>';}).join("")+'</div>';
  h+='<p class="banner">'+(db?"Ligado: os pedidos de todos os telemóveis aparecem aqui.":"Modo local: só aparecem os pedidos feitos neste ecrã.")+'</p></div></div>';
  app.innerHTML=h;
 }
 /* ---------- Gestão ---------- */
-function renderManage(){
- var h='<div class="view"><div class="manage"><div><h1 style="font-size:22px;font-weight:700">Fotos e disponibilidade</h1><p class="muted" style="margin-top:4px">Tira a foto do prato tal como sai da cozinha. Aparece logo no menu de todas as mesas.</p></div>';
- if(!assets)h+='<p class="hint">Para carregar fotos é preciso ter acesso de edição a esta página.</p>';
- CATS.forEach(function(c){var items=MENU.filter(function(m){return m.cat===c.id;});h+='<h2 style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8px">'+esc(c.n.pt)+'</h2>'+items.map(function(m){var so=soldOut(m.id);return '<div class="mrow"><span class="thumb">'+thumbHtml(m)+'</span><div style="min-width:0"><b>'+esc(m.n.pt)+'</b><div class="muted num" style="font-size:13px">'+money(m.p)+'</div></div><div class="acts">'+(assets?'<label class="ghost" for="f-'+m.id+'">📷 '+(photo(m.id)?"Trocar":"Foto")+'</label><input type="file" id="f-'+m.id+'" data-photo="'+m.id+'" accept="image/*" capture="environment" hidden>':'')+'<button type="button" class="sw" data-sold="'+m.id+'" aria-pressed="'+so+'">'+(so?"Esgotado":"Disponível")+'</button></div></div>';}).join("");});
+function todayOrders(){var d=new Date();d.setHours(0,0,0,0);return S.orders.filter(function(o){return o.createdAt>=d.getTime()&&o.status!=="cancelado";});}
+function openByTable(){var t={};S.orders.forEach(function(o){if(o.paid||o.status==="cancelado")return;(t[o.mesa]=t[o.mesa]||[]).push(o);});return t;}
+function renderRoom(){
+ var td=todayOrders(),rev=td.reduce(function(a,o){return a+(o.total||0);},0),open=openByTable(),reqs=S.requests.filter(function(r){return !r.done;});
+ var tickets={};td.forEach(function(o){tickets[o.mesa+"|"+o.batch]=1;});var nT=Object.keys(tickets).length;
+ var count={};td.forEach(function(o){o.items.forEach(function(it){count[it.id]=(count[it.id]||0)+it.qty;});});
+ var top=Object.keys(count).sort(function(a,b){return count[b]-count[a];}).slice(0,5);
+ var h='<div class="view"><div class="kitchen"><div class="k-head"><h1>Sala</h1><span class="muted">Hoje · '+new Date().toLocaleDateString("pt-PT",{weekday:"long",day:"numeric",month:"long"})+'</span></div>'+
+  '<div class="kpis"><div class="kpi"><small>Faturação</small><b class="num">'+money(rev)+'</b></div><div class="kpi"><small>Pedidos</small><b class="num">'+nT+'</b></div><div class="kpi"><small>Ticket médio</small><b class="num">'+(nT?money(rev/nT):"—")+'</b></div><div class="kpi"><small>Mesas abertas</small><b class="num">'+Object.keys(open).length+'</b></div></div>';
+ if(reqs.length)h+='<div class="alerts">'+reqs.map(function(r){return '<div class="alert"><span>🧾 Mesa '+esc(r.mesa)+' pediu a conta</span><button type="button" class="ghost" data-table="'+esc(r.mesa)+'">Abrir conta</button></div>';}).join("")+'</div>';
+ h+='<div class="tables">';
+ for(var i=1;i<=S.settings.tables;i++){var id=String(i).padStart(2,"0"),os=open[id]||[],asked=reqs.some(function(r){return r.mesa===id;});
+  if(!os.length){h+='<button type="button" class="tbl free" data-table="'+id+'"><b>Mesa '+id+'</b><span>Livre</span></button>';continue;}
+  var tot=os.reduce(function(a,o){return a+(o.total||0);},0),ppl={};os.forEach(function(o){ppl[o.gid]=1;});
+  var pending=os.filter(function(o){return o.status!=="entregue";}).length;
+  h+='<button type="button" class="tbl'+(asked?" bill":"")+'" data-table="'+id+'"><b>Mesa '+id+'</b><span class="num" style="font-weight:700;font-size:18px">'+money(tot)+'</span><span class="muted num" style="font-size:13px">'+Object.keys(ppl).length+' pessoa(s)'+(pending?' · '+pending+' a sair':'')+'</span>'+(asked?'<span class="pill on">Pediu a conta</span>':'')+'</button>';}
+ h+='</div>';
+ if(top.length)h+='<section class="col" style="background:var(--surface);border:1px solid var(--line)"><div class="col-h"><span>Mais pedidos hoje</span></div>'+top.map(function(id){return '<div class="row" style="justify-content:space-between;padding:4px"><span>'+esc(BY[id]?BY[id].n.pt:id)+'</span><b class="num">'+count[id]+'</b></div>';}).join("")+'</section>';
  h+='</div></div>';app.innerHTML=h;
 }
+function tableSheet(mesa){
+ sheet("Mesa "+mesa,function(b){
+  var os=(openByTable()[mesa]||[]);
+  if(!os.length){b.innerHTML='<p class="muted">Mesa livre. Não há pedidos por pagar.</p><p class="fine">Link desta mesa: <span class="num">#mesa-'+esc(mesa)+'</span></p>';return;}
+  var by={};os.forEach(function(o){var k=o.gid;(by[k]=by[k]||{name:o.guest,items:[],total:0});o.items.forEach(function(it){by[k].items.push(it);by[k].total+=it.unit*it.qty;});});
+  var keys=Object.keys(by),tot=keys.reduce(function(a,k){return a+by[k].total;},0),minT=keys.length*MIN_PP;
+  b.innerHTML=keys.map(function(k){var g=by[k];return '<div><div class="row" style="justify-content:space-between"><b>'+esc(g.name)+'</b><b class="num">'+money(g.total)+'</b></div>'+g.items.map(function(it){return '<div class="line" style="padding:8px 0"><span>'+it.qty+'× '+esc(it.name)+(it.opts&&it.opts.length?'<small>'+esc(it.opts.join(" · "))+'</small>':'')+'</span><span class="num muted">'+money(it.unit*it.qty)+'</span></div>';}).join("")+'</div>';}).join("")+
+   '<div class="total"><span>Total da mesa</span><span class="num">'+money(tot)+'</span></div>'+
+   '<p class="hint num">Dividido por '+keys.length+': '+money(Math.ceil(tot/keys.length))+' cada'+(tot<minT?' · abaixo do consumo mínimo ('+money(minT)+')':'')+'</p>'+
+   '<button type="button" class="primary" id="closeT"><span>Marcar como pago e fechar mesa</span><span>✓</span></button>';
+  b.querySelector("#closeT").onclick=function(){this.disabled=true;var ps=os.map(function(o){return store.patchOrder(o.id,{paid:true,paidAt:Date.now()});});S.requests.filter(function(r){return r.mesa===mesa&&!r.done;}).forEach(function(r){ps.push(store.doneRequest(r.id));});Promise.all(ps).then(function(){closeSheet();toast("✓ Mesa "+mesa+" fechada");}).catch(function(){toast("Não foi possível fechar a mesa.");});};
+ },{live:true});
+}
+function renderManage(){
+ var tab=S.mtab;
+ var h='<div class="view"><div class="manage"><div class="tabs" role="group" aria-label="Gestão">'+[["pratos","Pratos"],["mesas","Mesas e QR"]].map(function(t){return '<button type="button" data-mtab="'+t[0]+'" aria-pressed="'+(tab===t[0])+'">'+t[1]+'</button>';}).join("")+'</div>';
+ if(tab==="pratos"){
+  h+='<p class="muted">Tira a foto do prato tal como sai da cozinha e corrige ingredientes, preparo e preço. As alterações aparecem logo em todas as mesas.</p>';
+  if(!assets)h+='<p class="hint">Para carregar fotos é preciso ter acesso de edição a esta página.</p>';
+  CATS.forEach(function(c){h+='<h2 style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8px">'+esc(c.n.pt)+'</h2>'+MENU.filter(function(m){return m.cat===c.id;}).map(function(m){var so=soldOut(m.id),ed=S.items[m.id]&&(S.items[m.id].price||S.items[m.id].ing||S.items[m.id].prep||S.items[m.id].desc);return '<div class="mrow"><span class="thumb">'+thumbHtml(m)+'</span><div style="min-width:0"><b>'+esc(m.n.pt)+'</b><div class="muted num" style="font-size:13px">'+money(m.p)+(ed?' · editado':'')+'</div></div><div class="acts"><button type="button" class="sw" data-edit="'+m.id+'">Editar</button>'+(assets?'<label class="ghost" for="f-'+m.id+'">📷 '+(photo(m.id)?"Trocar":"Foto")+'</label><input type="file" id="f-'+m.id+'" data-photo="'+m.id+'" accept="image/*" capture="environment" hidden>':'')+'<button type="button" class="sw" data-sold="'+m.id+'" aria-pressed="'+so+'">'+(so?"Esgotado":"Disponível")+'</button></div></div>';}).join("");});
+ } else {
+  h+='<div class="row" style="flex-wrap:wrap;justify-content:space-between"><label class="row" style="gap:10px;font-weight:600">Número de mesas <input type="number" id="ntab" min="1" max="99" value="'+S.settings.tables+'" style="width:90px"></label>'+(downloads?'<button type="button" class="ghost" id="dlqr">Descarregar QR (PNG)</button>':'')+'</div>'+
+   '<p class="muted" style="font-size:14px">Cada QR abre o menu já com a mesa certa. Imprime e cola em cada mesa.</p><div class="qrs" id="qrs">';
+  for(var i=1;i<=S.settings.tables;i++){var id=String(i).padStart(2,"0");h+='<div class="qr"><div class="code" data-qr="'+id+'"></div><b>Mesa '+id+'</b><span style="font-size:12px;color:#667080">Menu Real · Quintal da Música</span></div>';}
+  h+='</div>';
+ }
+ h+='</div></div>';app.innerHTML=h;
+ if(tab==="mesas")drawQRs();
+}
+var APP_URL="https://claude.ai/artifact/TXwUamoRc8Ah1y2z7K96mo";
+function drawQRs(){if(!window.QRCode)return;document.querySelectorAll("[data-qr]").forEach(function(n){try{new QRCode(n,{text:APP_URL+"#mesa-"+n.dataset.qr,width:280,height:280,correctLevel:QRCode.CorrectLevel.M});}catch(e){}});}
+function qrSheetPng(){
+ var n=S.settings.tables,cols=4,cw=420,ch=500,rows=Math.ceil(n/cols),c=document.createElement("canvas");c.width=cols*cw;c.height=rows*ch;var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
+ document.querySelectorAll("[data-qr]").forEach(function(node,i){var src=node.querySelector("canvas");var cx=(i%cols)*cw,cy=Math.floor(i/cols)*ch;x.strokeStyle="#ddd";x.strokeRect(cx+10,cy+10,cw-20,ch-20);if(src)x.drawImage(src,cx+70,cy+40,280,280);x.fillStyle="#15181d";x.font="700 34px sans-serif";x.textAlign="center";x.fillText("Mesa "+node.dataset.qr,cx+cw/2,cy+380);x.font="400 20px sans-serif";x.fillStyle="#667080";x.fillText("Lê o QR para ver o menu e pedir",cx+cw/2,cy+420);x.fillText("Menu Real · Quintal da Música",cx+cw/2,cy+452);});
+ return new Promise(function(res){c.toBlob(res,"image/png");});
+}
+function editSheet(id){
+ var m=BY[id],o=S.items[id]||{};
+ sheet("Editar · "+m.n.pt,function(b){
+  var mc=m.mac||{p:0,c:0,f:0};
+  b.innerHTML='<div class="form"><label>Preço (escudos)<input type="number" id="e-price" min="0" step="10" value="'+m.p+'"></label>'+
+   '<label>Descrição curta<input type="text" id="e-desc" maxlength="140" value="'+esc(m.d?m.d.pt:"")+'"></label>'+
+   '<label>Ingredientes (separados por vírgulas)<textarea id="e-ing">'+esc(m.ingL?m.ingL.pt.join(", "):"")+'</textarea></label>'+
+   '<label>Como é preparado<textarea id="e-prep">'+esc(m.prep?m.prep.pt:"")+'</textarea></label>'+
+   '<div><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">Valor nutricional por dose</div><div class="g4"><label>kcal<input type="number" id="e-kcal" min="0" value="'+(m.kcal||"")+'"></label><label>Proteína g<input type="number" id="e-p" min="0" value="'+mc.p+'"></label><label>Hidratos g<input type="number" id="e-c" min="0" value="'+mc.c+'"></label><label>Gordura g<input type="number" id="e-f" min="0" value="'+mc.f+'"></label></div></div>'+
+   '<button type="button" class="primary" id="e-save"><span>Guardar alterações</span><span>✓</span></button>'+
+   (o.price||o.desc||o.ing||o.prep||o.mac||o.kcal?'<button type="button" class="linkbtn" id="e-reset">Repor texto original</button>':'')+'</div>';
+  b.querySelector("#e-save").onclick=function(){var v=function(k){return b.querySelector("#e-"+k).value;};
+   var patch={price:+v("price")||null,desc:v("desc").trim()||null,ing:v("ing").split(",").map(function(x){return x.trim();}).filter(Boolean),prep:v("prep").trim()||null,kcal:+v("kcal")||null,mac:{p:+v("p")||0,c:+v("c")||0,f:+v("f")||0}};
+   if(!patch.ing.length)patch.ing=null;
+   store.setItem(id,patch).then(function(){closeSheet();toast("✓ Guardado. Já aparece nas mesas.");}).catch(function(){toast("Sem permissão para guardar.");});};
+  var r=b.querySelector("#e-reset");if(r)r.onclick=function(){store.setItem(id,{price:null,desc:null,ing:null,prep:null,kcal:null,mac:null}).then(function(){closeSheet();toast("Texto original reposto.");});};
+ });
+}
+function creditsHtml(){var used={};MENU.forEach(function(m){var il=!photo(m.id)&&ilus(m.id);if(il)used[il.src]=il;});var list=Object.keys(used).map(function(k){return used[k];});if(!list.length)return "";
+ return '<details class="credits"><summary>Créditos das imagens ilustrativas</summary>'+list.map(function(c){return '<div>'+esc(c.title)+' · '+esc(c.creator||"autor desconhecido")+' · <a href="'+esc(c.page)+'" target="_blank" rel="noopener">'+esc(c.lic)+'</a></div>';}).join("")+'</details>';}
 function shrink(file){return new Promise(function(res){var img=new Image(),u=URL.createObjectURL(file);img.onload=function(){var s=Math.min(1,1400/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){res(b||file);},"image/jpeg",.85);};img.onerror=function(){res(file);};img.src=u;});}
 
 /* ---------- Eventos ---------- */
@@ -507,13 +625,19 @@ document.addEventListener("click",function(e){
  if((t=e.target.closest("[data-item]"))){dishSheet(t.dataset.item);return;}
  if(e.target.closest("#askBtn")){asstSheet();return;}
  if(e.target.closest("#openCart")){cartSheet();return;}
- if(e.target.closest("#billBtn")){var mine=S.orders.filter(function(o){return o.gid===S.gid;});store.addRequest({mesa:MESA,guest:S.guest,gid:S.gid,type:"conta",total:mine.reduce(function(a,o){return a+(o.total||0);},0),done:false,createdAt:Date.now()}).then(function(){toast("✓ "+L().billOk);});return;}
+ if(e.target.closest("#billBtn")){var mine=S.orders.filter(function(o){return o.gid===S.gid&&!o.paid&&o.status!=="cancelado";});store.addRequest({mesa:MESA,guest:S.guest,gid:S.gid,type:"conta",total:mine.reduce(function(a,o){return a+(o.total||0);},0),done:false,createdAt:Date.now()}).then(function(){toast("✓ "+L().billOk);});return;}
  if((t=e.target.closest("[data-st]"))){S.kstation=t.dataset.st;render();return;}
  if((t=e.target.closest("[data-adv]"))){t.disabled=true;store.setStatus(t.dataset.adv,t.dataset.next).catch(function(){t.disabled=false;toast("Não foi possível atualizar.");});return;}
  if((t=e.target.closest("[data-req]"))){store.doneRequest(t.dataset.req);return;}
+ if((t=e.target.closest("[data-table]"))){tableSheet(t.dataset.table);return;}
+ if((t=e.target.closest("[data-edit]"))){editSheet(t.dataset.edit);return;}
+ if((t=e.target.closest("[data-mtab]"))){S.mtab=t.dataset.mtab;render();return;}
+ if((t=e.target.closest("[data-cancel]"))){store.patchOrder(t.dataset.cancel,{status:"cancelado"});return;}
+ if(e.target.closest("#dlqr")){qrSheetPng().then(function(blob){return downloads.save({filename:"menu-real-qr-mesas.png",data:blob});}).then(function(){toast("✓ Ficheiro pronto");}).catch(function(){toast("Download cancelado.");});return;}
  if((t=e.target.closest("[data-sold]"))){var id=t.dataset.sold;store.setItem(id,{soldOut:!soldOut(id)}).catch(function(){toast("Sem permissão para alterar.");});return;}
 });
 document.addEventListener("change",function(e){
+ if(e.target.id==="ntab"){var n=Math.max(1,Math.min(99,parseInt(e.target.value,10)||12));store.setSettings({tables:n});return;}
  var inp=e.target.closest("[data-photo]");if(!inp||!inp.files||!inp.files[0]||!assets)return;
  var id=inp.dataset.photo;toast("A carregar foto…");
  shrink(inp.files[0]).then(function(b){return assets.upload(b,{type:"image/jpeg"});}).then(function(r){return store.setItem(id,{photoUrl:r.url,assetId:r.id});}).then(function(){toast("✓ Foto publicada no menu");}).catch(function(err){toast(err&&err.code==="too_large"?"Foto demasiado grande.":"Não foi possível carregar a foto.");});
@@ -521,7 +645,7 @@ document.addEventListener("change",function(e){
 var io=null;
 function watchCats(){if(!("IntersectionObserver" in window))return;if(io)io.disconnect();io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){var id=en.target.id.replace("cat-","");if(S.cat!==id){S.cat=id;document.querySelectorAll("[data-cat]").forEach(function(b){var on=b.dataset.cat===id;b.setAttribute("aria-pressed",String(on));if(on&&b.scrollIntoView)b.parentNode.scrollTo({left:b.offsetLeft-16,behavior:"smooth"});});}}});},{rootMargin:"-130px 0px -65% 0px"});document.querySelectorAll(".sec").forEach(function(s){io.observe(s);});}
 var _render=render;render=function(){_render();if(S.view==="client")watchCats();};
-setInterval(function(){if(S.view==="kitchen"&&!openSheet)render();},30000);
+setInterval(function(){if((S.view==="kitchen"||S.view==="room")&&!openSheet)render();},30000);
 
 /* ---------- Arranque ---------- */
 render();
@@ -529,6 +653,7 @@ if(window.claude&&window.claude.use){
  window.claude.use("db").then(function(d){if(d){db=d;subscribe();render();}});
  window.claude.use("sample").then(function(s){sample=s;});
  window.claude.use("assets").then(function(a){assets=a;if(S.view==="manage")render();});
+ window.claude.use("downloads").then(function(d){downloads=d;if(S.view==="manage")render();});
 }
 })();
 </script>
