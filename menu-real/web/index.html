@@ -1,0 +1,740 @@
+<title>Menu Real</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<meta name="theme-color" content="#0a66c2">
+<meta name="description" content="Menu Real: vê o prato real antes de pedir e pede direto da mesa.">
+<style>
+/* Layout: app de telemóvel centrado (cliente) + quadro de colunas (cozinha/bar) + lista de gestão; uma só barra de topo */
+:root{
+  --bg:#f6f7f8; --surface:#ffffff; --ink:#15181d; --muted:#667080; --line:#e4e7eb; --soft:#eef1f4;
+  --accent:#0a66c2; --accent-ink:#ffffff; --accent-soft:#e6f0fa; --ok:#13865b; --warn:#b26b00; --bad:#c2410c;
+  --f-ui:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif; --f-serif:"Instrument Serif",Georgia,serif;
+  --r:16px; --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px -12px rgba(16,24,40,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1013;--surface:#171a1f;--ink:#eef0f3;--muted:#98a1ae;--line:#272b33;--soft:#1e2228;--accent:#5aa9f0;--accent-ink:#06121f;--accent-soft:#16283a;--ok:#3fbf8a;--warn:#e0a03c;--bad:#f08a5d;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1013;--surface:#171a1f;--ink:#eef0f3;--muted:#98a1ae;--line:#272b33;--soft:#1e2228;--accent:#5aa9f0;--accent-ink:#06121f;--accent-soft:#16283a;--ok:#3fbf8a;--warn:#e0a03c;--bad:#f08a5d;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+h1,h2,h3,p{margin:0}
+
+/* Barra de topo */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:var(--bg)}
+.top-in{max-width:1180px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px;justify-content:space-between}
+.brand{display:flex;align-items:baseline;gap:8px;min-width:0}
+.brand b{font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+@media (max-width:480px){.brand span{display:none}.seg button{padding:6px 10px}}
+.brand span{font-family:var(--f-serif);font-style:italic;font-size:19px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg{display:flex;background:var(--soft);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+
+.view{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 120px}
+
+/* ===== Cliente ===== */
+.client{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.hello{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hello h1{font-family:var(--f-serif);font-weight:400;font-size:34px;line-height:1.05;letter-spacing:-.01em}
+.hello p{color:var(--muted);font-size:14px;margin-top:6px}
+.table-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px;border-radius:999px;padding:5px 10px;white-space:nowrap}
+.langs{display:flex;gap:6px;flex-wrap:wrap}
+.langs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;color:var(--muted)}
+.langs button[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
+
+.ask{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow)}
+.ask .spark{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.ask b{display:block;font-weight:600}
+.ask small{color:var(--muted);font-size:13px}
+
+.cats{position:sticky;top:calc(env(safe-area-inset-top,0px) + 53px);z-index:20;background:var(--bg);margin:0 -16px;padding:8px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;border:0;background:var(--soft);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;color:var(--muted)}
+.cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+.sec{display:flex;flex-direction:column;gap:2px;scroll-margin-top:120px}
+.sec h2{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 0 8px}
+.item{display:grid;grid-template-columns:1fr 92px;gap:14px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:12px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .t{display:flex;flex-direction:column;gap:4px;min-width:0}
+.item .nm{font-weight:600;font-size:16px}
+.item .ds{color:var(--muted);font-size:13.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item .pr{font-weight:600;font-size:14px}
+.item.out{opacity:.45}
+.thumb{width:92px;height:92px;border-radius:14px;overflow:hidden;background:var(--soft);position:relative;display:grid;place-items:center;max-width:100%}
+.thumb img,.hero img{width:100%;height:100%;object-fit:cover;display:block}
+.nophoto{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:10.5px;font-weight:600;text-align:center;line-height:1.15;padding:6px}
+.nophoto svg{opacity:.6}
+.real{position:absolute;left:6px;bottom:6px;background:rgba(255,255,255,.92);color:#15181d;font-size:10px;font-weight:700;border-radius:999px;padding:2px 7px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 8px;background:var(--soft);color:var(--muted)}
+.badge.hot{background:var(--accent-soft);color:var(--accent)}
+
+/* Barra do pedido */
+.cartbar{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+.cartbar button{pointer-events:auto;max-width:520px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center;border:0;border-radius:14px;background:var(--ink);color:var(--bg);padding:15px 18px;font-weight:600;box-shadow:0 12px 30px -10px rgba(0,0,0,.45)}
+.cartbar .cnt{background:var(--bg);color:var(--ink);border-radius:999px;min-width:24px;height:24px;display:inline-grid;place-items:center;font-size:13px;margin-right:10px;padding:0 6px}
+
+/* Folhas (bottom sheets) */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(10,12,16,.45);display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .2s}
+.scrim.show{opacity:1}
+.sheet{width:100%;max-width:560px;max-height:min(92vh,100%);overflow:auto;background:var(--surface);border-radius:22px 22px 0 0;padding:0 0 calc(16px + env(safe-area-inset-bottom,0px));transform:translateY(24px);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.scrim.show .sheet{transform:none}
+@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:22px;max-height:88vh}}
+.sheet-h{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
+.sheet-h h3{font-size:17px;font-weight:700}
+.x{border:0;background:var(--soft);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none}
+.sheet-b{padding:18px;display:flex;flex-direction:column;gap:18px}
+.hero{aspect-ratio:4/3;max-width:100%;border-radius:16px;overflow:hidden;background:var(--soft);display:grid;place-items:center;position:relative}
+.hero .real{left:12px;bottom:12px;font-size:12px;padding:4px 10px}
+.hero .nophoto{font-size:13px;gap:8px}
+.dish-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.dish-h h2{font-family:var(--f-serif);font-weight:400;font-size:30px;line-height:1.05}
+.dish-h .pr{font-weight:700;font-size:18px;white-space:nowrap}
+.muted{color:var(--muted)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.opt h4{margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+textarea{min-height:64px;resize:vertical}
+.row{display:flex;gap:12px;align-items:center}
+.qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px}
+.qty button{border:0;background:transparent;width:42px;height:46px;font-size:20px}
+.qty span{min-width:22px;text-align:center;font-weight:700}
+.primary{flex:1;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;padding:14px 16px;display:flex;justify-content:space-between;gap:10px}
+.primary:disabled{opacity:.5;cursor:default}
+.ghost{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;font-weight:600}
+.line{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.line small{display:block;color:var(--muted);font-size:13px}
+.total{display:flex;justify-content:space-between;font-weight:700;font-size:18px}
+.hint{font-size:13px;color:var(--muted);background:var(--soft);border-radius:12px;padding:10px 12px}
+.track{display:flex;flex-direction:column;gap:10px}
+.trk{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.steps i{height:4px;border-radius:2px;background:var(--line)}
+.steps i.on{background:var(--accent)}
+.status{font-weight:700;font-size:14px}
+
+/* Assistente */
+.chat{display:flex;flex-direction:column;gap:12px;min-height:240px}
+.msg{max-width:88%;padding:10px 13px;border-radius:16px;font-size:14.5px;white-space:pre-wrap}
+.msg.me{align-self:flex-end;background:var(--ink);color:var(--bg);border-bottom-right-radius:6px}
+.msg.ai{align-self:flex-start;background:var(--soft);border-bottom-left-radius:6px}
+.recs{display:flex;flex-direction:column;gap:6px;align-self:stretch}
+.rec{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;text-align:left}
+.rec b{font-weight:600}
+.sugg{display:flex;flex-wrap:wrap;gap:8px}
+.composer{position:sticky;bottom:0;background:var(--surface);padding-top:8px;display:flex;gap:8px}
+.composer input{flex:1}
+.composer button{border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;padding:0 16px}
+.dots::after{content:"…";animation:blink 1s steps(3,end) infinite}
+@keyframes blink{50%{opacity:.3}}
+
+.sect{display:flex;flex-direction:column;gap:10px}
+.sect h4{margin:0;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{background:var(--soft);border-radius:999px;padding:5px 11px;font-size:13.5px}
+.nutr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.nutr div{background:var(--soft);border-radius:12px;padding:10px 8px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
+.nutr b{font-size:18px}
+.nutr small{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+.macro{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line)}
+.macro i:nth-child(1){background:var(--accent)} .macro i:nth-child(2){background:var(--warn)} .macro i:nth-child(3){background:var(--bad)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.legend span:nth-child(1)::before{background:var(--accent)} .legend span:nth-child(2)::before{background:var(--warn)} .legend span:nth-child(3)::before{background:var(--bad)}
+.fine{font-size:12.5px;color:var(--muted)}
+.real.ilus{background:rgba(20,22,28,.72);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi small{color:var(--muted);font-size:12.5px;font-weight:600}
+.kpi b{font-size:24px;font-weight:700}
+.tables{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tbl{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:104px}
+.tbl b{font-size:16px}
+.tbl.free{background:transparent;color:var(--muted)}
+.tbl.bill{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--soft);color:var(--muted);align-self:flex-start}
+.pill.on{background:var(--accent);color:var(--accent-ink)}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:transparent;padding:10px 12px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.form{display:grid;gap:12px}
+.form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.form .g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.qrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.qr{background:#fff;color:#15181d;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.qr .code img,.qr .code canvas{width:140px!important;height:140px!important}
+.qr b{font-size:15px}
+.credits{font-size:12px;color:var(--muted);line-height:1.6}
+.credits a{color:inherit}
+.linkbtn{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline;padding:4px;align-self:center}
+/* ===== Cozinha / Bar ===== */
+.kitchen{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.k-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.k-head h1{font-size:22px;font-weight:700}
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--accent-soft);color:var(--ink);border-radius:14px;padding:12px 14px;font-weight:600}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+@media (max-width:820px){.board{grid-template-columns:1fr}}
+.col{background:var(--soft);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.col-h{display:flex;justify-content:space-between;align-items:center;padding:2px 4px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ord{background:var(--surface);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.ord-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ord-h b{font-size:17px}
+.ord ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ord li{font-size:15px}
+.ord li small{display:block;color:var(--bad);font-weight:600;font-size:13px}
+.ord .who{color:var(--muted);font-size:13px}
+.adv{border:0;border-radius:10px;background:var(--ink);color:var(--bg);font-weight:700;padding:11px}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:22px 8px}
+.station{font-size:11px;font-weight:700;border-radius:6px;padding:2px 6px;background:var(--soft);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* ===== Gestão ===== */
+.manage{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.mrow{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px}
+.mrow .thumb{width:64px;height:64px;border-radius:10px}
+.mrow .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.mrow label.ghost{display:inline-block;font-size:13px;padding:8px 10px;cursor:pointer}
+.sw{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 11px;font-size:13px;font-weight:600}
+.sw[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.banner{font-size:13px;color:var(--muted);text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-weight:600;font-size:14px;box-shadow:var(--shadow)}
+@media (prefers-reduced-motion:reduce){.scrim,.sheet{transition:none}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><b>Menu Real</b><span id="rname">Quintal da Música</span></div>
+    <div class="seg" role="group" aria-label="Vistas da equipa" id="staffSeg" hidden>
+      <button type="button" data-view="client" aria-pressed="true">Cliente</button>
+      <button type="button" data-view="kitchen" aria-pressed="false">Cozinha</button>
+      <button type="button" data-view="room" aria-pressed="false">Sala</button>
+      <button type="button" data-view="manage" aria-pressed="false">Gestão</button>
+    </div>
+  </div>
+</header>
+
+<main id="app"></main>
+<div class="cartbar" id="cartbar" hidden><button type="button" id="openCart"><span><span class="cnt num" id="cartN">0</span><span id="cartL">Ver pedido</span></span><span class="num" id="cartT">0$</span></button></div>
+<div id="layer"></div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- Dados do menu (cardápio impresso do Quintal da Música; descrições e calorias são estimativas de demonstração) ---------- */
+var MESA=(function(){var h=(location.hash||"").replace("#","");var m=h.match(/^mesa-?(\d{1,3})$/i);return m?String(m[1]).padStart(2,"0"):"04";})();
+var MIN_PP=1500;
+var CATS=[
+ {id:"sopas",n:{pt:"Sopas",en:"Soups",fr:"Soupes",de:"Suppen"}},
+ {id:"saladas",n:{pt:"Saladas",en:"Salads",fr:"Salades",de:"Salate"}},
+ {id:"carnes",n:{pt:"Carnes",en:"Meat",fr:"Viandes",de:"Fleisch"}},
+ {id:"cocktails",n:{pt:"Cocktails",en:"Cocktails",fr:"Cocktails",de:"Cocktails"}},
+ {id:"batidos",n:{pt:"Batidos",en:"Milkshakes",fr:"Milkshakes",de:"Milchshakes"}},
+ {id:"cafe",n:{pt:"Cafetaria",en:"Coffee & tea",fr:"Café & thé",de:"Kaffee & Tee"}},
+ {id:"vinhos",n:{pt:"Vinhos",en:"Wine",fr:"Vins",de:"Wein"}}
+];
+function I(id,cat,n,p,o){o=o||{};return {id:id,cat:cat,n:n,p:p,d:o.d||null,ing:o.ing||null,al:o.al||[],kcal:o.kcal||null,opts:o.opts||null,st:o.st||(["cocktails","batidos","cafe","vinhos"].indexOf(cat)>-1?"bar":"cozinha"),tag:o.tag||null,min:o.min||null};}
+var MENU=[
+ I("creme-marisco","sopas",{pt:"Creme de marisco",en:"Seafood cream soup",fr:"Velouté de fruits de mer",de:"Meeresfrüchte-Cremesuppe"},600,{d:{pt:"Sopa cremosa de marisco.",en:"Creamy seafood soup."},al:["marisco","leite"],kcal:320,min:15}),
+ I("sopa-legumes","sopas",{pt:"Sopa de legumes",en:"Vegetable soup",fr:"Velouté de légumes",de:"Gemüsesuppe"},300,{d:{pt:"Legumes da época.",en:"Seasonal vegetables."},kcal:160,tag:"veg",min:10}),
+ I("sopa-peixe","sopas",{pt:"Sopa de peixe",en:"Fish soup",fr:"Soupe de poisson",de:"Fischsuppe"},300,{d:{pt:"Sopa de peixe fresco.",en:"Fresh fish soup."},al:["peixe"],kcal:240,min:15}),
+ I("salada-mista","saladas",{pt:"Salada mista",en:"Mixed salad",fr:"Salade composée",de:"Gemischter Salat"},800,{d:{pt:"Alface, tomate, cebola e cenoura.",en:"Lettuce, tomato, onion and carrot."},ing:{pt:"Alface, tomate, cebola, cenoura, azeite",en:"Lettuce, tomato, onion, carrot, olive oil"},kcal:180,tag:"veg",min:8}),
+ I("salada-marisco","saladas",{pt:"Salada de marisco",en:"Seafood salad",fr:"Salade de fruits de mer",de:"Meeresfrüchtesalat"},1500,{d:{pt:"Marisco sobre salada fresca.",en:"Seafood over fresh greens."},al:["marisco"],kcal:380,min:12}),
+ I("bife-casa","carnes",{pt:"Bife à moda do Quintal",en:"Quintal house steak",fr:"Steak de la maison",de:"Steak nach Art des Hauses"},2000,{d:{pt:"Receita da casa.",en:"House recipe."},opts:"carne",kcal:850,tag:"casa",min:25}),
+ I("bife-portuguesa","carnes",{pt:"Bife à portuguesa",en:"Portuguese steak with egg",fr:"Steak à la portugaise",de:"Steak nach portugiesischer Art"},2000,{d:{pt:"Bife com ovo estrelado e batata frita.",en:"Steak with a fried egg and fries."},ing:{pt:"Bife de vaca, ovo, batata frita, molho",en:"Beef steak, egg, fries, sauce"},al:["ovo"],opts:"carne",kcal:980,min:25}),
+ I("vitela-cogumelos","carnes",{pt:"Bife de vitela com cogumelos",en:"Veal steak with mushrooms",fr:"Steak de veau aux champignons",de:"Kalbssteak mit Champignons"},2000,{d:{pt:"Vitela com molho de cogumelos.",en:"Veal with mushroom sauce."},al:["leite"],opts:"carne",kcal:820,min:25}),
+ I("grelhado-misto","carnes",{pt:"Grelhado misto",en:"Mixed grill",fr:"Assortiment de grillades",de:"Gemischter Grillteller"},1600,{d:{pt:"Seleção de carnes grelhadas.",en:"A selection of grilled meats."},opts:"acomp",kcal:1050,min:25}),
+ I("tornedo","carnes",{pt:"Tornedó com pimenta verde",en:"Tournedos with green pepper",fr:"Tournedos au poivre vert",de:"Tournedos mit grünem Pfeffer"},2000,{d:{pt:"Lombo com molho de pimenta verde.",en:"Tenderloin with green pepper sauce."},al:["leite"],opts:"carne",kcal:880,min:25}),
+ I("frango-ervas","carnes",{pt:"Peito de frango grelhado com ervas",en:"Grilled chicken breast with herbs",fr:"Blanc de poulet grillé aux herbes",de:"Gegrillte Hähnchenbrust mit Kräutern"},1400,{d:{pt:"Frango grelhado com ervas aromáticas.",en:"Grilled chicken with fresh herbs."},opts:"acomp",kcal:620,min:20}),
+ I("cachupa-rica","carnes",{pt:"Cachupa rica",en:"Cachupa rica",fr:"Cachupa rica",de:"Cachupa rica"},1200,{d:{pt:"O prato nacional de Cabo Verde: milho e feijão cozinhados devagar com carnes.",en:"Cape Verde's national dish: corn and beans slow-cooked with meats."},ing:{pt:"Milho, feijão, carnes, linguiça, couve",en:"Corn, beans, meats, sausage, cabbage"},opts:"ovo",kcal:900,tag:"tipico",min:15}),
+ I("caipirinha","cocktails",{pt:"Caipirinha",en:"Caipirinha",fr:"Caipirinha",de:"Caipirinha"},400,{opts:"cocktail",kcal:200}),
+ I("caipifari","cocktails",{pt:"Caipifari",en:"Caipifari",fr:"Caipifari",de:"Caipifari"},500,{opts:"cocktail",kcal:210}),
+ I("caipimaracuja","cocktails",{pt:"Caipimaracujá",en:"Passion fruit caipi",fr:"Caïpi passion",de:"Maracuja-Caipi"},500,{opts:"cocktail",kcal:230}),
+ I("caipiblack","cocktails",{pt:"Caipiblack",en:"Caipiblack",fr:"Caipiblack",de:"Caipiblack"},500,{opts:"cocktail",kcal:220}),
+ I("caipiroska","cocktails",{pt:"Caipiroska",en:"Caipiroska",fr:"Caïpiroska",de:"Caipiroska"},500,{opts:"cocktail",kcal:200}),
+ I("mojito","cocktails",{pt:"Mojito",en:"Mojito",fr:"Mojito",de:"Mojito"},500,{opts:"cocktail",kcal:190}),
+ I("mix-5al","cocktails",{pt:"5ªl Mix",en:"5ªl Mix",fr:"5ªl Mix",de:"5ªl Mix"},600,{d:{pt:"Cocktail da casa.",en:"House cocktail."},opts:"cocktail",tag:"casa",kcal:240}),
+ I("morango-leite","batidos",{pt:"Morango e leite",en:"Strawberry & milk",fr:"Fraise et lait",de:"Erdbeere & Milch"},350,{al:["leite"],kcal:260}),
+ I("laranja-papaia","batidos",{pt:"Laranja e papaia",en:"Orange & papaya",fr:"Orange et papaye",de:"Orange & Papaya"},400,{kcal:180,tag:"veg"}),
+ I("banana-laranja-papaia","batidos",{pt:"Banana, laranja e papaia",en:"Banana, orange & papaya",fr:"Banane, orange et papaye",de:"Banane, Orange & Papaya"},450,{kcal:230,tag:"veg"}),
+ I("cafe","cafe",{pt:"Café",en:"Espresso",fr:"Café",de:"Espresso"},70,{kcal:5}),
+ I("galao","cafe",{pt:"Galão",en:"Latte",fr:"Café au lait",de:"Milchkaffee"},150,{al:["leite"],kcal:120}),
+ I("cha","cafe",{pt:"Chá natural",en:"Herbal tea",fr:"Infusion",de:"Kräutertee"},100,{kcal:5}),
+ I("cha-fogo-tinto","vinhos",{pt:"Chã de Fogo tinto · 750 ml",en:"Chã de Fogo red · 750 ml",fr:"Chã de Fogo rouge · 750 ml",de:"Chã de Fogo rot · 750 ml"},2000,{d:{pt:"Vinho da ilha do Fogo.",en:"Wine from Fogo island."},al:["sulfitos"],tag:"tipico"}),
+ I("cabriz-tinto","vinhos",{pt:"Cabriz tinto · 750 ml",en:"Cabriz red · 750 ml",fr:"Cabriz rouge · 750 ml",de:"Cabriz rot · 750 ml"},1800,{al:["sulfitos"]}),
+ I("pera-doce","vinhos",{pt:"Pêra Doce tinto",en:"Pêra Doce red",fr:"Pêra Doce rouge",de:"Pêra Doce rot"},1500,{al:["sulfitos"]}),
+ I("penedo-gordo","vinhos",{pt:"Penedo Gordo Reserva",en:"Penedo Gordo Reserva",fr:"Penedo Gordo Reserva",de:"Penedo Gordo Reserva"},3000,{al:["sulfitos"]}),
+ I("cha-fogo-branco","vinhos",{pt:"Chã de Fogo branco · 750 ml",en:"Chã de Fogo white · 750 ml",fr:"Chã de Fogo blanc · 750 ml",de:"Chã de Fogo weiß · 750 ml"},2000,{al:["sulfitos"],tag:"tipico"}),
+ I("casal-garcia","vinhos",{pt:"Casal Garcia (verde)",en:"Casal Garcia (green wine)",fr:"Casal Garcia (vin vert)",de:"Casal Garcia (grüner Wein)"},1500,{al:["sulfitos"]}),
+ I("espumante","vinhos",{pt:"Vinho espumante",en:"Sparkling wine",fr:"Vin mousseux",de:"Schaumwein"},2600,{al:["sulfitos"]})
+];
+var BY={};MENU.forEach(function(m){BY[m.id]=m;});
+/* Ingredientes, preparo e macros por dose: estimativas de demonstração, a confirmar com a cozinha */
+var EXTRA={
+ "creme-marisco":{ing:["Camarão","Cebola","Tomate","Natas","Manteiga","Caldo de marisco"],ingEn:"Shrimp, onion, tomato, cream, butter, seafood stock",prep:["O marisco é salteado com cebola e tomate, cozido no caldo e triturado com natas até ficar cremoso.","Seafood sautéed with onion and tomato, simmered in stock and blended with cream."],m:[18,20,18]},
+ "sopa-legumes":{ing:["Batata","Cenoura","Abóbora","Couve","Cebola","Azeite"],ingEn:"Potato, carrot, pumpkin, cabbage, onion, olive oil",prep:["Legumes cozidos devagar e triturados. Feita no próprio dia.","Vegetables slow-cooked and blended. Made fresh every day."],m:[5,26,4]},
+ "sopa-peixe":{ing:["Peixe do dia","Batata","Tomate","Cebola","Pimento","Coentros"],ingEn:"Catch of the day, potato, tomato, onion, pepper, coriander",prep:["Caldo de peixe com legumes, cozido devagar. O peixe é desfiado no fim.","Fish stock with vegetables, slow-cooked; the fish is flaked in at the end."],m:[22,18,8]},
+ "salada-mista":{ing:["Alface","Tomate","Cebola","Cenoura","Azeite","Vinagre"],ingEn:"Lettuce, tomato, onion, carrot, olive oil, vinegar",prep:["Montada na hora e temperada com azeite e vinagre.","Made to order and dressed with olive oil and vinegar."],m:[3,12,13]},
+ "salada-marisco":{ing:["Camarão","Marisco do dia","Alface","Tomate","Cebola roxa","Limão","Azeite"],ingEn:"Shrimp, seafood of the day, lettuce, tomato, red onion, lemon, olive oil",prep:["O marisco é cozido, arrefecido e servido sobre salada fresca com limão.","Seafood is cooked, chilled and served over fresh greens with lemon."],m:[30,12,22]},
+ "bife-casa":{ing:["Bife de vaca","Molho da casa","Alho","Acompanhamento à escolha"],ingEn:"Beef steak, house sauce, garlic, side of your choice",prep:["Grelhado na chapa no ponto que escolheres e servido com o molho da casa.","Grilled to your liking and served with the house sauce."],m:[48,55,45]},
+ "bife-portuguesa":{ing:["Bife de vaca","Ovo","Alho","Louro","Vinho branco","Acompanhamento à escolha"],ingEn:"Beef steak, egg, garlic, bay leaf, white wine, side of your choice",prep:["Bife frito em alho e louro, com o molho do próprio bife e ovo estrelado por cima.","Steak pan-fried with garlic and bay leaf, finished with its own sauce and a fried egg on top."],m:[55,60,55]},
+ "vitela-cogumelos":{ing:["Vitela","Cogumelos","Natas","Alho","Manteiga","Acompanhamento à escolha"],ingEn:"Veal, mushrooms, cream, garlic, butter, side of your choice",prep:["A vitela é grelhada e coberta com cogumelos salteados em manteiga e natas.","Grilled veal topped with mushrooms sautéed in butter and cream."],m:[50,50,40]},
+ "grelhado-misto":{ing:["Carne de vaca","Carne de porco","Frango","Linguiça","Acompanhamento à escolha"],ingEn:"Beef, pork, chicken, sausage, side of your choice",prep:["Várias carnes grelhadas na hora e servidas juntas no prato.","A mix of meats grilled to order and served together."],m:[70,50,60]},
+ "tornedo":{ing:["Lombo de vaca","Pimenta verde","Natas","Manteiga","Acompanhamento à escolha"],ingEn:"Beef tenderloin, green peppercorns, cream, butter, side of your choice",prep:["O lombo é selado e acabado no ponto escolhido; o molho leva pimenta verde e natas.","Tenderloin seared and cooked to your liking, with a green peppercorn cream sauce."],m:[52,48,46]},
+ "frango-ervas":{ing:["Peito de frango","Alho","Ervas aromáticas","Limão","Azeite","Acompanhamento à escolha"],ingEn:"Chicken breast, garlic, herbs, lemon, olive oil, side of your choice",prep:["O peito é marinado em ervas, alho e limão e depois grelhado.","Chicken breast marinated in herbs, garlic and lemon, then grilled."],m:[50,50,18]},
+ "cachupa-rica":{ing:["Milho","Feijão","Carne de porco","Linguiça","Couve","Batata-doce","Mandioca"],ingEn:"Corn, beans, pork, sausage, cabbage, sweet potato, cassava",prep:["Milho e feijão cozidos durante horas com carnes e legumes, como manda a tradição. Com ovo estrelado se quiseres.","Corn and beans cooked for hours with meats and vegetables, the traditional way. Add a fried egg if you like."],m:[40,95,35]},
+ "caipirinha":{ing:["Cachaça","Lima","Açúcar","Gelo picado"],ingEn:"Cachaça, lime, sugar, crushed ice",prep:["Lima macerada com açúcar, gelo picado e cachaça. Feita na hora.","Lime muddled with sugar, crushed ice and cachaça. Made to order."],m:[0,24,0]},
+ "caipifari":{ing:["Receita do bar"],ingEn:"Bar recipe",prep:["Receita do bar do Quintal. Pergunta ao empregado.","The Quintal bar's own recipe. Ask your waiter."],m:[0,24,0]},
+ "caipimaracuja":{ing:["Cachaça","Maracujá","Açúcar","Gelo picado"],ingEn:"Cachaça, passion fruit, sugar, crushed ice",prep:["Maracujá fresco macerado com açúcar, gelo picado e cachaça.","Fresh passion fruit muddled with sugar, crushed ice and cachaça."],m:[0,28,0]},
+ "caipiblack":{ing:["Receita do bar"],ingEn:"Bar recipe",prep:["Receita do bar do Quintal. Pergunta ao empregado.","The Quintal bar's own recipe. Ask your waiter."],m:[0,26,0]},
+ "caipiroska":{ing:["Vodka","Lima","Açúcar","Gelo picado"],ingEn:"Vodka, lime, sugar, crushed ice",prep:["Lima macerada com açúcar, gelo picado e vodka.","Lime muddled with sugar, crushed ice and vodka."],m:[0,24,0]},
+ "mojito":{ing:["Rum branco","Hortelã","Lima","Açúcar","Água com gás"],ingEn:"White rum, mint, lime, sugar, soda water",prep:["Hortelã e lima maceradas com açúcar, rum, gelo e um toque de água com gás.","Mint and lime muddled with sugar, rum, ice and a splash of soda."],m:[0,22,0]},
+ "mix-5al":{ing:["Receita do bar"],ingEn:"Bar recipe",prep:["O cocktail da casa. Pergunta ao empregado o que leva hoje.","The house cocktail. Ask your waiter what's in it today."],m:[0,30,0]},
+ "morango-leite":{ing:["Morango","Leite","Açúcar","Gelo"],ingEn:"Strawberry, milk, sugar, ice",prep:["Morango fresco batido na hora com leite frio.","Fresh strawberries blended to order with cold milk."],m:[8,40,7]},
+ "laranja-papaia":{ing:["Laranja","Papaia","Gelo"],ingEn:"Orange, papaya, ice",prep:["Laranja espremida e papaia batidas na hora.","Fresh-squeezed orange blended with papaya to order."],m:[2,42,1]},
+ "banana-laranja-papaia":{ing:["Banana","Laranja","Papaia","Gelo"],ingEn:"Banana, orange, papaya, ice",prep:["Fruta fresca batida na hora.","Fresh fruit blended to order."],m:[3,55,1]},
+ "cafe":{ing:["Café"],ingEn:"Coffee",prep:["Tirado na hora.","Pulled to order."],m:[0,0,0]},
+ "galao":{ing:["Café","Leite"],ingEn:"Coffee, milk",prep:["Café com leite quente, servido em copo alto.","Coffee with hot milk, served in a tall glass."],m:[6,9,6]},
+ "cha":{ing:["Ervas naturais"],ingEn:"Natural herbs",prep:["Infusão de ervas naturais.","An infusion of natural herbs."],m:[0,0,0]}
+};
+MENU.forEach(function(m){var x=EXTRA[m.id];if(!x)return;m.ingL={pt:x.ing,en:x.ingEn};m.prep={pt:x.prep[0],en:x.prep[1]};m.mac={p:x.m[0],c:x.m[1],f:x.m[2]};if(m.mac.p+m.mac.c+m.mac.f>0&&m.cat!=="cocktails"){m.kcal=Math.round((4*m.mac.p+4*m.mac.c+9*m.mac.f)/10)*10;}});
+var OPTS={
+ carne:[{k:"ponto",req:true,c:[["mal","Mal passado","Rare","Saignant","Blutig"],["medio","Médio","Medium","À point","Medium"],["bem","Bem passado","Well done","Bien cuit","Durch"]]},
+        {k:"acomp",req:true,c:[["batata","Batata frita","Fries","Frites","Pommes"],["arroz","Arroz","Rice","Riz","Reis"],["legumes","Legumes","Vegetables","Légumes","Gemüse"]]}],
+ acomp:[{k:"acomp",req:true,c:[["batata","Batata frita","Fries","Frites","Pommes"],["arroz","Arroz","Rice","Riz","Reis"],["legumes","Legumes","Vegetables","Légumes","Gemüse"]]}],
+ ovo:[{k:"ovo",req:false,multi:true,c:[["ovo","+ Ovo estrelado","+ Fried egg","+ Œuf au plat","+ Spiegelei"]],price:{ovo:100}}],
+ cocktail:[{k:"alc",req:false,multi:true,c:[["sem","Sem álcool","Alcohol-free","Sans alcool","Alkoholfrei"],["gelo","Pouco gelo","Light ice","Peu de glace","Wenig Eis"]]}]
+};
+var AL={marisco:["Marisco","Shellfish","Fruits de mer","Meeresfrüchte"],peixe:["Peixe","Fish","Poisson","Fisch"],leite:["Leite","Milk","Lait","Milch"],ovo:["Ovo","Egg","Œuf","Ei"],sulfitos:["Sulfitos","Sulphites","Sulfites","Sulfite"]};
+var LI={pt:0,en:1,fr:2,de:3};
+var T={
+ pt:{ilus:"Ilustrativa",prepT:"Como é preparado",nut:"Valor nutricional",perDose:"por dose · aproximado",prot:"Proteína",carb:"Hidratos",fat:"Gordura",kc:"kcal",confirm:"Informação de demonstração. Confirma alergias com o empregado.",hi:"Bem-vindo",sub:"Vê cada prato antes de pedir. O pedido vai direto para a cozinha.",mesa:"Mesa",ask:"Não sabes o que escolher?",askS:"Pergunta ao assistente: leve, típico, sem marisco, até 1.500$…",see:"Ver pedido",add:"Adicionar",ing:"Ingredientes",al:"Alergénios",none:"Nenhum indicado",kcal:"Calorias",aprox:"aprox.",time:"Tempo",min:"min",note:"Observações",noteP:"Ex.: sem cebola, molho à parte",yourOrder:"O teu pedido",name:"O teu nome",nameP:"Para a cozinha saber de quem é",send:"Enviar para a cozinha",minH:"Consumo mínimo: 1.500$ por pessoa.",sent:"Pedido enviado",track:"Os teus pedidos",bill:"Pedir a conta",billOk:"O garçom foi avisado.",st:{novo:"Recebido",preparo:"Em preparo",pronto:"Pronto",entregue:"Entregue"},photoSoon:"Foto real\nem breve",real:"Foto real",out:"Esgotado",empty:"O pedido está vazio.",choose:"Escolhe",asst:"Assistente",asstP:"Escreve a tua pergunta",asstHi:"Olá! Diz-me o que te apetece e eu sugiro pratos deste menu.",sugg:["Algo típico de Cabo Verde","Um prato leve","Sem marisco","Até 1.500$"],asstErr:"O assistente não respondeu. Tenta outra vez daqui a pouco.",asstOff:"O assistente não está disponível nesta vista.",total:"Total",tag:{tipico:"Típico",casa:"Da casa",veg:"Vegetariano"}},
+ en:{ilus:"Illustrative",prepT:"How it's made",nut:"Nutrition",perDose:"per serving · approximate",prot:"Protein",carb:"Carbs",fat:"Fat",kc:"kcal",confirm:"Demo information. Please confirm allergies with your waiter.",hi:"Welcome",sub:"See every dish before you order. Your order goes straight to the kitchen.",mesa:"Table",ask:"Not sure what to choose?",askS:"Ask the assistant: light, local, no shellfish, under 1,500$…",see:"View order",add:"Add",ing:"Ingredients",al:"Allergens",none:"None listed",kcal:"Calories",aprox:"approx.",time:"Time",min:"min",note:"Notes",noteP:"e.g. no onion, sauce on the side",yourOrder:"Your order",name:"Your name",nameP:"So the kitchen knows whose it is",send:"Send to the kitchen",minH:"Minimum spend: 1,500$ per person.",sent:"Order sent",track:"Your orders",bill:"Ask for the bill",billOk:"Your waiter has been told.",st:{novo:"Received",preparo:"Preparing",pronto:"Ready",entregue:"Served"},photoSoon:"Real photo\ncoming soon",real:"Real photo",out:"Sold out",empty:"Your order is empty.",choose:"Choose",asst:"Assistant",asstP:"Type your question",asstHi:"Hi! Tell me what you feel like and I'll suggest dishes from this menu.",sugg:["Something typical of Cape Verde","A light dish","No shellfish","Under 1,500$"],asstErr:"The assistant didn't answer. Try again in a moment.",asstOff:"The assistant isn't available in this view.",total:"Total",tag:{tipico:"Local",casa:"House",veg:"Vegetarian"}},
+ fr:{ilus:"Illustration",prepT:"Préparation",nut:"Valeurs nutritionnelles",perDose:"par portion · approximatif",prot:"Protéines",carb:"Glucides",fat:"Lipides",kc:"kcal",confirm:"Informations de démonstration. Confirmez les allergies avec le serveur.",hi:"Bienvenue",sub:"Voyez chaque plat avant de commander. La commande part directement en cuisine.",mesa:"Table",ask:"Vous hésitez ?",askS:"Demandez à l'assistant : léger, local, sans fruits de mer…",see:"Voir la commande",add:"Ajouter",ing:"Ingrédients",al:"Allergènes",none:"Aucun indiqué",kcal:"Calories",aprox:"env.",time:"Temps",min:"min",note:"Remarques",noteP:"Ex. : sans oignon, sauce à part",yourOrder:"Votre commande",name:"Votre prénom",nameP:"Pour que la cuisine sache à qui c'est",send:"Envoyer en cuisine",minH:"Consommation minimum : 1 500$ par personne.",sent:"Commande envoyée",track:"Vos commandes",bill:"Demander l'addition",billOk:"Le serveur a été prévenu.",st:{novo:"Reçue",preparo:"En préparation",pronto:"Prête",entregue:"Servie"},photoSoon:"Vraie photo\nbientôt",real:"Vraie photo",out:"Épuisé",empty:"Votre commande est vide.",choose:"Choisissez",asst:"Assistant",asstP:"Posez votre question",asstHi:"Bonjour ! Dites-moi ce qui vous ferait plaisir et je vous propose des plats de ce menu.",sugg:["Un plat typique","Un plat léger","Sans fruits de mer","Moins de 1 500$"],asstErr:"L'assistant n'a pas répondu. Réessayez dans un instant.",asstOff:"L'assistant n'est pas disponible ici.",total:"Total",tag:{tipico:"Typique",casa:"Maison",veg:"Végétarien"}},
+ de:{ilus:"Beispielbild",prepT:"Zubereitung",nut:"Nährwerte",perDose:"pro Portion · ungefähr",prot:"Eiweiß",carb:"Kohlenhydrate",fat:"Fett",kc:"kcal",confirm:"Demo-Angaben. Allergien bitte beim Kellner bestätigen.",hi:"Willkommen",sub:"Sehen Sie jedes Gericht vor der Bestellung. Die Bestellung geht direkt in die Küche.",mesa:"Tisch",ask:"Unsicher, was Sie wählen sollen?",askS:"Fragen Sie den Assistenten: leicht, typisch, ohne Meeresfrüchte…",see:"Bestellung ansehen",add:"Hinzufügen",ing:"Zutaten",al:"Allergene",none:"Keine angegeben",kcal:"Kalorien",aprox:"ca.",time:"Zeit",min:"Min.",note:"Hinweise",noteP:"z. B. ohne Zwiebeln, Soße extra",yourOrder:"Ihre Bestellung",name:"Ihr Name",nameP:"Damit die Küche weiß, für wen es ist",send:"An die Küche senden",minH:"Mindestverzehr: 1.500$ pro Person.",sent:"Bestellung gesendet",track:"Ihre Bestellungen",bill:"Rechnung bitte",billOk:"Ihr Kellner wurde informiert.",st:{novo:"Erhalten",preparo:"In Zubereitung",pronto:"Fertig",entregue:"Serviert"},photoSoon:"Echtes Foto\nfolgt",real:"Echtes Foto",out:"Ausverkauft",empty:"Ihre Bestellung ist leer.",choose:"Wählen",asst:"Assistent",asstP:"Ihre Frage",asstHi:"Hallo! Sagen Sie mir, worauf Sie Lust haben, und ich schlage Gerichte aus dieser Karte vor.",sugg:["Etwas Typisches","Ein leichtes Gericht","Ohne Meeresfrüchte","Unter 1.500$"],asstErr:"Der Assistent hat nicht geantwortet. Bitte gleich noch einmal versuchen.",asstOff:"Der Assistent ist hier nicht verfügbar.",total:"Gesamt",tag:{tipico:"Typisch",casa:"Haus",veg:"Vegetarisch"}}
+};
+var ST_ORDER=["novo","preparo","pronto","entregue"];
+var BASE_LIST=JSON.parse(JSON.stringify(MENU));
+/* Imagens ilustrativas com licença aberta (Openverse), até haver foto real do restaurante */
+var PHOTOS={"sopa-legumes": {"src": "img/sopa-legumes.jpg", "title": "Tuscan Vegetable Soup", "creator": "Mr.TinDC", "page": "https://www.flickr.com/photos/7471115@N08/3165559496", "lic": "CC BY-ND 2.0"}, "sopa-peixe": {"src": "img/sopa-peixe.jpg", "title": "sweet and sour Vietnamese fish soup", "creator": "stu_spivack", "page": "https://www.flickr.com/photos/35034346243@N01/232273270", "lic": "CC BY-SA 2.0"}, "salada-mista": {"src": "img/salada-mista.jpg", "title": "The famous Mixed Salad at Salvadonica", "creator": "Salvadonica, Chianti, Tuscany", "page": "https://www.flickr.com/photos/38027316@N06/9056609117", "lic": "CC BY 2.0"}, "bife-casa": {"src": "img/bife-casa.jpg", "title": "Garlic Steak with Fries and Green Beans", "creator": "UCFFool", "page": "https://www.flickr.com/photos/36762416@N04/3832578544", "lic": "CC BY 2.0"}, "bife-portuguesa": {"src": "img/bife-portuguesa.jpg", "title": "Wagyu Rump Steak Sandwich - Cafe Sapore AUD17.50", "creator": "avlxyz", "page": "https://www.flickr.com/photos/10559879@N00/3958149754", "lic": "CC BY-SA 2.0"}, "vitela-cogumelos": {"src": "img/vitela-cogumelos.jpg", "title": "Steak & Mushroom Sauce", "creator": "Thank You (25 Millions ) views", "page": "https://www.flickr.com/photos/34128007@N04/54333736846", "lic": "CC BY 2.0"}, "grelhado-misto": {"src": "img/grelhado-misto.jpg", "title": "Piatela Kreatika - Mixed Grill - Tsindos AUD27 for 1", "creator": "avlxyz", "page": "https://www.flickr.com/photos/10559879@N00/4068185888", "lic": "CC BY-SA 2.0"}, "caipirinha": {"src": "img/caipirinha.jpg", "title": "Caipirinhas", "creator": "andybullock77", "page": "https://www.flickr.com/photos/94549249@N00/4607609510", "lic": "CC BY 2.0"}, "caipiroska": {"src": "img/caipiroska.jpg", "title": "caipiroska", "creator": "tnarik", "page": "https://www.flickr.com/photos/80075387@N00/2774127338", "lic": "CC BY-SA 2.0"}, "mojito": {"src": "img/mojito.jpg", "title": "Mojito", "creator": "TheCulinaryGeek", "page": "https://www.flickr.com/photos/72949902@N00/5084101811", "lic": "CC BY 2.0"}, "caipimaracuja": {"src": "img/caipimaracuja.jpg", "title": "mango dream", "creator": "Matthias Rhomberg", "page": "https://www.flickr.com/photos/33772123@N03/3444207913", "lic": "CC BY 2.0"}, "morango-leite": {"src": "img/morango-leite.jpg", "title": "Strawberry Milkshake", "creator": "Vancouver Bites!", "page": "https://www.flickr.com/photos/92945296@N00/4675313359", "lic": "CC BY-SA 2.0"}, "cafe": {"src": "img/cafe.jpg", "title": "Espresso", "creator": "phvolmer", "page": "https://www.flickr.com/photos/29699251@N08/3468361138", "lic": "CC BY-ND 2.0"}, "galao": {"src": "img/galao.jpg", "title": "Latte glass", "creator": "The Coffee Chronicler", "page": "https://www.flickr.com/photos/187871768@N05/52500906951", "lic": "CC BY-ND 2.0"}, "vinho-tinto": {"src": "img/vinho-tinto.jpg", "title": "Vinao Red Wine Glass by Schott Zwiesel", "creator": "Didriks", "page": "https://www.flickr.com/photos/49889671@N03/19719405372", "lic": "CC BY 2.0"}, "vinho-branco": {"src": "img/vinho-branco.jpg", "title": "iittala White Wine Glass", "creator": "Didriks", "page": "https://www.flickr.com/photos/49889671@N03/17242944939", "lic": "CC BY 2.0"}, "espumante": {"src": "img/espumante.jpg", "title": "Champagne glass", "creator": "quinn.anya", "page": "https://www.flickr.com/photos/53326337@N00/2119419690", "lic": "CC BY-SA 2.0"}, "cachupa-rica": {"src": "img/cachupa-rica.jpg", "title": "Cachupa", "creator": "oddharmonic", "page": "https://www.flickr.com/photos/42528087@N00/8483232553", "lic": "CC BY-SA 2.0"}};
+var PHOTO_ALIAS={"cabriz-tinto":"vinho-tinto","pera-doce":"vinho-tinto","penedo-gordo":"vinho-tinto","cha-fogo-tinto":"vinho-tinto","cha-fogo-branco":"vinho-branco","casal-garcia":"vinho-branco"};
+function customItem(id,o){var n=o.name||"Prato";return {id:id,cat:o.cat||"carnes",n:{pt:n,en:n,fr:n,de:n},p:+o.price||0,d:null,ing:null,al:Array.isArray(o.al)?o.al:[],kcal:null,opts:o.opts||null,st:o.station==="bar"?"bar":"cozinha",tag:"casa",min:+o.min||null,custom:true};}
+function applyOverrides(){
+ MENU.length=0;BASE_LIST.forEach(function(b){MENU.push(JSON.parse(JSON.stringify(b)));});
+ Object.keys(S.items).forEach(function(id){var o=S.items[id];if(o&&o.custom&&!o.deleted)MENU.push(customItem(id,o));});
+ for(var k in BY)delete BY[k];MENU.forEach(function(m){BY[m.id]=m;});
+ MENU.forEach(function(m){var o=S.items[m.id]||{};
+  if(typeof o.price==="number"&&o.price>0)m.p=o.price;
+  if(o.desc)m.d={pt:o.desc,en:o.desc};
+  if(Array.isArray(o.ing)&&o.ing.length)m.ingL={pt:o.ing,en:o.ing.join(", ")};
+  if(o.prep)m.prep={pt:o.prep,en:o.prep};
+  if(o.mac&&typeof o.mac==="object"){m.mac={p:+o.mac.p||0,c:+o.mac.c||0,f:+o.mac.f||0};if(!m.kcal&&(m.mac.p+m.mac.c+m.mac.f))m.kcal=Math.round(4*m.mac.p+4*m.mac.c+9*m.mac.f);}
+  if(typeof o.kcal==="number"&&o.kcal>0)m.kcal=o.kcal;
+  m.hidden=!!o.hidden;
+ });
+}
+
+/* ---------- Estado local ---------- */
+function ls(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem("mr-"+k));}localStorage.setItem("mr-"+k,JSON.stringify(v));}catch(e){return null;}}
+var S={view:"client",lang:ls("lang")||"pt",cat:"sopas",cart:[],guest:ls("guest")||"",gid:ls("gid")||Math.random().toString(36).slice(2,10),orders:[],requests:[],items:{},chat:[],busy:false,kstation:"todos",settings:{tables:12,name:"Quintal da Música"},mtab:"pratos",pin:ls("pin")||"",staff:!!ls("pin")||/^#?equipa$/i.test(location.hash||"")};
+ls("gid",S.gid);
+function L(){return T[S.lang];}
+function nm(m){return m.n[S.lang]||m.n.pt;}
+function ds(m){return m.d?(m.d[S.lang]||m.d.en||m.d.pt):"";}
+function money(v){return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,".")+"$";}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function el(html){var t=document.createElement("template");t.innerHTML=html.trim();return t.content.firstElementChild;}
+function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(function(){t.hidden=true;},2600);}
+function ago(ts){var m=Math.max(0,Math.round((Date.now()-ts)/60000));return m<1?"agora":m+" min";}
+function photo(id){var it=S.items[id];return it&&it.photoUrl?it.photoUrl:null;}
+function soldOut(id){var it=S.items[id];return !!(it&&it.soldOut);}
+var CAM='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+var SPARK='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>';
+var X='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+function ilus(id){return PHOTOS[id]||PHOTOS[PHOTO_ALIAS[id]]||null;}
+function thumbHtml(m,big){var u=photo(m.id);if(u)return '<img src="'+esc(u)+'" alt="'+esc(nm(m))+'"><span class="real">'+(big?"📷 ":"")+esc(L().real)+'</span>';var il=ilus(m.id);if(il)return '<img src="'+esc(il.src)+'" alt="'+esc(nm(m))+'" loading="lazy"><span class="real ilus">'+esc(L().ilus)+'</span>';return '<div class="nophoto">'+CAM+'<span>'+esc(L().photoSoon).replace("\n","<br>")+'</span></div>';}
+
+/* ---------- Armazenamento: db partilhada, ou memória local quando não há db ---------- */
+var db=null, sample=null, assets=null, downloads=null, subs={};
+var SB_URL="https://ktdbdhsjznajrlklmmri.supabase.co", SB_KEY="sb_publishable_J625B8RTQGC9U5xtGs7MXg_DqIvS9Pq";
+var sb=(window.supabase&&!(window.claude&&window.claude.use))?window.supabase.createClient(SB_URL,SB_KEY):null;
+function rowOrder(r){return {id:r.id,mesa:r.mesa,guest:r.guest,gid:r.gid,station:r.station,items:r.items||[],total:r.total,status:r.status,batch:r.batch,paid:r.paid,createdAt:+r.created_at,updatedAt:+r.updated_at};}
+function rowReq(r){return {id:r.id,mesa:r.mesa,guest:r.guest,gid:r.gid,type:r.type,total:r.total,done:r.done,createdAt:+r.created_at};}
+function rpc(fn,args){return sb.rpc(fn,Object.assign({p_pin:S.pin},args)).then(function(res){if(res.error)throw res.error;return res.data;});}
+function chk(res){if(res.error)throw res.error;return res.data;}
+var sbLoad={
+ orders:function(){return sb.from("mr_orders").select("*").order("created_at",{ascending:false}).limit(300).then(chk).then(function(d){S.orders=d.map(rowOrder);render();});},
+ requests:function(){return sb.from("mr_requests").select("*").order("created_at",{ascending:false}).limit(60).then(chk).then(function(d){S.requests=d.map(rowReq);render();});},
+ items:function(){return sb.from("mr_items").select("*").then(chk).then(function(d){var m={};d.forEach(function(r){m[r.id]=r.data||{};});S.items=m;applyOverrides();render();});},
+ settings:function(){return sb.from("mr_settings").select("*").eq("id","main").maybeSingle().then(chk).then(function(r){if(r&&r.data)S.settings=Object.assign({tables:12,name:"Quintal da Música"},r.data);render();});}
+};
+var sbTimers={};function sbRefresh(k){clearTimeout(sbTimers[k]);sbTimers[k]=setTimeout(function(){sbLoad[k]().catch(function(){});},150);}
+function sbStart(){
+ sbLoad.settings().catch(function(){});sbLoad.items().catch(function(){});sbLoad.orders().catch(function(){});sbLoad.requests().catch(function(){});
+ sb.channel("menureal").on("postgres_changes",{event:"*",schema:"public",table:"mr_orders"},function(){sbRefresh("orders");})
+  .on("postgres_changes",{event:"*",schema:"public",table:"mr_requests"},function(){sbRefresh("requests");})
+  .on("postgres_changes",{event:"*",schema:"public",table:"mr_items"},function(){sbRefresh("items");})
+  .on("postgres_changes",{event:"*",schema:"public",table:"mr_settings"},function(){sbRefresh("settings");}).subscribe();
+ setInterval(function(){sbLoad.orders().catch(function(){});sbLoad.requests().catch(function(){});},20000);
+}
+var local={orders:[],requests:[]};
+function useLocal(){S.orders=local.orders.slice();S.requests=local.requests.slice();}
+var store={
+ addOrder:function(o){if(sb)return sb.from("mr_orders").insert({mesa:o.mesa,guest:o.guest,gid:o.gid,station:o.station,items:o.items,total:o.total,status:"novo",batch:o.batch,paid:false,created_at:o.createdAt,updated_at:o.updatedAt}).then(chk).then(function(){sbRefresh("orders");});if(db)return db.collection("orders").add(o);o.id="l"+Date.now()+Math.random();local.orders.push(o);useLocal();render();return Promise.resolve();},
+ setStatus:function(id,st){if(sb)return rpc("mr_set_status",{p_id:id,p_status:st}).then(function(){sbRefresh("orders");});if(db)return db.doc("orders/"+id).update({status:st,updatedAt:Date.now()});local.orders.forEach(function(o){if(o.id===id)o.status=st;});useLocal();render();return Promise.resolve();},
+ addRequest:function(r){if(sb)return sb.from("mr_requests").insert({mesa:r.mesa,guest:r.guest||"",gid:r.gid||"",type:"conta",total:r.total||0,done:false,created_at:r.createdAt}).then(chk).then(function(){sbRefresh("requests");});if(db)return db.collection("requests").add(r);r.id="r"+Date.now();local.requests.push(r);useLocal();render();return Promise.resolve();},
+ doneRequest:function(id){if(sb)return rpc("mr_done_request",{p_id:id}).then(function(){sbRefresh("requests");});if(db)return db.doc("requests/"+id).update({done:true});local.requests.forEach(function(r){if(r.id===id)r.done=true;});useLocal();render();return Promise.resolve();},
+ setItem:function(id,patch){var next=Object.assign({},S.items[id]||{},patch,{updatedAt:Date.now()});Object.keys(next).forEach(function(k){if(next[k]===null)delete next[k];});if(sb)return rpc("mr_put_item",{p_id:id,p_data:next}).then(function(){S.items[id]=next;applyOverrides();render();sbRefresh("items");});if(db)return db.doc("items/"+id).set(next);S.items[id]=next;applyOverrides();render();return Promise.resolve();},
+ closeTable:function(mesa){if(sb)return rpc("mr_close_table",{p_mesa:mesa}).then(function(){sbRefresh("orders");sbRefresh("requests");});var ps=S.orders.filter(function(o){return o.mesa===mesa&&!o.paid;}).map(function(o){return store.patchOrder(o.id,{paid:true,paidAt:Date.now()});});S.requests.filter(function(r){return r.mesa===mesa&&!r.done;}).forEach(function(r){ps.push(store.doneRequest(r.id));});return Promise.all(ps);},
+ patchOrder:function(id,patch){if(db)return db.doc("orders/"+id).update(Object.assign({updatedAt:Date.now()},patch));local.orders.forEach(function(o){if(o.id===id)Object.assign(o,patch);});useLocal();render();return Promise.resolve();},
+ setSettings:function(patch){S.settings=Object.assign({},S.settings,patch);if(sb)return rpc("mr_put_settings",{p_data:S.settings}).then(function(){render();});if(db)return db.doc("settings/main").set(S.settings);render();return Promise.resolve();}
+};
+function subscribe(){
+ if(!db)return;
+ subs.o=db.collection("orders").orderBy("createdAt","desc").limit(200).onSnapshot(function(s){S.orders=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();},function(){});
+ subs.r=db.collection("requests").orderBy("createdAt","desc").limit(50).onSnapshot(function(s){S.requests=s.docs.map(function(d){return Object.assign({id:d.id},d.data());});render();},function(){});
+ subs.i=db.collection("items").onSnapshot(function(s){var m={};s.docs.forEach(function(d){m[d.id]=d.data();});S.items=m;applyOverrides();render();},function(){});
+ subs.s=db.doc("settings/main").onSnapshot(function(d){if(d.exists)S.settings=Object.assign({tables:12},d.data());render();},function(){});
+}
+
+/* ---------- Render ---------- */
+var app=document.getElementById("app");
+function render(){
+ document.querySelectorAll(".seg button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.view===S.view));});
+ var seg=document.getElementById("staffSeg");if(seg)seg.hidden=!(S.staff||!sb);
+ var rn=document.getElementById("rname");if(rn)rn.textContent=S.settings.name||"";
+ document.title="Menu Real · "+(S.settings.name||"");
+ document.documentElement.lang=S.view==="client"?S.lang:"pt";
+ if(S.view==="client")renderClient();else if(S.view==="kitchen")renderKitchen();else if(S.view==="room")renderRoom();else renderManage();
+ renderCartbar();
+ if(openSheet&&openSheet.refresh)openSheet.refresh();
+}
+function renderClient(){
+ var l=L(), y=window.scrollY;
+ var mine=S.orders.filter(function(o){return o.gid===S.gid&&!o.paid&&o.status!=="cancelado";});
+ var h='<div class="view"><div class="client">'+
+  '<div class="hello"><div><h1>'+esc(l.hi)+'</h1><p>'+esc(l.sub)+'</p></div><span class="table-tag">'+esc(l.mesa)+' '+MESA+'</span></div>'+
+  '<div class="langs" role="group" aria-label="Língua">'+["pt","en","fr","de"].map(function(k){return '<button type="button" data-lang="'+k+'" aria-pressed="'+(S.lang===k)+'">'+{pt:"Português",en:"English",fr:"Français",de:"Deutsch"}[k]+'</button>';}).join("")+'</div>'+
+  '<button type="button" class="ask" id="askBtn"><span class="spark">'+SPARK+'</span><span><b>'+esc(l.ask)+'</b><small>'+esc(l.askS)+'</small></span></button>'+
+  (mine.length?trackHtml(mine):"")+
+  '<nav class="cats" aria-label="Categorias">'+CATS.filter(function(c){return MENU.some(function(m){return m.cat===c.id&&!m.hidden;});}).map(function(c){return '<button type="button" data-cat="'+c.id+'" aria-pressed="'+(S.cat===c.id)+'">'+esc(c.n[S.lang])+'</button>';}).join("")+'</nav>'+
+  CATS.filter(function(c){return MENU.some(function(m){return m.cat===c.id&&!m.hidden;});}).map(function(c){return '<section class="sec" id="cat-'+c.id+'"><h2>'+esc(c.n[S.lang])+'</h2>'+MENU.filter(function(m){return m.cat===c.id&&!m.hidden;}).map(itemHtml).join("")+'</section>';}).join("")+
+  '<p class="banner">Demonstração · preços do cardápio impresso; descrições, ingredientes e calorias são estimativas. Imagens “ilustrativas” têm licença aberta e são substituídas pelas fotos reais do restaurante.</p>'+creditsHtml()+
+ '</div></div>';
+ app.innerHTML=h; window.scrollTo(0,y);
+}
+function itemHtml(m){var l=L(),out=soldOut(m.id);return '<button type="button" class="item'+(out?" out":"")+'" data-item="'+m.id+'"><span class="t"><span class="nm">'+esc(nm(m))+'</span>'+(ds(m)?'<span class="ds">'+esc(ds(m))+'</span>':'')+'<span class="row" style="gap:8px"><span class="pr num">'+money(m.p)+'</span>'+(out?'<span class="badge">'+esc(l.out)+'</span>':(m.tag?'<span class="badge hot">'+esc(l.tag[m.tag])+'</span>':''))+'</span></span><span class="thumb">'+thumbHtml(m)+'</span></button>';}
+function trackHtml(mine){var l=L();var by={};mine.forEach(function(o){(by[o.batch]=by[o.batch]||[]).push(o);});
+ var h='<section class="track" aria-label="'+esc(l.track)+'"><h2 style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">'+esc(l.track)+'</h2>';
+ mine.slice(0,4).forEach(function(o){var idx=ST_ORDER.indexOf(o.status);h+='<div class="trk"><div class="row" style="justify-content:space-between"><span class="status">'+esc(l.st[o.status]||o.status)+'</span><span class="muted num" style="font-size:13px">'+(o.station==="bar"?"Bar":"Cozinha")+' · '+ago(o.createdAt)+'</span></div><div class="steps">'+ST_ORDER.map(function(s,i){return '<i class="'+(i<=idx?"on":"")+'"></i>';}).join("")+'</div><div class="muted" style="font-size:13px">'+o.items.map(function(it){return it.qty+"× "+esc(BY[it.id]?nm(BY[it.id]):it.name);}).join(", ")+'</div></div>';});
+ h+='<button type="button" class="ghost" id="billBtn">🧾 '+esc(l.bill)+'</button></section>';return h;}
+function renderCartbar(){var bar=document.getElementById("cartbar");var n=S.cart.reduce(function(a,c){return a+c.qty;},0);bar.hidden=!(S.view==="client"&&n>0);document.getElementById("cartN").textContent=n;document.getElementById("cartL").textContent=L().see;document.getElementById("cartT").textContent=money(cartTotal());}
+function cartTotal(){return S.cart.reduce(function(a,c){return a+c.qty*c.unit;},0);}
+
+/* ---------- Folhas ---------- */
+var openSheet=null, lastFocus=null;
+function sheet(title,bodyFn,opts){
+ closeSheet(true); lastFocus=document.activeElement;
+ var s=el('<div class="scrim" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="sheet"><div class="sheet-h"><h3>'+esc(title)+'</h3><button type="button" class="x" aria-label="Fechar">'+X+'</button></div><div class="sheet-b"></div></div></div>');
+ var body=s.querySelector(".sheet-b");
+ openSheet={el:s,body:body,refresh:opts&&opts.live?function(){bodyFn(body);}:null};
+ bodyFn(body);
+ s.addEventListener("click",function(e){if(e.target===s||e.target.closest(".x"))closeSheet();});
+ document.getElementById("layer").appendChild(s);
+ requestAnimationFrame(function(){s.classList.add("show");var f=s.querySelector(".x");f&&f.focus();});
+ document.body.style.overflow="hidden";
+}
+function closeSheet(instant){if(!openSheet)return;var s=openSheet.el;openSheet=null;document.body.style.overflow="";if(instant){s.remove();}else{s.classList.remove("show");setTimeout(function(){s.remove();},200);}if(lastFocus&&lastFocus.focus&&!instant)lastFocus.focus();}
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet();});
+
+function detailHtml(m){
+ var l=L(),h="",lk=S.lang==="pt"?"pt":"en";
+ if(m.ingL){var list=lk==="pt"?m.ingL.pt:m.ingL.en.split(", ").map(function(x){return x.charAt(0).toUpperCase()+x.slice(1);});h+='<div class="sect"><h4>'+esc(l.ing)+'</h4><div class="tags">'+list.map(function(x){return '<span>'+esc(x)+'</span>';}).join("")+'</div></div>';}
+ h+='<div class="sect"><h4>'+esc(l.al)+'</h4><p>'+(m.al.length?m.al.map(function(a){return esc(AL[a][LI[S.lang]]);}).join(" · "):'<span class="muted">'+esc(l.none)+'</span>')+'</p></div>';
+ if(m.prep)h+='<div class="sect"><h4>'+esc(l.prepT)+'</h4><p>'+esc(m.prep[lk])+'</p>'+(m.min?'<p class="fine num">⏱ '+m.min+' '+esc(l.min)+'</p>':'')+'</div>';
+ if(m.kcal){var mc=m.mac||{p:0,c:0,f:0},tot=mc.p*4+mc.c*4+mc.f*9;
+  h+='<div class="sect"><h4>'+esc(l.nut)+' <span style="text-transform:none;letter-spacing:0;font-weight:500">· '+esc(l.perDose)+'</span></h4><div class="nutr"><div><b class="num">'+m.kcal+'</b><small>'+esc(l.kc)+'</small></div><div><b class="num">'+mc.p+' g</b><small>'+esc(l.prot)+'</small></div><div><b class="num">'+mc.c+' g</b><small>'+esc(l.carb)+'</small></div><div><b class="num">'+mc.f+' g</b><small>'+esc(l.fat)+'</small></div></div>'+
+  (tot>0?'<div class="macro" role="img" aria-label="'+esc(l.prot)+' '+Math.round(mc.p*400/tot)+'%, '+esc(l.carb)+' '+Math.round(mc.c*400/tot)+'%, '+esc(l.fat)+' '+Math.round(mc.f*900/tot)+'%"><i style="width:'+(mc.p*400/tot)+'%"></i><i style="width:'+(mc.c*400/tot)+'%"></i><i style="width:'+(mc.f*900/tot)+'%"></i></div><div class="legend"><span>'+esc(l.prot)+'</span><span>'+esc(l.carb)+'</span><span>'+esc(l.fat)+'</span></div>':'')+'</div>';}
+ h+='<p class="fine">'+esc(l.confirm)+'</p>';
+ return h;
+}
+function dishSheet(id){
+ var m=BY[id],l=L(),groups=OPTS[m.opts]||[],sel={},qty=1,note="";
+ groups.forEach(function(g){sel[g.k]=g.multi?[]:null;});
+ sheet(nm(m),function(b){
+  var extra=0;groups.forEach(function(g){if(g.price){(sel[g.k]||[]).forEach(function(v){extra+=g.price[v]||0;});}});
+  var ready=groups.every(function(g){return !g.req||sel[g.k];});
+  var out=soldOut(id);
+  b.innerHTML='<div class="hero">'+thumbHtml(m,true)+'</div>'+
+   '<div class="dish-h"><h2>'+esc(nm(m))+'</h2><span class="pr num">'+money(m.p)+'</span></div>'+
+   (ds(m)?'<p class="muted">'+esc(ds(m))+'</p>':'')+
+   detailHtml(m)+
+   groups.map(function(g){return '<div class="opt"><h4>'+esc(g.req?l.choose:"Extras")+'</h4><div class="chips">'+g.c.map(function(c){var on=g.multi?(sel[g.k]||[]).indexOf(c[0])>-1:sel[g.k]===c[0];return '<button type="button" class="chip" data-g="'+g.k+'" data-v="'+c[0]+'" aria-pressed="'+on+'">'+esc(c[1+LI[S.lang]])+(g.price&&g.price[c[0]]?' <span class="muted num">+'+g.price[c[0]]+'$</span>':'')+'</button>';}).join("")+'</div></div>';}).join("")+
+   '<label class="opt"><h4>'+esc(l.note)+'</h4><textarea id="note" placeholder="'+esc(l.noteP)+'">'+esc(note)+'</textarea></label>'+
+   '<div class="row"><div class="qty"><button type="button" data-q="-1" aria-label="Menos">−</button><span class="num" aria-live="polite">'+qty+'</span><button type="button" data-q="1" aria-label="Mais">+</button></div>'+
+   '<button type="button" class="primary" id="addBtn"'+(ready&&!out?"":" disabled")+'><span>'+esc(out?l.out:l.add)+'</span><span class="num">'+money((m.p+extra)*qty)+'</span></button></div>';
+  b.querySelectorAll(".chip").forEach(function(c){c.onclick=function(){var g=groups.filter(function(x){return x.k===c.dataset.g;})[0];if(g.multi){var a=sel[g.k],i=a.indexOf(c.dataset.v);i>-1?a.splice(i,1):a.push(c.dataset.v);}else{sel[g.k]=c.dataset.v;}note=b.querySelector("#note").value;openSheet&&openSheet.rerender();};});
+  b.querySelectorAll("[data-q]").forEach(function(q){q.onclick=function(){qty=Math.max(1,qty+ +q.dataset.q);note=b.querySelector("#note").value;openSheet.rerender();};});
+  b.querySelector("#addBtn").onclick=function(){
+   note=b.querySelector("#note").value.trim();
+   var labels=[];groups.forEach(function(g){var v=sel[g.k];(Array.isArray(v)?v:(v?[v]:[])).forEach(function(x){var c=g.c.filter(function(cc){return cc[0]===x;})[0];labels.push(c[1]);});});
+   S.cart.push({id:id,qty:qty,unit:m.p+extra,opts:labels,note:note});
+   closeSheet();render();toast("✓ "+nm(m));
+  };
+ });
+}
+/* re-render helper: guarda a função de corpo da última folha */
+(function(){var orig=sheet;sheet=function(t,fn,o){orig(t,fn,o);openSheet.rerender=function(){var sc=openSheet.el.querySelector(".sheet"),y=sc.scrollTop;fn(openSheet.body);sc.scrollTop=y;};};})();
+
+function cartSheet(){
+ var l=L();
+ sheet(l.yourOrder,function(b){
+  if(!S.cart.length){b.innerHTML='<p class="muted">'+esc(l.empty)+'</p>';return;}
+  b.innerHTML='<div>'+S.cart.map(function(c,i){var m=BY[c.id];return '<div class="line"><div><b>'+c.qty+'× '+esc(nm(m))+'</b>'+(c.opts.length?'<small>'+esc(c.opts.join(" · "))+'</small>':'')+(c.note?'<small>“'+esc(c.note)+'”</small>':'')+'</div><div style="text-align:right"><div class="num">'+money(c.unit*c.qty)+'</div><button type="button" class="x" style="width:28px;height:28px;margin-top:6px;margin-left:auto" data-rm="'+i+'" aria-label="Remover">'+X+'</button></div></div>';}).join("")+'</div>'+
+   '<div class="total"><span>'+esc(l.total)+'</span><span class="num">'+money(cartTotal())+'</span></div>'+
+   '<p class="hint">'+esc(l.minH)+'</p>'+
+   '<label class="opt"><h4>'+esc(l.name)+'</h4><input type="text" id="gname" maxlength="24" placeholder="'+esc(l.nameP)+'" value="'+esc(S.guest)+'" autocomplete="given-name"></label>'+
+   '<button type="button" class="primary" id="sendBtn"><span>'+esc(l.send)+'</span><span>→</span></button>';
+  b.querySelectorAll("[data-rm]").forEach(function(x){x.onclick=function(){S.cart.splice(+x.dataset.rm,1);render();openSheet&&openSheet.rerender();if(!S.cart.length)closeSheet();};});
+  b.querySelector("#sendBtn").onclick=function(){
+   var name=b.querySelector("#gname").value.trim()||(l.mesa+" "+MESA);S.guest=name;ls("guest",name);
+   var batch=Date.now().toString(36),now=Date.now(),btn=this;btn.disabled=true;
+   var groups={};S.cart.forEach(function(c){var st=BY[c.id].st;(groups[st]=groups[st]||[]).push({id:c.id,name:BY[c.id].n.pt,qty:c.qty,opts:c.opts,note:c.note,unit:c.unit});});
+   var ps=Object.keys(groups).map(function(st){var its=groups[st];return store.addOrder({mesa:MESA,guest:name,gid:S.gid,station:st,items:its,total:its.reduce(function(a,c){return a+c.unit*c.qty;},0),status:"novo",batch:batch,createdAt:now,updatedAt:now});});
+   Promise.all(ps).then(function(){S.cart=[];closeSheet();render();toast("✓ "+l.sent);window.scrollTo({top:0,behavior:"smooth"});}).catch(function(){btn.disabled=false;toast("Não foi possível enviar. Tenta de novo.");});
+  };
+ });
+}
+
+/* ---------- Assistente ---------- */
+function menuForAI(){return MENU.filter(function(m){return !soldOut(m.id)&&!m.hidden;}).map(function(m){return {id:m.id,categoria:m.cat,nome:m.n.pt,nome_en:m.n.en,preco:m.p,descricao:m.d?m.d.pt:"",ingredientes:m.ingL?m.ingL.pt.join(", "):"",preparo:m.prep?m.prep.pt:"",proteina_g:m.mac?m.mac.p:null,hidratos_g:m.mac?m.mac.c:null,gordura_g:m.mac?m.mac.f:null,alergenios:m.al,kcal_aprox:m.kcal,tempo_min:m.min,tag:m.tag,destino:m.st};});}
+function asstSheet(prefill){
+ var l=L();
+ sheet(l.asst,function(b){
+  var h='<div class="chat">'+(S.chat.length?"":'<div class="msg ai">'+esc(l.asstHi)+'</div><div class="sugg">'+l.sugg.map(function(s){return '<button type="button" class="chip" data-s="'+esc(s)+'">'+esc(s)+'</button>';}).join("")+'</div>');
+  S.chat.forEach(function(m){if(m.role==="user"){h+='<div class="msg me">'+esc(m.content)+'</div>';}else{h+='<div class="msg ai">'+esc(m.reply)+'</div>';if(m.items&&m.items.length){h+='<div class="recs">'+m.items.filter(function(id){return BY[id];}).map(function(id){var it=BY[id];return '<button type="button" class="rec" data-item="'+id+'"><span><b>'+esc(nm(it))+'</b><br><span class="muted" style="font-size:13px">'+(it.kcal?"≈ "+it.kcal+" kcal · ":"")+esc(CATS.filter(function(c){return c.id===it.cat;})[0].n[S.lang])+'</span></span><span class="num">'+money(it.p)+' ›</span></button>';}).join("")+'</div>';}}});
+  if(S.busy)h+='<div class="msg ai dots">'+(S.lang==="pt"?"A pensar":"…")+'</div>';
+  h+='</div><form class="composer" id="cf"><input type="text" id="q" placeholder="'+esc(l.asstP)+'" autocomplete="off" aria-label="'+esc(l.asstP)+'"><button type="submit">→</button></form>';
+  b.innerHTML=h;
+  b.querySelectorAll("[data-s]").forEach(function(c){c.onclick=function(){ask(c.dataset.s);};});
+  b.querySelectorAll(".rec").forEach(function(r){r.onclick=function(){dishSheet(r.dataset.item);};});
+  b.querySelector("#cf").onsubmit=function(e){e.preventDefault();var v=b.querySelector("#q").value.trim();if(v)ask(v);};
+  var sc=openSheet&&openSheet.el.querySelector(".sheet");if(sc)sc.scrollTop=sc.scrollHeight;
+ });
+ if(prefill)ask(prefill);
+}
+function localAsk(q){
+ var t=q.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""),lg=S.lang;
+ var list=MENU.filter(function(m){return !m.hidden&&!soldOut(m.id);}),why=[];
+ var num=(t.match(/(\d[\d.\s]{1,6})/)||[])[1];num=num?parseInt(num.replace(/[.\s]/g,""),10):null;
+ function has(w){return w.some(function(x){return t.indexOf(x)>-1;});}
+ var drink=has(["bebida","beber","drink","cocktail","boisson","getrank","sumo","batido","juice","vinho","wine","vin","wein"]);
+ var food=has(["prato","comer","dish","food","plat","gericht","fome","hungry"]);
+ if(drink&&!food)list=list.filter(function(m){return m.st==="bar";});else if(food&&!drink)list=list.filter(function(m){return m.st==="cozinha";});
+ if(has(["marisco","shellfish","fruits de mer","meeresfr"]))list=list.filter(function(m){return m.al.indexOf("marisco")<0;});
+ if(has(["peixe","fish","poisson","fisch"])&&has(["sem","no ","without","sans","ohne","alerg"]))list=list.filter(function(m){return m.al.indexOf("peixe")<0;});
+ if(has(["leite","lactose","milk","lait","milch"]))list=list.filter(function(m){return m.al.indexOf("leite")<0;});
+ if(has(["sem alcool","alcohol-free","sans alcool","alkoholfrei","sem álcool"]))list=list.filter(function(m){return m.cat==="batidos"||m.cat==="cafe"||m.opts==="cocktail";});
+ if(has(["vegetar","vegan","veggie"]))list=list.filter(function(m){return m.tag==="veg";});
+ if(has(["tipic","typical","local","cabo verde","cape verde","typique","typisch","cachupa"]))list=list.filter(function(m){return m.tag==="tipico";});
+ if(num&&has(["$","escudo","cve","preco","price","prix","preis","ate","under","max","moins","unter","barato","cheap"])&&!has(["kcal","calor"]))list=list.filter(function(m){return m.p<=num;});
+ if(num&&has(["kcal","calor"]))list=list.filter(function(m){return m.kcal&&m.kcal<=num;});
+ if(has(["leve","light","leger","leicht","dieta"]))list=list.filter(function(m){return m.kcal&&m.kcal<=550;}).sort(function(a,b){return a.kcal-b.kcal;});
+ else if(has(["proteina","protein","proteine","eiweiss","musculo","gym"]))list=list.filter(function(m){return m.mac&&m.mac.p;}).sort(function(a,b){return b.mac.p-a.mac.p;});
+ else if(has(["barato","cheap","pas cher","gunstig","economico"]))list.sort(function(a,b){return a.p-b.p;});
+ else if(has(["rapido","quick","fast","vite","schnell"]))list=list.filter(function(m){return m.min;}).sort(function(a,b){return a.min-b.min;});
+ var ing=MENU.filter(function(m){return t.indexOf(m.n.pt.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""))>-1;})[0];
+ var R={pt:["Estas opções encaixam no que pediste:","Não encontrei nada no menu com esses critérios. Experimenta de outra forma.","Leva: ","Informação aproximada; confirma alergias com o empregado."],en:["These options match what you asked for:","I couldn't find anything on the menu that matches. Try asking another way.","It has: ","Approximate information; please confirm allergies with your waiter."],fr:["Ces options correspondent à votre demande :","Je n'ai rien trouvé qui corresponde. Essayez autrement.","Ingrédients : ","Informations approximatives ; confirmez les allergies avec le serveur."],de:["Diese Gerichte passen zu Ihrer Frage:","Ich habe nichts Passendes gefunden. Fragen Sie bitte anders.","Zutaten: ","Ungefähre Angaben; Allergien bitte beim Kellner bestätigen."]}[lg];
+ if(ing&&ing.ingL&&!num)return {role:"assistant",reply:nm(ing)+". "+R[2]+(lg==="pt"?ing.ingL.pt.join(", "):ing.ingL.en)+". "+R[3],items:[ing.id]};
+ if(!list.length)return {role:"assistant",reply:R[1],items:[]};
+ return {role:"assistant",reply:R[0]+" "+R[3],items:list.slice(0,3).map(function(m){return m.id;})};
+}
+function ask(q){
+ if(S.busy)return;
+ if(!sample){S.chat.push({role:"user",content:q},localAsk(q));openSheet&&openSheet.rerender();return;}
+ S.chat.push({role:"user",content:q});S.busy=true;openSheet&&openSheet.rerender();
+ var langName={pt:"português europeu",en:"English",fr:"français",de:"Deutsch"}[S.lang];
+ var sys="És o assistente do restaurante Quintal da Música (Praia, Cabo Verde), dentro do Menu Real. Ajudas o cliente a escolher pratos e bebidas.\n"+
+  "Regras: usa APENAS os itens do MENU abaixo; nunca inventes pratos, preços, ingredientes ou disponibilidade. As calorias são aproximadas: diz isso quando falares delas. Se houver alergia, avisa que a informação deve ser confirmada com o empregado. Sê breve e simpático (máx. 3 frases). Sugere no máximo 3 itens, com ids exatos. Responde em "+langName+". Consumo mínimo: 1500$ por pessoa.\n"+
+  "Responde só com JSON: {\"reply\": string, \"items\": [ids]}\nMENU: "+JSON.stringify(menuForAI());
+ var msgs=[{role:"user",content:sys+"\n\nPergunta do cliente: "+S.chat[0].content}];
+ var hist=S.chat.slice(1,-1);
+ if(S.chat.length>1){msgs=[{role:"user",content:sys+"\n\nPergunta do cliente: "+S.chat[0].content}];
+  for(var i=1;i<S.chat.length;i++){var m=S.chat[i];msgs.push(m.role==="user"?{role:"user",content:m.content}:{role:"assistant",content:JSON.stringify({reply:m.reply,items:m.items})});}}
+ sample.json(msgs,{modelTier:"quick",cache:false}).then(function(r){
+  var reply=r&&typeof r.reply==="string"?r.reply:"";var items=r&&Array.isArray(r.items)?r.items.filter(function(id){return BY[id];}).slice(0,3):[];
+  S.chat.push({role:"assistant",reply:reply||L().asstErr,items:items});
+ }).catch(function(e){S.chat.push({role:"assistant",reply:e&&e.code==="not_granted"?L().asstOff:L().asstErr,items:[]});})
+ .then(function(){S.busy=false;openSheet&&openSheet.rerender&&openSheet.rerender();});
+ void hist;
+}
+
+/* ---------- Cozinha ---------- */
+function renderKitchen(){
+ var st=S.kstation;
+ var list=S.orders.filter(function(o){return ["novo","preparo","pronto"].indexOf(o.status)>-1&&(st==="todos"||o.station===st);});
+ var reqs=S.requests.filter(function(r){return !r.done;});
+ var cols=[["novo","Novos","Aceitar e preparar"],["preparo","Em preparo","Marcar como pronto"],["pronto","Prontos","Marcar como entregue"]];
+ var h='<div class="view"><div class="kitchen"><div class="k-head"><h1>Pedidos em tempo real</h1><div class="seg" role="group" aria-label="Posto">'+[["todos","Tudo"],["cozinha","Cozinha"],["bar","Bar"]].map(function(x){return '<button type="button" data-st="'+x[0]+'" aria-pressed="'+(st===x[0])+'">'+x[1]+'</button>';}).join("")+'</div></div>';
+ if(reqs.length)h+='<div class="alerts">'+reqs.map(function(r){return '<div class="alert"><span>🧾 Mesa '+esc(r.mesa)+' pediu a conta · '+esc(r.guest||"")+' · <span class="num">'+money(r.total||0)+'</span></span><button type="button" class="ghost" data-req="'+r.id+'">Feito</button></div>';}).join("")+'</div>';
+ h+='<div class="board">'+cols.map(function(c){var os=list.filter(function(o){return o.status===c[0];}).sort(function(a,b){return a.createdAt-b.createdAt;});return '<section class="col"><div class="col-h"><span>'+c[1]+'</span><span class="num">'+os.length+'</span></div>'+(os.length?os.map(function(o){return '<article class="ord"><div class="ord-h"><b>Mesa '+esc(o.mesa)+'</b><span class="station">'+(o.station==="bar"?"Bar":"Cozinha")+'</span></div><div class="who num">'+esc(o.guest)+' · '+ago(o.createdAt)+'</div><ul>'+o.items.map(function(it){return '<li><b class="num">'+it.qty+'×</b> '+esc(it.name)+((it.opts&&it.opts.length)||it.note?'<small>'+esc((it.opts||[]).join(" · "))+(it.note?(it.opts&&it.opts.length?" · ":"")+"“"+esc(it.note)+"”":"")+'</small>':'')+'</li>';}).join("")+'</ul><button type="button" class="adv" data-adv="'+o.id+'" data-next="'+ST_ORDER[ST_ORDER.indexOf(o.status)+1]+'">'+c[2]+'</button>'+(o.status==="novo"?'<button type="button" class="linkbtn" data-cancel="'+o.id+'">Cancelar pedido</button>':'')+'</article>';}).join(""):'<p class="empty">Sem pedidos.</p>')+'</section>';}).join("")+'</div>';
+ h+='<p class="banner">'+((db||sb)?"Ligado: os pedidos de todos os telemóveis aparecem aqui.":"Modo local: só aparecem os pedidos feitos neste ecrã.")+'</p></div></div>';
+ app.innerHTML=h;
+}
+/* ---------- Gestão ---------- */
+function todayOrders(){var d=new Date();d.setHours(0,0,0,0);return S.orders.filter(function(o){return o.createdAt>=d.getTime()&&o.status!=="cancelado";});}
+function openByTable(){var t={};S.orders.forEach(function(o){if(o.paid||o.status==="cancelado")return;(t[o.mesa]=t[o.mesa]||[]).push(o);});return t;}
+function renderRoom(){
+ var td=todayOrders(),rev=td.reduce(function(a,o){return a+(o.total||0);},0),open=openByTable(),reqs=S.requests.filter(function(r){return !r.done;});
+ var tickets={};td.forEach(function(o){tickets[o.mesa+"|"+o.batch]=1;});var nT=Object.keys(tickets).length;
+ var count={};td.forEach(function(o){o.items.forEach(function(it){count[it.id]=(count[it.id]||0)+it.qty;});});
+ var top=Object.keys(count).sort(function(a,b){return count[b]-count[a];}).slice(0,5);
+ var h='<div class="view"><div class="kitchen"><div class="k-head"><h1>Sala</h1><span class="muted">Hoje · '+new Date().toLocaleDateString("pt-PT",{weekday:"long",day:"numeric",month:"long"})+'</span></div>'+
+  '<div class="kpis"><div class="kpi"><small>Faturação</small><b class="num">'+money(rev)+'</b></div><div class="kpi"><small>Pedidos</small><b class="num">'+nT+'</b></div><div class="kpi"><small>Ticket médio</small><b class="num">'+(nT?money(rev/nT):"—")+'</b></div><div class="kpi"><small>Mesas abertas</small><b class="num">'+Object.keys(open).length+'</b></div></div>';
+ if(reqs.length)h+='<div class="alerts">'+reqs.map(function(r){return '<div class="alert"><span>🧾 Mesa '+esc(r.mesa)+' pediu a conta</span><button type="button" class="ghost" data-table="'+esc(r.mesa)+'">Abrir conta</button></div>';}).join("")+'</div>';
+ h+='<div class="tables">';
+ for(var i=1;i<=S.settings.tables;i++){var id=String(i).padStart(2,"0"),os=open[id]||[],asked=reqs.some(function(r){return r.mesa===id;});
+  if(!os.length){h+='<button type="button" class="tbl free" data-table="'+id+'"><b>Mesa '+id+'</b><span>Livre</span></button>';continue;}
+  var tot=os.reduce(function(a,o){return a+(o.total||0);},0),ppl={};os.forEach(function(o){ppl[o.gid]=1;});
+  var pending=os.filter(function(o){return o.status!=="entregue";}).length;
+  h+='<button type="button" class="tbl'+(asked?" bill":"")+'" data-table="'+id+'"><b>Mesa '+id+'</b><span class="num" style="font-weight:700;font-size:18px">'+money(tot)+'</span><span class="muted num" style="font-size:13px">'+Object.keys(ppl).length+' pessoa(s)'+(pending?' · '+pending+' a sair':'')+'</span>'+(asked?'<span class="pill on">Pediu a conta</span>':'')+'</button>';}
+ h+='</div>';
+ if(top.length)h+='<section class="col" style="background:var(--surface);border:1px solid var(--line)"><div class="col-h"><span>Mais pedidos hoje</span></div>'+top.map(function(id){return '<div class="row" style="justify-content:space-between;padding:4px"><span>'+esc(BY[id]?BY[id].n.pt:id)+'</span><b class="num">'+count[id]+'</b></div>';}).join("")+'</section>';
+ h+='</div></div>';app.innerHTML=h;
+}
+function tableSheet(mesa){
+ sheet("Mesa "+mesa,function(b){
+  var os=(openByTable()[mesa]||[]);
+  if(!os.length){b.innerHTML='<p class="muted">Mesa livre. Não há pedidos por pagar.</p><p class="fine">Link desta mesa: <span class="num">#mesa-'+esc(mesa)+'</span></p>';return;}
+  var by={};os.forEach(function(o){var k=o.gid;(by[k]=by[k]||{name:o.guest,items:[],total:0});o.items.forEach(function(it){by[k].items.push(it);by[k].total+=it.unit*it.qty;});});
+  var keys=Object.keys(by),tot=keys.reduce(function(a,k){return a+by[k].total;},0),minT=keys.length*MIN_PP;
+  b.innerHTML=keys.map(function(k){var g=by[k];return '<div><div class="row" style="justify-content:space-between"><b>'+esc(g.name)+'</b><b class="num">'+money(g.total)+'</b></div>'+g.items.map(function(it){return '<div class="line" style="padding:8px 0"><span>'+it.qty+'× '+esc(it.name)+(it.opts&&it.opts.length?'<small>'+esc(it.opts.join(" · "))+'</small>':'')+'</span><span class="num muted">'+money(it.unit*it.qty)+'</span></div>';}).join("")+'</div>';}).join("")+
+   '<div class="total"><span>Total da mesa</span><span class="num">'+money(tot)+'</span></div>'+
+   '<p class="hint num">Dividido por '+keys.length+': '+money(Math.ceil(tot/keys.length))+' cada'+(tot<minT?' · abaixo do consumo mínimo ('+money(minT)+')':'')+'</p>'+
+   '<button type="button" class="primary" id="closeT"><span>Marcar como pago e fechar mesa</span><span>✓</span></button>';
+  b.querySelector("#closeT").onclick=function(){this.disabled=true;store.closeTable(mesa).then(function(){closeSheet();toast("✓ Mesa "+mesa+" fechada");}).catch(function(){toast("Não foi possível fechar a mesa.");});};
+ },{live:true});
+}
+function renderManage(){
+ var tab=S.mtab;
+ var h='<div class="view"><div class="manage"><div class="tabs" role="group" aria-label="Gestão">'+[["pratos","Pratos"],["mesas","Mesas e QR"]].map(function(t){return '<button type="button" data-mtab="'+t[0]+'" aria-pressed="'+(tab===t[0])+'">'+t[1]+'</button>';}).join("")+(sb?'<button type="button" id="logout" style="margin-left:auto">Sair</button>':'')+'</div>';
+ if(tab==="pratos"){
+  h+='<div class="row" style="flex-wrap:wrap;justify-content:space-between;gap:10px"><label class="row" style="gap:10px;font-weight:600;flex:1;min-width:240px">Nome<input type="text" id="rnameIn" maxlength="40" value="'+esc(S.settings.name||"")+'"></label><button type="button" class="primary" id="addDish" style="flex:none"><span>+ Novo prato</span></button></div>'+
+   '<p class="muted">Tira a foto do prato tal como sai da cozinha e corrige ingredientes, preparo e preço. As alterações aparecem logo em todas as mesas. Usa “No menu / Escondido” para mostrar só os pratos de hoje.</p>';
+  if(!assets&&!sb)h+='<p class="hint">Para carregar fotos é preciso ter acesso de edição a esta página.</p>';
+  CATS.forEach(function(c){if(!MENU.some(function(m){return m.cat===c.id;}))return;h+='<h2 style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8px">'+esc(c.n.pt)+'</h2>'+MENU.filter(function(m){return m.cat===c.id;}).map(function(m){var so=soldOut(m.id),ed=S.items[m.id]&&(S.items[m.id].price||S.items[m.id].ing||S.items[m.id].prep||S.items[m.id].desc);return '<div class="mrow"><span class="thumb">'+thumbHtml(m)+'</span><div style="min-width:0"><b>'+esc(m.n.pt)+'</b><div class="muted num" style="font-size:13px">'+money(m.p)+(ed?' · editado':'')+'</div></div><div class="acts"><button type="button" class="sw" data-edit="'+m.id+'">Editar</button><button type="button" class="sw" data-hide="'+m.id+'" aria-pressed="'+!!m.hidden+'">'+(m.hidden?"Escondido":"No menu")+'</button>'+((assets||sb)?'<label class="ghost" for="f-'+m.id+'">📷 '+(photo(m.id)?"Trocar":"Foto")+'</label><input type="file" id="f-'+m.id+'" data-photo="'+m.id+'" accept="image/*" capture="environment" hidden>':'')+'<button type="button" class="sw" data-sold="'+m.id+'" aria-pressed="'+so+'">'+(so?"Esgotado":"Disponível")+'</button></div></div>';}).join("");});
+ } else {
+  h+='<div class="row" style="flex-wrap:wrap;justify-content:space-between"><label class="row" style="gap:10px;font-weight:600">Número de mesas <input type="number" id="ntab" min="1" max="99" value="'+S.settings.tables+'" style="width:90px"></label>'+'<button type="button" class="ghost" id="dlqr">Descarregar QR (PNG)</button>'+'</div>'+
+   '<p class="muted" style="font-size:14px">Cada QR abre o menu já com a mesa certa. Imprime e cola em cada mesa.</p><div class="qrs" id="qrs">';
+  for(var i=1;i<=S.settings.tables;i++){var id=String(i).padStart(2,"0");h+='<div class="qr"><div class="code" data-qr="'+id+'"></div><b>Mesa '+id+'</b><span style="font-size:12px;color:#667080">Menu Real · '+esc(S.settings.name||"")+'</span></div>';}
+  h+='</div>';
+ }
+ h+='</div></div>';app.innerHTML=h;
+ if(tab==="mesas")drawQRs();
+}
+var APP_URL=sb?(location.origin+location.pathname):"https://claude.ai/artifact/TXwUamoRc8Ah1y2z7K96mo";
+function drawQRs(){if(!window.QRCode)return;document.querySelectorAll("[data-qr]").forEach(function(n){try{new QRCode(n,{text:APP_URL+"#mesa-"+n.dataset.qr,width:280,height:280,correctLevel:QRCode.CorrectLevel.M});}catch(e){}});}
+function qrSheetPng(){
+ var n=S.settings.tables,cols=4,cw=420,ch=500,rows=Math.ceil(n/cols),c=document.createElement("canvas");c.width=cols*cw;c.height=rows*ch;var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
+ document.querySelectorAll("[data-qr]").forEach(function(node,i){var src=node.querySelector("canvas");var cx=(i%cols)*cw,cy=Math.floor(i/cols)*ch;x.strokeStyle="#ddd";x.strokeRect(cx+10,cy+10,cw-20,ch-20);if(src)x.drawImage(src,cx+70,cy+40,280,280);x.fillStyle="#15181d";x.font="700 34px sans-serif";x.textAlign="center";x.fillText("Mesa "+node.dataset.qr,cx+cw/2,cy+380);x.font="400 20px sans-serif";x.fillStyle="#667080";x.fillText("Lê o QR para ver o menu e pedir",cx+cw/2,cy+420);x.fillText("Menu Real · "+(S.settings.name||""),cx+cw/2,cy+452);});
+ return new Promise(function(res){c.toBlob(res,"image/png");});
+}
+function newDish(){var id="custom-"+Date.now().toString(36);S.items[id]={custom:true,name:"Novo prato",cat:"carnes",station:"cozinha",price:0,hidden:true};applyOverrides();editSheet(id,true);}
+function editSheet(id,isNew){
+ var m=BY[id],o=S.items[id]||{};
+ sheet("Editar · "+m.n.pt,function(b){
+  var mc=m.mac||{p:0,c:0,f:0};
+  var isC=!!m.custom;
+  b.innerHTML='<div class="form">'+(isC?'<label>Nome do prato<input type="text" id="e-name" maxlength="60" value="'+esc(m.n.pt)+'"></label><div class="g4" style="grid-template-columns:1fr 1fr"><label>Categoria<select id="e-cat">'+CATS.map(function(c){return '<option value="'+c.id+'"'+(c.id===m.cat?" selected":"")+'>'+esc(c.n.pt)+'</option>';}).join("")+'</select></label><label>Vai para<select id="e-st"><option value="cozinha"'+(m.st==="cozinha"?" selected":"")+'>Cozinha</option><option value="bar"'+(m.st==="bar"?" selected":"")+'>Bar</option></select></label></div>':'')+'<label>Preço (escudos)<input type="number" id="e-price" min="0" step="10" value="'+m.p+'"></label>'+
+   '<label>Descrição curta<input type="text" id="e-desc" maxlength="140" value="'+esc(m.d?m.d.pt:"")+'"></label>'+
+   '<label>Ingredientes (separados por vírgulas)<textarea id="e-ing">'+esc(m.ingL?m.ingL.pt.join(", "):"")+'</textarea></label>'+
+   '<label>Como é preparado<textarea id="e-prep">'+esc(m.prep?m.prep.pt:"")+'</textarea></label>'+
+   '<div><div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">Valor nutricional por dose</div><div class="g4"><label>kcal<input type="number" id="e-kcal" min="0" value="'+(m.kcal||"")+'"></label><label>Proteína g<input type="number" id="e-p" min="0" value="'+mc.p+'"></label><label>Hidratos g<input type="number" id="e-c" min="0" value="'+mc.c+'"></label><label>Gordura g<input type="number" id="e-f" min="0" value="'+mc.f+'"></label></div></div>'+
+   '<button type="button" class="primary" id="e-save"><span>Guardar alterações</span><span>✓</span></button>'+
+   (isC?'<button type="button" class="linkbtn" id="e-del">Apagar este prato</button>':(o.price||o.desc||o.ing||o.prep||o.mac||o.kcal?'<button type="button" class="linkbtn" id="e-reset">Repor texto original</button>':''))+'</div>';
+  b.querySelector("#e-save").onclick=function(){var v=function(k){return b.querySelector("#e-"+k).value;};
+   var patch={hidden:isNew?false:(o.hidden||null),soldOut:o.soldOut||null,photoUrl:o.photoUrl||null,price:+v("price")||null,desc:v("desc").trim()||null,ing:v("ing").split(",").map(function(x){return x.trim();}).filter(Boolean),prep:v("prep").trim()||null,kcal:+v("kcal")||null,mac:{p:+v("p")||0,c:+v("c")||0,f:+v("f")||0}};
+   if(!patch.ing.length)patch.ing=null;
+   if(isC){patch.custom=true;patch.name=v("name").trim()||"Prato";patch.cat=b.querySelector("#e-cat").value;patch.station=b.querySelector("#e-st").value;if(!patch.price){toast("Indica o preço.");return;}}
+   store.setItem(id,patch).then(function(){closeSheet();toast("✓ Guardado. Já aparece nas mesas.");}).catch(pinErr);};
+  var dl=b.querySelector("#e-del");if(dl)dl.onclick=function(){store.setItem(id,{deleted:true,hidden:true}).then(function(){closeSheet();toast("Prato apagado.");}).catch(pinErr);};
+  var r=b.querySelector("#e-reset");if(r)r.onclick=function(){store.setItem(id,{price:null,desc:null,ing:null,prep:null,kcal:null,mac:null}).then(function(){closeSheet();toast("Texto original reposto.");});};
+ });
+}
+function creditsHtml(){var used={};MENU.forEach(function(m){var il=!photo(m.id)&&ilus(m.id);if(il)used[il.src]=il;});var list=Object.keys(used).map(function(k){return used[k];});if(!list.length)return "";
+ return '<details class="credits"><summary>Créditos das imagens ilustrativas</summary>'+list.map(function(c){return '<div>'+esc(c.title)+' · '+esc(c.creator||"autor desconhecido")+' · <a href="'+esc(c.page)+'" target="_blank" rel="noopener">'+esc(c.lic)+'</a></div>';}).join("")+'</details>';}
+function shrink(file){return new Promise(function(res){var img=new Image(),u=URL.createObjectURL(file);img.onload=function(){var s=Math.min(1,1400/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){res(b||file);},"image/jpeg",.85);};img.onerror=function(){res(file);};img.src=u;});}
+
+/* ---------- Equipa: PIN ---------- */
+function pinErr(e){var m=e&&(e.message||"");if(/pin/i.test(m)){S.pin="";ls("pin","");toast("PIN errado ou expirado. Volta a entrar.");pinSheet(S.view);}else toast("Não foi possível guardar. Verifica a ligação.");}
+function pinSheet(next){
+ sheet("Acesso da equipa",function(b){
+  b.innerHTML='<p class="muted">Cozinha, Sala e Gestão são só para a equipa. Escreve o PIN.</p><form id="pinF" class="row"><input type="text" inputmode="numeric" autocomplete="off" id="pinIn" maxlength="8" placeholder="PIN" style="font-size:22px;letter-spacing:.3em;text-align:center"><button type="submit" class="primary" style="flex:none"><span>Entrar</span></button></form><p class="fine" id="pinMsg"></p>';
+  b.querySelector("#pinF").onsubmit=function(e){e.preventDefault();var v=b.querySelector("#pinIn").value.trim();if(!v)return;
+   var ok=sb?sb.rpc("mr_pin_ok",{p_pin:v}).then(function(r){return !r.error&&r.data===true;}):Promise.resolve(true);
+   ok.then(function(good){if(!good){b.querySelector("#pinMsg").textContent="PIN errado.";return;}S.pin=v;ls("pin",v);S.staff=true;closeSheet(true);S.view=next;render();window.scrollTo(0,0);});};
+  setTimeout(function(){var i=b.querySelector("#pinIn");i&&i.focus();},50);
+ });
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener("click",function(e){
+ var t;
+ if((t=e.target.closest(".seg button[data-view]"))){if(sb&&t.dataset.view!=="client"&&!S.pin){pinSheet(t.dataset.view);return;}S.view=t.dataset.view;closeSheet(true);render();window.scrollTo(0,0);return;}
+ if(openSheet&&openSheet.el.contains(e.target))return;
+ if((t=e.target.closest("[data-lang]"))){S.lang=t.dataset.lang;ls("lang",S.lang);render();return;}
+ if((t=e.target.closest("[data-cat]"))){S.cat=t.dataset.cat;var s=document.getElementById("cat-"+S.cat);document.querySelectorAll("[data-cat]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.cat===S.cat));});if(s)s.scrollIntoView({behavior:"smooth",block:"start"});return;}
+ if((t=e.target.closest("[data-item]"))){dishSheet(t.dataset.item);return;}
+ if(e.target.closest("#askBtn")){asstSheet();return;}
+ if(e.target.closest("#openCart")){cartSheet();return;}
+ if(e.target.closest("#billBtn")){var mine=S.orders.filter(function(o){return o.gid===S.gid&&!o.paid&&o.status!=="cancelado";});store.addRequest({mesa:MESA,guest:S.guest,gid:S.gid,type:"conta",total:mine.reduce(function(a,o){return a+(o.total||0);},0),done:false,createdAt:Date.now()}).then(function(){toast("✓ "+L().billOk);});return;}
+ if((t=e.target.closest("[data-st]"))){S.kstation=t.dataset.st;render();return;}
+ if((t=e.target.closest("[data-adv]"))){t.disabled=true;store.setStatus(t.dataset.adv,t.dataset.next).catch(function(e){t.disabled=false;pinErr(e);});return;}
+ if((t=e.target.closest("[data-req]"))){store.doneRequest(t.dataset.req).catch(pinErr);return;}
+ if((t=e.target.closest("[data-table]"))){tableSheet(t.dataset.table);return;}
+ if((t=e.target.closest("[data-edit]"))){editSheet(t.dataset.edit);return;}
+ if((t=e.target.closest("[data-mtab]"))){S.mtab=t.dataset.mtab;render();return;}
+ if((t=e.target.closest("[data-cancel]"))){store.setStatus(t.dataset.cancel,"cancelado").catch(pinErr);return;}
+ if(e.target.closest("#dlqr")){if(!downloads){qrSheetPng().then(function(blob){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="menu-real-qr-mesas.png";document.body.appendChild(a);a.click();a.remove();toast("✓ QR descarregados");});return;}qrSheetPng().then(function(blob){return downloads.save({filename:"menu-real-qr-mesas.png",data:blob});}).then(function(){toast("✓ Ficheiro pronto");}).catch(function(){toast("Download cancelado.");});return;}
+ if((t=e.target.closest("[data-sold]"))){var id=t.dataset.sold;store.setItem(id,{soldOut:!soldOut(id)}).catch(pinErr);return;}
+ if((t=e.target.closest("[data-hide]"))){var hid=t.dataset.hide;store.setItem(hid,{hidden:!(S.items[hid]&&S.items[hid].hidden)}).catch(pinErr);return;}
+ if(e.target.closest("#addDish")){newDish();return;}
+ if(e.target.closest("#logout")){S.pin="";ls("pin","");S.staff=false;S.view="client";render();return;}
+});
+document.addEventListener("change",function(e){
+ if(e.target.id==="rnameIn"){store.setSettings({name:e.target.value.trim()||"Restaurante"}).catch(pinErr);return;}
+ if(e.target.id==="ntab"){var n=Math.max(1,Math.min(99,parseInt(e.target.value,10)||12));store.setSettings({tables:n}).catch(pinErr);return;}
+ var inp=e.target.closest("[data-photo]");if(!inp||!inp.files||!inp.files[0]||!(assets||sb))return;
+ var id=inp.dataset.photo;toast("A carregar foto…");
+ shrink(inp.files[0]).then(function(b){if(sb){var path=id+"-"+Date.now()+".jpg";return sb.storage.from("menureal").upload(path,b,{contentType:"image/jpeg",upsert:false}).then(function(r){if(r.error)throw r.error;return {url:sb.storage.from("menureal").getPublicUrl(path).data.publicUrl,id:path};});}return assets.upload(b,{type:"image/jpeg"});}).then(function(r){return store.setItem(id,{photoUrl:r.url,assetId:r.id});}).then(function(){toast("✓ Foto publicada no menu");}).catch(function(err){toast(err&&err.code==="too_large"?"Foto demasiado grande.":"Não foi possível carregar a foto.");});
+});
+var io=null;
+function watchCats(){if(!("IntersectionObserver" in window))return;if(io)io.disconnect();io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){var id=en.target.id.replace("cat-","");if(S.cat!==id){S.cat=id;document.querySelectorAll("[data-cat]").forEach(function(b){var on=b.dataset.cat===id;b.setAttribute("aria-pressed",String(on));if(on&&b.scrollIntoView)b.parentNode.scrollTo({left:b.offsetLeft-16,behavior:"smooth"});});}}});},{rootMargin:"-130px 0px -65% 0px"});document.querySelectorAll(".sec").forEach(function(s){io.observe(s);});}
+var _render=render;render=function(){_render();if(S.view==="client")watchCats();};
+setInterval(function(){if((S.view==="kitchen"||S.view==="room")&&!openSheet)render();},30000);
+
+/* ---------- Arranque ---------- */
+applyOverrides();
+render();
+if(sb)sbStart();
+if(window.claude&&window.claude.use){
+ window.claude.use("db").then(function(d){if(d){db=d;subscribe();render();}});
+ window.claude.use("sample").then(function(s){sample=s;});
+ window.claude.use("assets").then(function(a){assets=a;if(S.view==="manage")render();});
+ window.claude.use("downloads").then(function(d){downloads=d;if(S.view==="manage")render();});
+}
+})();
+</script>
