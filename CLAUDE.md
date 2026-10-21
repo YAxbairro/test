@@ -16,5 +16,8 @@ explicitamente em que conta/email está ligado, e onde ele deve entrar para faze
 ## Projeto Menu Real
 - Código: `menu-real/` neste repositório, branch `claude/cabo-verde-delivery-app-1gfxg1`.
 - Base de dados: Supabase projeto **lutuima-veiga** (yaxtechcv@gmail.com), tabelas `mr_*` e bucket `menureal`.
-- Não tocar em tabelas que não sejam `mr_*`.
+- Tabelas: `mr_orders`, `mr_requests` (conta/garçom/água/gelo/talheres/guardanapos), `mr_items`, `mr_settings` (programa do dia, entregas),
+  `mr_payments`, `mr_feedback`, `mr_delivery` (estas 3 só se leem com PIN via `mr_staff_data`). Fechar conta: `mr_pay`.
+- Links: mesa `#mesa-NN`, entrega `#entrega`, equipa `#equipa`.
+- Não tocar em tabelas que não sejam `mr_*`. DELETE e SQL com vários comandos bloqueiam o MCP: usar 1 comando por chamada.
 - Fala em português de Cabo Verde/Portugal, respostas curtas e sinceras.
