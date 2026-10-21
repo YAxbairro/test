@@ -19,6 +19,6 @@ explicitamente em que conta/email está ligado, e onde ele deve entrar para faze
 - Tabelas: `mr_orders`, `mr_requests` (conta/garçom/água/gelo/talheres/guardanapos), `mr_items`, `mr_settings` (programa do dia, entregas),
   `mr_payments`, `mr_feedback`, `mr_delivery` (estas 3 só se leem com PIN via `mr_staff_data`). Fechar conta: `mr_pay` (fecha a mesa).
 - `mr_tables`: mesa aberta/fechada (`mr_set_table`). O servidor só aceita pedidos de mesas abertas e sem pausa. PIN muda-se com `mr_change_pin`.
-- Links: mesa `#mesa-NN`, entrega `#entrega`, equipa `#equipa`.
+- Links: mesa `#mesa-NN`, entrega `#entrega`, equipa `#equipa`, garçom `#garcom` (ecrã de tarefas no telemóvel).
 - Não tocar em tabelas que não sejam `mr_*`. DELETE e SQL com vários comandos bloqueiam o MCP: usar 1 comando por chamada.
 - Fala em português de Cabo Verde/Portugal, respostas curtas e sinceras.
