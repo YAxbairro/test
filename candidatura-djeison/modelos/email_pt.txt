@@ -32,3 +32,5 @@ Com os melhores cumprimentos,
 {relacao_pt} de Djeison Ferreira
 Tel./WhatsApp: {telefone}
 E-mail: {email}
+
+Contacto do jogador (Djeison): {email_jogador} | WhatsApp: {whatsapp_jogador}

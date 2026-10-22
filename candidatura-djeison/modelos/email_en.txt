@@ -32,3 +32,5 @@ Kind regards,
 {relacao_en} of Djeison Ferreira
 Phone/WhatsApp: {telefone}
 Email: {email}
+
+Player's contact (Djeison): {email_jogador} | WhatsApp: {whatsapp_jogador}

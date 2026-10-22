@@ -32,3 +32,5 @@ Cordialement,
 {relacao_fr} de Djeison Ferreira
 Tél./WhatsApp : {telefone}
 E-mail : {email}
+
+Contact du joueur (Djeison): {email_jogador} | WhatsApp: {whatsapp_jogador}
