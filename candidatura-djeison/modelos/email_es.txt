@@ -6,7 +6,7 @@ Mi nombre es {nome}, {relacao_es} del jugador Djeison Ferreira. Les escribo para
 PERFIL
 • Nombre: {nome_completo}
 • Fecha de nacimiento: {data_nascimento} – caboverdiano
-• Posición: {posicao_es} | Altura: {altura} | Pie: {pe}
+• Posición: {posicao_es} | Altura: {altura} | Pie: {pe_es}
 • Club actual: AD Nogueirense (Campeonato de Portugal – 4.ª categoría portuguesa), dorsal {numero}
 • Situación: con permiso de residencia en Portugal (reside en Portugal)
 

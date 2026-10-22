@@ -6,7 +6,7 @@ My name is {nome}, {relacao_en} of the player Djeison Ferreira. I am writing to 
 PROFILE
 • Name: {nome_completo}
 • Date of birth: {data_nascimento} – Cape Verdean
-• Position: {posicao_en} | Height: {altura} | Foot: {pe}
+• Position: {posicao_en} | Height: {altura} | Foot: {pe_en}
 • Current club: AD Nogueirense (Campeonato de Portugal – Portuguese 4th tier), no. {numero}
 • Status: holds a Portuguese residence permit (lives in Portugal)
 
