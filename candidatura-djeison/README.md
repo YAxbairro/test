@@ -31,7 +31,7 @@ publicação da página Kriolfut no Instagram sobre o golo na Taça.
 | `perfil_djeison_ferreira.pdf` | Perfil de 1 página (PT/EN) que vai em anexo em cada e-mail |
 | `gerar_perfil.py` | Volta a gerar o PDF depois de mudares o `config.json` ou de juntares `foto.jpg` |
 | `modelos/email_pt.txt` `email_en.txt` `email_fr.txt` `email_es.txt` | Texto dos e-mails em 4 línguas. Cada clube recebe a língua do seu país, com o nome do clube no texto |
-| `clubes.csv` | 114 clubes (Portugal, Luxemburgo, Suíça, Países Baixos, Bélgica, Espanha, França) com o site e o e-mail oficial |
+| `clubes.csv` | 117 clubes (Portugal, Luxemburgo, Suíça, Países Baixos, Bélgica, Malta, Espanha, França), 103 deles já com o e-mail oficial |
 | `enviar_emails.py` | A automação: envia um e-mail personalizado a cada clube, por lotes, e regista tudo em `enviados.csv` |
 | `encontrar_emails.py` | Procura e-mails nos sites dos clubes (útil quando acrescentares clubes à lista) |
 
