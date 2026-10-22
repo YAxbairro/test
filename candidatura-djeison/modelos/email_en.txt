@@ -1,11 +1,11 @@
-Subject: Player profile – Djeison Ferreira, {idade}-year-old centre-back – 2025/26 league champion (Portugal)
+Subject: Player profile – Djeison Ferreira, centre-back born 2005 – 2025/26 league champion (Portugal)
 Dear Football / Scouting Department of {clube},
 
 My name is {nome}, {relacao_en} of the player Djeison Ferreira. I am writing to introduce him as a candidate for the {equipa_alvo} of {clube}.
 
 PROFILE
 • Name: {nome_completo}
-• Date of birth: {data_nascimento} ({idade} years old) – Cape Verdean
+• Date of birth: {data_nascimento} – Cape Verdean
 • Position: {posicao_en} | Height: {altura} | Foot: {pe}
 • Current club: AD Nogueirense (Campeonato de Portugal – Portuguese 4th tier), no. {numero}
 • Status: holds a Portuguese residence permit (lives in Portugal)

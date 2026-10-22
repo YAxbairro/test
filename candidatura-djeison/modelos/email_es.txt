@@ -1,11 +1,11 @@
-Asunto: Candidatura espontánea – Djeison Ferreira, defensa central ({idade} años) – campeón 2025/26 (Portugal)
+Asunto: Candidatura espontánea – Djeison Ferreira, defensa central (nacido en 2005) – campeón 2025/26 (Portugal)
 Estimados responsables de la dirección deportiva / scouting del {clube}:
 
 Mi nombre es {nome}, {relacao_es} del jugador Djeison Ferreira. Les escribo para presentar su candidatura espontánea para el {equipa_alvo} del {clube}.
 
 PERFIL
 • Nombre: {nome_completo}
-• Fecha de nacimiento: {data_nascimento} ({idade} años) – caboverdiano
+• Fecha de nacimiento: {data_nascimento} – caboverdiano
 • Posición: {posicao_es} | Altura: {altura} | Pie: {pe}
 • Club actual: AD Nogueirense (Campeonato de Portugal – 4.ª categoría portuguesa), dorsal {numero}
 • Situación: con permiso de residencia en Portugal (reside en Portugal)
