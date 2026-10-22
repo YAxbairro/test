@@ -8,6 +8,7 @@ PROFIL
 • Date de naissance : {data_nascimento} ({idade} ans) – Cap-verdien
 • Poste : {posicao_fr} | Taille : {altura} | Pied : {pe}
 • Club actuel : AD Nogueirense (Campeonato de Portugal – 4e division portugaise), n° {numero}
+• Situation : titulaire d'un titre de séjour portugais (réside au Portugal)
 
 PARCOURS ET PALMARÈS
 • Élu Meilleur Jeune Joueur du Championnat Régional de Santiago Sud (Cap-Vert) avec l'AD Bairro (Praia)
@@ -20,7 +21,9 @@ VIDÉO ET STATISTIQUES
 • zerozero : {zerozero}
 • Sofascore : {sofascore}
 
-Vous trouverez son profil complet en PDF ci-joint. Djeison est disponible pour un essai, une période d'observation ou pour l'envoi de matchs complets en vidéo.
+Profil complet : {perfil_pdf}
+
+Djeison est disponible pour un essai, une période d'observation ou pour l'envoi de matchs complets en vidéo.
 
 Je vous remercie de votre attention et reste à votre disposition.
 

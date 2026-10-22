@@ -36,9 +36,9 @@ CSS = """
 @page { size: A4; margin: 0; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1d24; background: #fff; }
-.page { width: 210mm; min-height: 297mm; padding: 14mm 14mm 10mm; }
+.page { width: 210mm; height: 296mm; overflow: hidden; padding: 12mm 14mm 8mm; }
 header { display: flex; gap: 8mm; align-items: center; background: #0f2a4a; color: #fff;
-         margin: -14mm -14mm 7mm; padding: 11mm 14mm; }
+         margin: -12mm -14mm 5mm; padding: 8mm 14mm; }
 .foto { width: 38mm; height: 38mm; border-radius: 50%; object-fit: cover; border: 3px solid #e2b43c;
         background: #23456e; flex: none; display: flex; align-items: center; justify-content: center;
         font-size: 11px; color: #9fb4cf; text-align: center; }
@@ -46,7 +46,7 @@ h1 { margin: 0; font-size: 30px; letter-spacing: .5px; }
 .sub { margin-top: 2mm; font-size: 15px; color: #e2b43c; font-weight: 600; }
 .sub2 { margin-top: 1.5mm; font-size: 12.5px; color: #c9d6e6; }
 h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1.2px; color: #0f2a4a;
-     border-bottom: 2px solid #e2b43c; padding-bottom: 1.5mm; margin: 6mm 0 3mm; }
+     border-bottom: 2px solid #e2b43c; padding-bottom: 1.5mm; margin: 4.5mm 0 2.5mm; }
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5mm; }
 .cell { background: #f2f5f9; border-radius: 6px; padding: 2.5mm 3mm; }
 .cell b { display: block; font-size: 9.5px; text-transform: uppercase; color: #5b6b80; letter-spacing: .6px; }
@@ -57,13 +57,13 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1.2px; color: #
 .badge .small { font-size: 10.5px; color: #5b6b80; margin-top: 1mm; }
 table { width: 100%; border-collapse: collapse; font-size: 11px; }
 th { text-align: left; background: #0f2a4a; color: #fff; padding: 1.8mm 2mm; font-weight: 600; }
-td { padding: 1.8mm 2mm; border-bottom: 1px solid #e3e8ef; }
+td { padding: 1.4mm 2mm; border-bottom: 1px solid #e3e8ef; }
 tr.hl td { background: #fff6dc; font-weight: 600; }
 .links a { color: #0f4c8a; text-decoration: none; font-weight: 600; }
 .links div { font-size: 11.5px; margin: 1.2mm 0; }
 .cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 7mm; }
 ul { margin: 0; padding-left: 4.5mm; font-size: 11.5px; line-height: 1.55; }
-footer { margin-top: 6mm; padding-top: 3mm; border-top: 1px solid #d5dce6; font-size: 11px; color: #3c4a5c;
+footer { margin-top: 4mm; padding-top: 3mm; border-top: 1px solid #d5dce6; font-size: 11px; color: #3c4a5c;
          display: flex; justify-content: space-between; }
 """
 
@@ -75,7 +75,7 @@ def foto_html():
             mime = "png" if nome.endswith("png") else "jpeg"
             data = base64.b64encode(open(p, "rb").read()).decode()
             return f'<img class="foto" src="data:image/{mime};base64,{data}" alt="Djeison Ferreira">'
-    return '<div class="foto">foto.jpg</div>'
+    return '<div class="foto" style="font-size:34px;font-weight:800;color:#e2b43c">DF</div>'
 
 
 def gerar():
@@ -88,7 +88,9 @@ def gerar():
     percurso = "".join(
         f'<tr class="{"hl" if "CAMPEÃO" in r[3] or "Melhor" in r[3] else ""}"><td>{r[0]}</td><td>{r[1]}</td>'
         f"<td>{r[2]}</td><td>{r[3]}</td></tr>" for r in PERCURSO)
-    video2 = (f'<div>🎬 Vídeo 2: <a href="{j["video_highlights_2"]}">{j["video_highlights_2"]}</a></div>'
+    contrato = (f'<div class="cell" style="grid-column: span 2"><b>Situação contratual / Contract</b>'
+                f'<span>{j["situacao_contratual"]}</span></div>' if j["situacao_contratual"] else "")
+    video2 = (f'<div>Vídeo 2: <a href="{j["video_highlights_2"]}">{j["video_highlights_2"]}</a></div>'
               if j["video_highlights_2"] else "")
     doc = f"""<!doctype html><html lang="pt"><head><meta charset="utf-8">
 <title>Djeison Ferreira – Perfil de Jogador</title><style>{CSS}</style></head><body><div class="page">
@@ -103,15 +105,14 @@ def gerar():
   <div class="cell"><b>Nacionalidade</b><span>{j["nacionalidade"]}</span></div>
   <div class="cell"><b>Altura / Height</b><span>{j["altura"]}</span></div>
   <div class="cell"><b>Pé / Foot</b><span>{j["pe"]}</span></div>
-  <div class="cell" style="grid-column: span 2"><b>Situação contratual / Contract</b><span>{j["situacao_contratual"]}</span></div>
-  <div class="cell" style="grid-column: span 2"><b>Documentos / Status</b><span>{j["documentos"]}</span></div>
+  {contrato}<div class="cell" style="grid-column: span {4 - 2 * bool(j["situacao_contratual"])}"><b>Documentos / Status</b><span>{j["documentos"]}</span></div>
 </div>
 
 <h2>Destaques · Highlights</h2>
 <div class="badges">
-  <div class="badge"><div class="big">🏆 Campeão 2025/26</div><div class="small">Divisão de Elite AF Coimbra<br>Subida ao Campeonato de Portugal</div></div>
-  <div class="badge"><div class="big">⭐ Melhor Jovem</div><div class="small">Campeonato Regional<br>Santiago Sul (Cabo Verde)</div></div>
-  <div class="badge"><div class="big">⚽ Golo na Taça</div><div class="small">Taça de Portugal 2026/27<br>vs Associação Naval 1893</div></div>
+  <div class="badge"><div class="big">Campeão 2025/26</div><div class="small">Divisão de Elite AF Coimbra<br>Subida ao Campeonato de Portugal</div></div>
+  <div class="badge"><div class="big">Melhor Jovem</div><div class="small">Campeonato Regional<br>Santiago Sul (Cabo Verde)</div></div>
+  <div class="badge"><div class="big">Golo na Taça</div><div class="small">Taça de Portugal 2026/27<br>vs Associação Naval 1893</div></div>
 </div>
 
 <h2>Percurso · Career</h2>
@@ -123,19 +124,19 @@ def gerar():
 <div class="cols">
 <div><h2>Características · Profile</h2><ul>
   <li>Defesa central com capacidade para jogar a médio defensivo</li>
-  <li>Titular indiscutível na subida da AD Nogueirense</li>
+  <li>Campeão e subida de divisão com a AD Nogueirense</li>
   <li>Jogos completos de 90 minutos no Campeonato de Portugal</li>
   <li>Disponível para treinos de observação / trial</li>
 </ul></div>
 <div class="links"><h2>Vídeo e estatísticas</h2>
-  <div>🎬 Highlights: <a href="{j["video_highlights"]}">{j["video_highlights"]}</a></div>{video2}
-  <div>📊 zerozero: <a href="{j["zerozero"]}">zerozero.pt/jogador/djeison/2507934</a></div>
-  <div>📈 Sofascore: <a href="{j["sofascore"]}">sofascore.com · Djeison Ferreira</a></div>
-  <div>📷 Instagram: <a href="{j["instagram"]}">@djeison_b.b</a></div>
+  <div>Highlights: <a href="{j["video_highlights"]}">Ver vídeo / Watch video (Google Drive)</a></div>{video2}
+  <div>zerozero: <a href="{j["zerozero"]}">zerozero.pt/jogador/djeison/2507934</a></div>
+  <div>Sofascore: <a href="{j["sofascore"]}">sofascore.com · Djeison Ferreira</a></div>
+  <div>Instagram: <a href="{j["instagram"]}">@djeison_b.b</a></div>
 </div></div>
 
 <footer><div><b>Contacto / Contact:</b> {c["nome"]} ({c["relacao_pt"]})</div>
-<div>📞 {c["telefone"]} · ✉️ {c["email"]}</div></footer>
+<div>{c["telefone"]} · {c["email"]}</div></footer>
 </div></body></html>"""
     out_html = os.path.join(AQUI, "perfil_djeison_ferreira.html")
     open(out_html, "w", encoding="utf-8").write(doc)

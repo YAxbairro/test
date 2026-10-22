@@ -8,26 +8,27 @@
     "posicao_en": "Centre-back / Defensive midfielder",
     "posicao_fr": "Défenseur central / Milieu défensif",
     "posicao_es": "Defensa central / Mediocentro defensivo",
-    "altura": "[PREENCHER: ex. 1,85 m]",
-    "pe": "[PREENCHER: direito / esquerdo]",
+    "altura": "1,88 m",
+    "pe": "Direito",
     "clube_atual": "AD Nogueirense (Campeonato de Portugal)",
     "numero": "19",
-    "situacao_contratual": "[PREENCHER: ex. contrato até junho 2027 / livre em junho 2027]",
-    "documentos": "[PREENCHER: ex. passaporte cabo-verdiano + autorização de residência em Portugal]",
+    "situacao_contratual": "",
+    "documentos": "Passaporte cabo-verdiano + autorização de residência em Portugal",
     "zerozero": "https://www.zerozero.pt/jogador/djeison/2507934",
     "sofascore": "https://www.sofascore.com/pt/football/player/djeison-ferreira/2052937",
     "instagram": "https://www.instagram.com/djeison_b.b/",
     "video_highlights": "https://drive.google.com/file/d/1V3o91Vjs0wNG_UtKeykETLKSWLjMaRCo/view",
-    "video_highlights_2": ""
+    "video_highlights_2": "",
+    "perfil_pdf": "https://docs.google.com/document/d/1NIk2y8yXvCeIoCc4-P1aotvmch9oYjnryRQ3e1csnVk/view"
   },
   "contacto": {
-    "nome": "[O TEU NOME]",
+    "nome": "Yanick Dos Reis Silva",
     "relacao_pt": "irmão e representante familiar",
     "relacao_en": "brother and family representative",
     "relacao_fr": "frère et représentant familial",
     "relacao_es": "hermano y representante familiar",
     "email": "yanickdrs@gmail.com",
-    "telefone": "[O TEU TELEFONE / WHATSAPP, ex. +351 9xx xxx xxx]"
+    "telefone": "+238 955 78 82"
   },
   "envio": {
     "smtp_servidor": "smtp.gmail.com",

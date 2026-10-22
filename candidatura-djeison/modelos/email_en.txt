@@ -8,6 +8,7 @@ PROFILE
 • Date of birth: {data_nascimento} ({idade} years old) – Cape Verdean
 • Position: {posicao_en} | Height: {altura} | Foot: {pe}
 • Current club: AD Nogueirense (Campeonato de Portugal – Portuguese 4th tier), no. {numero}
+• Status: holds a Portuguese residence permit (lives in Portugal)
 
 CAREER & ACHIEVEMENTS
 • Named Best Young Player of the Santiago South Regional Championship (Cape Verde) with AD Bairro (Praia)
@@ -20,7 +21,9 @@ VIDEO & STATS
 • zerozero: {zerozero}
 • Sofascore: {sofascore}
 
-His full profile is attached as a PDF. Djeison is available for a trial, an observation period, or to send full-match footage.
+Full profile: {perfil_pdf}
+
+Djeison is available for a trial, an observation period, or to send full-match footage.
 
 Thank you for your time. I look forward to hearing from you.
 

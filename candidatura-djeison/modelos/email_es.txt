@@ -8,6 +8,7 @@ PERFIL
 • Fecha de nacimiento: {data_nascimento} ({idade} años) – caboverdiano
 • Posición: {posicao_es} | Altura: {altura} | Pie: {pe}
 • Club actual: AD Nogueirense (Campeonato de Portugal – 4.ª categoría portuguesa), dorsal {numero}
+• Situación: con permiso de residencia en Portugal (reside en Portugal)
 
 TRAYECTORIA Y LOGROS
 • Elegido Mejor Jugador Joven del Campeonato Regional de Santiago Sur (Cabo Verde) con el AD Bairro (Praia)
@@ -20,7 +21,9 @@ VÍDEO Y ESTADÍSTICAS
 • zerozero: {zerozero}
 • Sofascore: {sofascore}
 
-Adjunto su perfil completo en PDF. Djeison está disponible para una prueba, un periodo de observación o para enviar partidos completos en vídeo.
+Perfil completo: {perfil_pdf}
+
+Djeison está disponible para una prueba, un periodo de observación o para enviar partidos completos en vídeo.
 
 Muchas gracias por su atención. Quedo a su disposición.
 
