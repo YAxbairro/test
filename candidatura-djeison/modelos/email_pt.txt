@@ -1,0 +1,31 @@
+Assunto: Candidatura espontânea – Djeison Ferreira, defesa central ({idade} anos) – Campeão Elite AF Coimbra 25/26
+Exmos. Senhores do Departamento de Futebol / Scouting do {clube},
+
+O meu nome é {nome}, sou {relacao_pt} do jogador Djeison Ferreira, e escrevo para apresentar a sua candidatura espontânea para a {equipa_alvo} do {clube}.
+
+PERFIL RESUMIDO
+• Nome: {nome_completo}
+• Nascimento: {data_nascimento} ({idade} anos) – {nacionalidade}
+• Posição: {posicao_pt} | Altura: {altura} | Pé: {pe}
+• Clube atual: {clube_atual}, n.º {numero}
+
+PERCURSO E CONQUISTAS
+• Eleito Melhor Jogador Jovem do Campeonato Regional de Santiago Sul (Cabo Verde), ao serviço da AD Bairro (Praia)
+• Campeão da Divisão de Elite da AF Coimbra 2025/26 com a AD Nogueirense – subida ao Campeonato de Portugal
+• 2026/27: titular no Campeonato de Portugal (jogos completos de 90 min) e golo na Taça de Portugal frente à Associação Naval 1893
+• Jogador versátil: atua como defesa central e como médio defensivo
+
+VÍDEO E ESTATÍSTICAS
+• Vídeo de melhores momentos: {video_highlights}
+• zerozero: {zerozero}
+• Sofascore: {sofascore}
+
+Em anexo segue o perfil completo em PDF. O Djeison está disponível para treinos de observação, período de experiência ou para enviar jogos completos em vídeo.
+
+Agradeço desde já a atenção e fico disponível para qualquer contacto.
+
+Com os melhores cumprimentos,
+{nome}
+{relacao_pt} de Djeison Ferreira
+Tel./WhatsApp: {telefone}
+E-mail: {email}

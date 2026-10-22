@@ -1,0 +1,31 @@
+Objet : Candidature spontanée – Djeison Ferreira, défenseur central ({idade} ans) – champion 2025/26 (Portugal)
+Madame, Monsieur, responsables du football / recrutement du {clube},
+
+Je m'appelle {nome}, {relacao_fr} du joueur Djeison Ferreira. Je vous écris pour vous présenter sa candidature spontanée pour l'{equipa_alvo} du {clube}.
+
+PROFIL
+• Nom : {nome_completo}
+• Date de naissance : {data_nascimento} ({idade} ans) – Cap-verdien
+• Poste : {posicao_fr} | Taille : {altura} | Pied : {pe}
+• Club actuel : AD Nogueirense (Campeonato de Portugal – 4e division portugaise), n° {numero}
+
+PARCOURS ET PALMARÈS
+• Élu Meilleur Jeune Joueur du Championnat Régional de Santiago Sud (Cap-Vert) avec l'AD Bairro (Praia)
+• Champion 2025/26 de la Division Élite de l'AF Coimbra avec l'AD Nogueirense – montée en Campeonato de Portugal
+• 2026/27 : titulaire en Campeonato de Portugal (matchs complets de 90 min) et buteur en Coupe du Portugal contre l'Associação Naval 1893
+• Joueur polyvalent : défenseur central et milieu défensif
+
+VIDÉO ET STATISTIQUES
+• Vidéo (meilleures actions) : {video_highlights}
+• zerozero : {zerozero}
+• Sofascore : {sofascore}
+
+Vous trouverez son profil complet en PDF ci-joint. Djeison est disponible pour un essai, une période d'observation ou pour l'envoi de matchs complets en vidéo.
+
+Je vous remercie de votre attention et reste à votre disposition.
+
+Cordialement,
+{nome}
+{relacao_fr} de Djeison Ferreira
+Tél./WhatsApp : {telefone}
+E-mail : {email}

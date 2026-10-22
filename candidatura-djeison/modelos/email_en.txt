@@ -1,0 +1,31 @@
+Subject: Player profile – Djeison Ferreira, {idade}-year-old centre-back – 2025/26 league champion (Portugal)
+Dear Football / Scouting Department of {clube},
+
+My name is {nome}, {relacao_en} of the player Djeison Ferreira. I am writing to introduce him as a candidate for the {equipa_alvo} of {clube}.
+
+PROFILE
+• Name: {nome_completo}
+• Date of birth: {data_nascimento} ({idade} years old) – Cape Verdean
+• Position: {posicao_en} | Height: {altura} | Foot: {pe}
+• Current club: AD Nogueirense (Campeonato de Portugal – Portuguese 4th tier), no. {numero}
+
+CAREER & ACHIEVEMENTS
+• Named Best Young Player of the Santiago South Regional Championship (Cape Verde) with AD Bairro (Praia)
+• 2025/26 champion of the AF Coimbra Elite Division with AD Nogueirense – promoted to the Campeonato de Portugal
+• 2026/27: starter in the Campeonato de Portugal (full 90-minute matches) and scored in the Portuguese Cup (Taça de Portugal) against Associação Naval 1893
+• Versatile: plays both as centre-back and defensive midfielder
+
+VIDEO & STATS
+• Highlights: {video_highlights}
+• zerozero: {zerozero}
+• Sofascore: {sofascore}
+
+His full profile is attached as a PDF. Djeison is available for a trial, an observation period, or to send full-match footage.
+
+Thank you for your time. I look forward to hearing from you.
+
+Kind regards,
+{nome}
+{relacao_en} of Djeison Ferreira
+Phone/WhatsApp: {telefone}
+Email: {email}

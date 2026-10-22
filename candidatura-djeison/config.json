@@ -1,0 +1,40 @@
+{
+  "jogador": {
+    "nome_completo": "Djeison Alberto dos Reis Ferreira",
+    "nome_desportivo": "Djeison Ferreira",
+    "data_nascimento": "27/10/2005",
+    "nacionalidade": "Cabo-verdiana",
+    "posicao_pt": "Defesa central / Médio defensivo",
+    "posicao_en": "Centre-back / Defensive midfielder",
+    "posicao_fr": "Défenseur central / Milieu défensif",
+    "posicao_es": "Defensa central / Mediocentro defensivo",
+    "altura": "[PREENCHER: ex. 1,85 m]",
+    "pe": "[PREENCHER: direito / esquerdo]",
+    "clube_atual": "AD Nogueirense (Campeonato de Portugal)",
+    "numero": "19",
+    "situacao_contratual": "[PREENCHER: ex. contrato até junho 2027 / livre em junho 2027]",
+    "documentos": "[PREENCHER: ex. passaporte cabo-verdiano + autorização de residência em Portugal]",
+    "zerozero": "https://www.zerozero.pt/jogador/djeison/2507934",
+    "sofascore": "https://www.sofascore.com/pt/football/player/djeison-ferreira/2052937",
+    "instagram": "https://www.instagram.com/djeison_b.b/",
+    "video_highlights": "[COLAR AQUI O LINK DO VÍDEO]",
+    "video_highlights_2": ""
+  },
+  "contacto": {
+    "nome": "[O TEU NOME]",
+    "relacao_pt": "irmão e representante familiar",
+    "relacao_en": "brother and family representative",
+    "relacao_fr": "frère et représentant familial",
+    "relacao_es": "hermano y representante familiar",
+    "email": "[O TEU EMAIL]",
+    "telefone": "[O TEU TELEFONE / WHATSAPP, ex. +351 9xx xxx xxx]"
+  },
+  "envio": {
+    "smtp_servidor": "smtp.gmail.com",
+    "smtp_porta": 587,
+    "anexo_pdf": "perfil_djeison_ferreira.pdf",
+    "limite_por_execucao": 20,
+    "intervalo_min_segundos": 90,
+    "intervalo_max_segundos": 240
+  }
+}
