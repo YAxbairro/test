@@ -23,5 +23,9 @@ sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto
   `mr_payments`, `mr_feedback`, `mr_delivery` (estas 3 só se leem com PIN via `mr_staff_data`). Fechar conta: `mr_pay` (fecha a mesa).
 - `mr_tables`: mesa aberta/fechada (`mr_set_table`). O servidor só aceita pedidos de mesas abertas e sem pausa. PIN muda-se com `mr_change_pin`.
 - Links: mesa `#mesa-NN`, entrega `#entrega`, equipa `#equipa`, garçom `#garcom` (ecrã de tarefas no telemóvel).
+- Pedidos só entram por `mr_checkout` (o servidor calcula preços a partir de `mr_menu` + `mr_items`, recusa esgotados, mesa fechada e pausa).
+  Pedidos ao garçom por `mr_request`. Estados por `mr_advance` (com estado esperado). Pagar por pessoa: `mr_pay_guest`. Confirmar telemóvel: `mr_ack`.
+  Fotos: Edge Function `mr-upload` (precisa do PIN). Inserção anónima direta nas tabelas e no bucket está fechada.
+- Testes: scratchpad `web/*.js` (e2e, v2, v3, wt, real, aud) + `clean.sh` para limpar dados de teste.
 - Não tocar em tabelas que não sejam `mr_*`. DELETE e SQL com vários comandos bloqueiam o MCP: usar 1 comando por chamada.
 - Fala em português de Cabo Verde/Portugal, respostas curtas e sinceras.
