@@ -663,13 +663,13 @@ var CAT_ACC={sopas:"#f5a06a",saladas:"#9fd6a5",carnes:"#f39a8f",cocktails:"#f4a7
 var app=document.getElementById("app");
 function render(){
  document.querySelectorAll(".seg button").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.view===S.view));});
- var seg=document.getElementById("staffSeg");if(seg)seg.hidden=!(S.staff||!sb);
+ var seg=document.getElementById("staffSeg");if(seg)seg.hidden=!S.staff;
  var rn=document.getElementById("rname");if(rn)rn.textContent=S.settings.name||"";
  document.title="Menu Real · "+(S.settings.name||"");
  document.documentElement.lang=S.view==="client"?S.lang:"pt";
- document.body.classList.toggle("cx-mode",S.view==="client");document.body.classList.toggle("staff",!!(S.staff||!sb));
+ document.body.classList.toggle("cx-mode",S.view==="client");document.body.classList.toggle("staff",!!S.staff);
  if(S.view==="client")renderClient();else if(S.view==="kitchen")renderKitchen();else if(S.view==="room")renderRoom();else if(S.view==="waiter")renderWaiter();else renderManage();
- var wc=document.getElementById("wcount");if(wc&&(S.staff||!sb)){var nw=waiterTasks().length;wc.hidden=!nw;wc.textContent=nw;}
+ var wc=document.getElementById("wcount");if(wc&&S.staff){var nw=waiterTasks().length;wc.hidden=!nw;wc.textContent=nw;}
  renderCartbar();alertStaff();if(S.view==="client")ratePrompt();else loadStaff();
  if(openSheet&&openSheet.refresh)openSheet.refresh();
 }
@@ -1023,7 +1023,7 @@ function tableSheet(mesa){
 }
 function renderManage(){
  var tab=S.mtab;
- var h='<div class="view"><div class="manage"><div class="tabs" role="group" aria-label="Gestão">'+[["pratos","Pratos"],["mesas","Mesas e QR"],["config","Programa e entregas"],["rel","Relatório"],["aval","Avaliações"]].map(function(t){return '<button type="button" data-mtab="'+t[0]+'" aria-pressed="'+(tab===t[0])+'">'+t[1]+'</button>';}).join("")+(sb?'<button type="button" id="logout" style="margin-left:auto">Sair</button>':'')+'</div>';
+ var h='<div class="view"><div class="manage"><div class="tabs" role="group" aria-label="Gestão">'+[["pratos","Pratos"],["mesas","Mesas e QR"],["config","Programa e entregas"],["rel","Relatório"],["aval","Avaliações"]].map(function(t){return '<button type="button" data-mtab="'+t[0]+'" aria-pressed="'+(tab===t[0])+'">'+t[1]+'</button>';}).join("")+'<button type="button" id="logout" style="margin-left:auto">Sair</button></div>';
  if(tab==="pratos"){
   h+='<div class="row" style="flex-wrap:wrap;justify-content:space-between;gap:10px"><label class="row" style="gap:10px;font-weight:600;flex:1;min-width:240px">Nome<input type="text" id="rnameIn" maxlength="40" value="'+esc(S.settings.name||"")+'"></label><button type="button" class="primary" id="addDish" style="flex:none"><span>+ Novo prato</span></button></div>'+
    '<p class="muted">Tira a foto do prato tal como sai da cozinha e corrige ingredientes, preparo e preço. As alterações aparecem logo em todas as mesas. Usa “No menu / Escondido” para mostrar só os pratos de hoje.</p>';
@@ -1083,7 +1083,7 @@ function pinSheet(next){
  sheet("Acesso da equipa",function(b){
   b.innerHTML='<p class="muted">Cozinha, Sala e Gestão são só para a equipa. Escreve o PIN.</p><form id="pinF" class="row"><input type="text" inputmode="numeric" autocomplete="off" id="pinIn" maxlength="8" placeholder="PIN" style="font-size:22px;letter-spacing:.3em;text-align:center"><button type="submit" class="primary" style="flex:none"><span>Entrar</span></button></form><p class="fine" id="pinMsg"></p>';
   b.querySelector("#pinF").onsubmit=function(e){e.preventDefault();var v=b.querySelector("#pinIn").value.trim();if(!v)return;
-   var ok=sb?sb.rpc("mr_pin_ok",{p_pin:v}).then(function(r){return !r.error&&r.data===true;}):Promise.resolve(true);
+   var ok=sb?sb.rpc("mr_pin_ok",{p_pin:v}).then(function(r){return !r.error&&r.data===true;}):Promise.resolve(v===String(S.settings.staffPin||"4465"));
    ok.then(function(good){if(!good){b.querySelector("#pinMsg").textContent="PIN errado.";return;}S.pin=v;ls("pin",v);S.staff=true;closeSheet(true);S.view=next;sdAt=0;render();window.scrollTo(0,0);});};
   setTimeout(function(){var i=b.querySelector("#pinIn");i&&i.focus();},50);
  });
@@ -1273,7 +1273,7 @@ function orderForTable(mesa){var go=function(){location.hash="mesa-"+mesa;locati
 function pinFormHtml(){return '<div class="card-s"><h3>Mudar o PIN da equipa</h3><p class="fine">4 a 8 números. Quem já está ligado vai ter de entrar outra vez com o PIN novo.</p><div class="row" style="gap:8px;flex-wrap:wrap"><input type="password" inputmode="numeric" id="np1" maxlength="8" placeholder="PIN novo" style="flex:1;min-width:120px"><input type="password" inputmode="numeric" id="np2" maxlength="8" placeholder="Repetir" style="flex:1;min-width:120px"><button type="button" class="primary" id="npSave" style="flex:none"><span>Guardar PIN</span></button></div></div>';}
 function changePin(){var a=(document.getElementById("np1")||{}).value||"",b=(document.getElementById("np2")||{}).value||"";
  if(!/^\d{4,8}$/.test(a)){toast("O PIN tem de ter 4 a 8 números.");return;}if(a!==b){toast("Os PIN não coincidem.");return;}
- if(!sb){S.pin=a;ls("pin",a);toast("✓ PIN alterado");return;}
+ if(!sb){store.setSettings({staffPin:a}).then(function(){S.pin=a;ls("pin",a);toast("✓ PIN alterado");});return;}
  rpc("mr_change_pin",{p_new:a}).then(function(){S.pin=a;ls("pin",a);toast("✓ PIN alterado. Usa o novo daqui para a frente.");render();}).catch(pinErr);}
 
 /* ---------- Garçom: o que fazer agora ---------- */
@@ -1299,7 +1299,7 @@ function renderWaiter(){var tasks=waiterTasks(),open=openByTable(),reqs=S.reques
 /* ---------- Eventos ---------- */
 document.addEventListener("click",function(e){
  var t;
- if((t=e.target.closest(".seg button[data-view]"))){if(sb&&t.dataset.view!=="client"&&!S.pin){pinSheet(t.dataset.view);return;}S.view=t.dataset.view;closeSheet(true);render();window.scrollTo(0,0);return;}
+ if((t=e.target.closest(".seg button[data-view]"))){if(t.dataset.view!=="client"&&!S.pin){pinSheet(t.dataset.view);return;}S.view=t.dataset.view;closeSheet(true);render();window.scrollTo(0,0);return;}
  if(openSheet&&openSheet.el.contains(e.target))return;
  if((t=e.target.closest("[data-lang]"))){S.lang=t.dataset.lang;ls("lang",S.lang);render();return;}
  if((t=e.target.closest("[data-cat]"))){var nc=t.dataset.cat;if(nc===S.cat)return;var ci=CATS.map(function(c){return c.id;}),d=ci.indexOf(nc)>=ci.indexOf(S.cat)?1:-1;S.cat=nc;document.querySelectorAll("[data-cat]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.cat===nc));});var first=catItems(nc)[0];var r=document.getElementById("rail");if(r){r.innerHTML=railItems();anim(r,[{opacity:0,transform:"translateX("+(d*30)+"px)"},{opacity:1,transform:"none"}],{duration:600,easing:EZ});}if(first)transitionTo(first.id,d);return;}
@@ -1315,6 +1315,7 @@ document.addEventListener("click",function(e){
  if((t=e.target.closest("[data-item]"))){if(S.view==="client"){var it=BY[t.dataset.item];closeSheet(true);S.cat=it.cat;S.sel=it.id;render();window.scrollTo({top:0,behavior:"smooth"});return;}dishSheet(t.dataset.item);return;}
  if(e.target.closest("#askBtn")){asstSheet();return;}
  if(e.target.closest("#openCart")){cartSheet();return;}
+ if(e.target.closest(".cx-brand")){var nw=Date.now();S.taps=(S.taps||[]).filter(function(x){return nw-x<2500;});S.taps.push(nw);if(S.taps.length>=5){S.taps=[];if(S.pin){S.staff=true;S.view="waiter";render();}else pinSheet("waiter");}return;}
  if(e.target.closest("#callBtn")){svcSheet();return;}
  if(e.target.closest("#openReq")){if(pendReq("garcom")){toast(L().openAsk);return;}sendReq("garcom",null,{abrir:true});return;}
  if(e.target.closest("#billBtn")){askBill(e.target.closest("#billBtn"));return;}
