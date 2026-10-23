@@ -1,14 +1,17 @@
 # Notas para o Claude (preferências do Yanick)
 
-## Contas — dizer SEMPRE com que conta/email estou ligado
-O Yanick tem vários emails. Sempre que usar ou mencionar um serviço externo, dizer
-explicitamente em que conta/email está ligado, e onde ele deve entrar para fazer algo.
+## ⚠️ REGRA Nº 1 — dizer SEMPRE o EMAIL da conta (o Yanick já pediu várias vezes)
+O Yanick tem vários emails. Em TODAS as respostas onde aparece um serviço externo
+(GitHub, Supabase, Vercel, Claude, Drive, etc.), escrever ao lado o **EMAIL** da conta,
+não só o nome de utilizador. Formato: `Serviço (email@...)`. Também nos passo-a-passo
+("entra no GitHub com yanick...@..."). Se o email não for conhecido, dizer que não se
+sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto.
 
 | Serviço | Conta ligada nesta sessão |
 |---|---|
 | Claude (claude.ai, artifacts) | yanickdrs@gmail.com |
 | Google Drive | yanickdrs@gmail.com |
-| GitHub | utilizador **YAxbairro** (email não visível pela API) |
+| GitHub | utilizador **YAxbairro** — EMAIL AINDA DESCONHECIDO (a API não mostra; perguntar ao Yanick e escrever aqui) |
 | Supabase | organização "yaxtechcv@gmail.com's Org" → **yaxtechcv@gmail.com** (plano grátis) |
 | Vercel | equipa "afroberd-gmailcom's projects" → **afroberd@gmail.com** (sem permissão para criar projetos) |
 | Canva, ElevenLabs, Higgsfield, Gemini | email não visível; ElevenLabs/Higgsfield/Gemini sem créditos |
