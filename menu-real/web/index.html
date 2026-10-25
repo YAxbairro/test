@@ -361,6 +361,8 @@ input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--bg)
 .sw[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
 .banner{font-size:13px;color:var(--muted);text-align:center}
 [hidden]{display:none!important}
+button.qr{font:inherit;cursor:pointer;text-align:center}button.qr:active{transform:scale(.98)}
+.qrbig{display:flex;justify-content:center;padding:8px;background:#fff;border-radius:16px}.qrbig img,.qrbig canvas{width:240px;height:240px}
 .staffbar{display:grid;gap:8px;margin-bottom:12px}.soundbar{border:0;border-radius:14px;background:#f6d36b;color:#3a2f00;font-weight:700;padding:12px 14px;text-align:left}
 .payg{width:100%;margin-top:6px;text-align:left}
 .waiter{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
@@ -1064,8 +1066,8 @@ function renderManage(){
  } else if(tab==="aval"){h+=feedbackHtml();
  } else {
   h+='<div class="row" style="flex-wrap:wrap;justify-content:space-between"><label class="row" style="gap:10px;font-weight:600">Número de mesas <input type="number" id="ntab" min="1" max="99" value="'+S.settings.tables+'" style="width:90px"></label>'+'<button type="button" class="ghost" id="dlqr">Descarregar QR (PNG)</button>'+'</div>'+
-   '<p class="muted" style="font-size:14px">Cada QR abre o menu já com a mesa certa. Imprime e cola em cada mesa.</p><div class="qrs" id="qrs">';
-  for(var i=1;i<=S.settings.tables;i++){var id=String(i).padStart(2,"0");h+='<div class="qr"><div class="code" data-qr="'+id+'"></div><b>Mesa '+id+'</b><span style="font-size:12px;color:#667080">Menu Real · '+esc(S.settings.name||"")+'</span></div>';}
+   '<p class="muted" style="font-size:14px">Cada QR abre o menu já com a mesa certa. Imprime e cola em cada mesa. <b>Toca num QR</b> para abrir essa mesa neste telemóvel, copiar o link ou partilhar.</p><div class="qrs" id="qrs">';
+  for(var i=1;i<=S.settings.tables;i++){var id=String(i).padStart(2,"0");h+='<button type="button" class="qr" data-qrm="'+id+'" aria-label="Mesa '+id+': abrir, copiar ou partilhar"><div class="code" data-qr="'+id+'"></div><b>Mesa '+id+'</b><span style="font-size:12px;color:#667080">Toca para abrir ou partilhar</span></button>';}
   h+='</div>';
  }
  h+='</div></div>';app.innerHTML=h;
@@ -1338,6 +1340,16 @@ store.payGuest=function(mesa,gid,method,tip){if(sb)return rpc("mr_pay_guest",{p_
 function ackDevice(m,gid){ls(ackKey(m,gid),1);if(sb&&S.pin)rpc("mr_ack",{p_mesa:m,p_gid:gid}).then(function(){sbLoad.tables().catch(function(){});}).catch(function(){});}
 function loadQueue(){if(!sb||S.staff)return;sb.rpc("mr_queue").then(function(r){if(!r.error&&Array.isArray(r.data)){S.queue=r.data.map(function(x){return {s:x.s,c:+x.c};});}});}
 var prevSt={};function trackCancels(){if(S.staff)return;S.orders.forEach(function(o){if(o.gid!==S.gid||o.mesa!==MESA)return;if(prevSt[o.id]&&prevSt[o.id]!=="cancelado"&&o.status==="cancelado")toast("⚠️ "+({pt:"Um pedido foi cancelado pela cozinha. Fala com o garçom.",en:"An order was cancelled by the kitchen. Please talk to the waiter.",fr:"Une commande a été annulée par la cuisine.",de:"Eine Bestellung wurde von der Küche storniert."}[S.lang]||""));prevSt[o.id]=o.status;});}
+function qrSheet(id){var url=APP_URL+"#mesa-"+id;
+ sheet("Mesa "+id,function(b){
+  b.innerHTML='<div class="qrbig"><div id="qrBig"></div></div><p class="fine" style="text-align:center;word-break:break-all">'+esc(url)+'</p>'+
+   '<a class="primary" id="qOpen" href="'+esc(url)+'" target="_blank" rel="noopener" style="text-decoration:none"><span>Abrir a mesa '+esc(id)+' (como cliente)</span><span>↗</span></a>'+
+   '<div class="row" style="gap:8px"><button type="button" class="ghost" id="qCopy" style="flex:1">Copiar link</button>'+(navigator.share?'<button type="button" class="ghost" id="qShare" style="flex:1">Partilhar</button>':'')+'</div>'+
+   '<p class="fine">Para testar: abre noutro telemóvel com a câmara a apontar para este QR, ou toca em "Abrir".</p>';
+  try{new QRCode(b.querySelector("#qrBig"),{text:url,width:240,height:240,correctLevel:QRCode.CorrectLevel.M});}catch(e){}
+  b.querySelector("#qCopy").onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){toast("✓ Link copiado");}).catch(function(){prompt("Copia o link:",url);});};
+  var sh=b.querySelector("#qShare");if(sh)sh.onclick=function(){navigator.share({title:"Mesa "+id+" · "+(S.settings.name||"Menu Real"),url:url}).catch(function(){});};
+ });}
 /* ---------- Eventos ---------- */
 document.addEventListener("click",function(e){
  var t;
@@ -1368,9 +1380,10 @@ document.addEventListener("click",function(e){
  if((t=e.target.closest("[data-edit]"))){editSheet(t.dataset.edit);return;}
  if((t=e.target.closest("[data-mtab]"))){S.mtab=t.dataset.mtab;sdAt=0;render();return;}
  if((t=e.target.closest("[data-cancel]"))){if(!confirm("Cancelar este pedido? O cliente vai ver que foi cancelado."))return;store.setStatus(t.dataset.cancel,"cancelado","novo").catch(pinErr);return;}
- if(e.target.closest("#dlqr")){if(!downloads){qrSheetPng().then(function(blob){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="menu-real-qr-mesas.png";document.body.appendChild(a);a.click();a.remove();toast("✓ QR descarregados");});return;}qrSheetPng().then(function(blob){return downloads.save({filename:"menu-real-qr-mesas.png",data:blob});}).then(function(){toast("✓ Ficheiro pronto");}).catch(function(){toast("Download cancelado.");});return;}
+ if(e.target.closest("#dlqr")){if(!downloads){qrSheetPng().then(function(blob){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="menu-real-qr-mesas.png";document.body.appendChild(a);a.click();a.remove();toast("✓ QR guardados nas Transferências do telemóvel");});return;}qrSheetPng().then(function(blob){return downloads.save({filename:"menu-real-qr-mesas.png",data:blob});}).then(function(){toast("✓ Ficheiro pronto");}).catch(function(){toast("Download cancelado.");});return;}
  if((t=e.target.closest("[data-sold]"))){var id=t.dataset.sold;store.setItem(id,{soldOut:!soldOut(id)}).catch(pinErr);return;}
  if((t=e.target.closest("[data-hide]"))){var hid=t.dataset.hide;store.setItem(hid,{hidden:!(S.items[hid]&&S.items[hid].hidden)}).catch(pinErr);return;}
+ if((t=e.target.closest("[data-qrm]"))){qrSheet(t.dataset.qrm);return;}
  if(e.target.closest("#addDish")){newDish();return;}
  if((t=e.target.closest("[data-ack]"))){var pa=t.dataset.ack.split("|");ackDevice(pa[0],pa[1]);render();return;}
  if((t=e.target.closest("[data-kick]"))){var pk=t.dataset.kick.split("|");if(!confirm("Cancelar os pedidos ainda não preparados deste telemóvel na mesa "+pk[0]+"?"))return;ackDevice(pk[0],pk[1]);Promise.all(S.orders.filter(function(o){return o.mesa===pk[0]&&o.gid===pk[1]&&o.status==="novo";}).map(function(o){return store.setStatus(o.id,"cancelado","novo");})).then(function(){toast("Pedidos cancelados");render();}).catch(pinErr);return;}
