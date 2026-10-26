@@ -476,7 +476,7 @@ var LSP=RID==="quintal"?"":RID+"-",DBMENU=RID!=="quintal";
 var MESA=(function(){var h=(location.hash||"").replace("#","");if(/^entrega$/i.test(h))return "ENT";if(/^balcao$/i.test(h))return "BAL";var m=h.match(/^mesa-?(\d{1,3})$/i);return m?String(m[1]).padStart(2,"0"):"";})();
 function ssGet(k){try{return sessionStorage.getItem("mr-"+LSP+k);}catch(e){return null;}}function ssSet(k,v){try{sessionStorage.setItem("mr-"+LSP+k,v);}catch(e){}}
 window.addEventListener("hashchange",function(){location.reload();});
-var MIN_PP=1500;
+var MIN_PP=1500;function minPP(){return DBMENU?(+S.settings.minPP||0):(S.settings.minPP!=null?+S.settings.minPP:MIN_PP);}
 var CATS=[
  {id:"sopas",n:{pt:"Sopas",en:"Soups",fr:"Soupes",de:"Suppen"}},
  {id:"saladas",n:{pt:"Saladas",en:"Salads",fr:"Salades",de:"Salate"}},
@@ -570,6 +570,7 @@ var T2={"pt": {"svc": "Pedir ao garçom", "svcSub": "Toca no que precisas. A equ
 var T5={"pt": {"pick": "Levantar", "pickOff": "O levantamento no balcão está fechado neste momento.", "payOnPick": "Pagas quando levantares", "pickInfo": "Avisamos aqui quando estiver pronto. Mostra o teu nome no balcão.", "readyPick": "Pronto! Podes levantar", "needPhoneP": "Indica o nome e o telefone."}, "en": {"pick": "Pick-up", "pickOff": "Pick-up is closed right now.", "payOnPick": "Pay when you pick up", "pickInfo": "We'll show here when it's ready. Give your name at the counter.", "readyPick": "Ready! Come pick it up", "needPhoneP": "Please add your name and phone."}, "fr": {"pick": "À emporter", "pickOff": "Le retrait au comptoir est fermé.", "payOnPick": "Paiement au retrait", "pickInfo": "Nous l'indiquons ici quand c'est prêt. Donnez votre nom au comptoir.", "readyPick": "Prêt ! Vous pouvez venir", "needPhoneP": "Indiquez nom et téléphone."}, "de": {"pick": "Abholen", "pickOff": "Abholung ist gerade geschlossen.", "payOnPick": "Zahlung bei Abholung", "pickInfo": "Wir zeigen hier, wenn es fertig ist. Nennen Sie Ihren Namen an der Theke.", "readyPick": "Fertig! Bitte abholen", "needPhoneP": "Bitte Name und Telefon angeben."}};
 var T4={"pt": "📷 Para pedir, lê o QR da tua mesa", "en": "📷 To order, scan the QR on your table", "fr": "📷 Pour commander, scannez le QR de votre table", "de": "📷 Zum Bestellen den QR-Code am Tisch scannen"};
 var T3={"pt": {"closedT": "🔒 Mesa fechada · toca para chamar o garçom", "closedS": "Mesa fechada. Chama o garçom para abrir.", "pausedT": "⏸ A cozinha não está a aceitar pedidos agora", "openAsk": "✓ O garçom vem abrir a tua mesa"}, "en": {"closedT": "🔒 Table closed · tap to call the waiter", "closedS": "Table closed. Call the waiter to open it.", "pausedT": "⏸ The kitchen isn't taking orders right now", "openAsk": "✓ A waiter is coming to open your table"}, "fr": {"closedT": "🔒 Table fermée · touchez pour appeler le serveur", "closedS": "Table fermée. Appelez le serveur.", "pausedT": "⏸ La cuisine ne prend pas de commandes", "openAsk": "✓ Le serveur vient ouvrir votre table"}, "de": {"closedT": "🔒 Tisch geschlossen · tippen, um den Kellner zu rufen", "closedS": "Tisch geschlossen. Bitte Kellner rufen.", "pausedT": "⏸ Die Küche nimmt gerade keine Bestellungen an", "openAsk": "✓ Der Kellner kommt und öffnet den Tisch"}};Object.keys(T3).forEach(function(k){Object.assign(T2[k],T3[k],T5[k],{scanQR:T4[k]});});
+if(DBMENU){T.pt.sugg=["Algo barato","Uma bebida","Até 500$"];T.en.sugg=["Something cheap","A drink","Under 500$"];T.fr.sugg=["Pas cher","Une boisson","Moins de 500$"];T.de.sugg=["Etwas Günstiges","Ein Getränk","Unter 500$"];T.pt.askS=T.en.askS=T.fr.askS=T.de.askS="";}
 Object.keys(T2).forEach(function(k){Object.assign(T[k],T2[k]);T[k].st=Object.assign({},T[k].st,{caminho:T2[k].onway});});
 var ST_ORDER=["novo","preparo","pronto","entregue"];
 var BASE_LIST=DBMENU?[]:JSON.parse(JSON.stringify(MENU));var menuLoaded=!DBMENU;
@@ -596,6 +597,7 @@ function applyOverrides(){
 function ls(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem("mr-"+LSP+k));}localStorage.setItem("mr-"+LSP+k,JSON.stringify(v));}catch(e){return null;}}
 var S={view:"client",lang:ls("lang")||"pt",cat:"sopas",cart:[],guest:ls("guest")||"",gid:ls("gid")||Math.random().toString(36).slice(2,10),orders:[],requests:[],items:{},chat:[],busy:false,kstation:"todos",settings:DBMENU?{tables:10,name:""}:{tables:12,name:"Quintal da Música"},mtab:"pratos",pin:ls("pin")||"",staff:/^#?(equipa|garcom)$/i.test(location.hash||"")||(!!ls("pin")&&!!MESA&&ssGet("staffOrder")===MESA)};
 if(/^#?garcom$/i.test(location.hash||"")&&ls("pin"))S.view="waiter";
+if(S.staff&&ls("pin")&&!MESA&&["kitchen","waiter","room","manage"].indexOf(ssGet("view"))>-1)S.view=ssGet("view");
 ls("gid",S.gid);
 function L(){return T[S.lang];}
 function nm(m){return m.n[S.lang]||m.n.pt;}
@@ -693,7 +695,8 @@ function alertStaff(){if(sb&&!(ordersLoaded&&reqsLoaded))return;var ids=S.reques
  if(seenReq&&S.view!=="client"&&ids.some(function(id){return seenReq.indexOf(id)<0;})){beep();if(navigator.vibrate)navigator.vibrate([200,100,200]);}
  seenReq=ids;}
 var actx=null;function audioOn(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();}catch(e){}}
-document.addEventListener("pointerdown",function(){if(S.staff)audioOn();var sb2=document.getElementById("soundBar");if(sb2&&actx&&actx.state==="running")sb2.remove();},true);
+document.addEventListener("pointerdown",function(){if(S.staff)audioOn();},true);
+document.addEventListener("click",function(){setTimeout(function(){var sb2=document.getElementById("soundBar");if(sb2&&actx&&actx.state==="running")sb2.remove();},400);});
 var wake=null;function keepAwake(){if(!S.staff||S.view==="client"||!navigator.wakeLock||wake)return;navigator.wakeLock.request("screen").then(function(w){wake=w;w.addEventListener("release",function(){wake=null;});}).catch(function(){});}
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")keepAwake();});
 function staffBar(){var h="";if(!actx||actx.state!=="running")h+='<button type="button" class="soundbar" id="soundBar">🔈 Toca aqui para ligar o som dos avisos</button>';if(S.pin==="4465")h+='<p class="hint">⚠️ Ainda usas o PIN de teste (4465). Muda-o em Gestão → Programa e entregas.</p>';return h;}
@@ -907,7 +910,7 @@ function cartSheet(){
   if(!S.cart.length){b.innerHTML='<p class="muted">'+esc(l.empty)+'</p>';return;}
   b.innerHTML='<div>'+S.cart.map(function(c,i){var m=BY[c.id];return '<div class="line"><div><b>'+c.qty+'× '+esc(nm(m))+'</b>'+(c.opts.length?'<small>'+esc(c.opts.join(" · "))+'</small>':'')+(c.note?'<small>“'+esc(c.note)+'”</small>':'')+'</div><div style="text-align:right"><div class="num">'+money(c.unit*c.qty)+'</div><button type="button" class="x" style="width:28px;height:28px;margin-top:6px;margin-left:auto" data-rm="'+i+'" aria-label="Remover">'+X+'</button></div></div>';}).join("")+'</div>'+
    '<div class="total"><span>'+esc(l.total)+'</span><span class="num">'+money(cartTotal())+'</span></div>'+
-   (DELIV?'':'<p class="hint">'+esc(l.minH)+'</p>')+
+   (DELIV||!minPP()?'':'<p class="hint">'+esc(l.minH.replace("1.500$",money(minPP())))+'</p>')+
    '<label class="opt"><h4>'+esc(l.name)+'</h4><input type="text" id="gname" maxlength="24" placeholder="'+esc(l.nameP)+'" value="'+esc(S.staff&&S.pin?"Garçom":S.guest)+'" autocomplete="given-name"></label>'+
    (DELIV?delivFields(l):'')+
    '<button type="button" class="primary" id="sendBtn"'+(!canOrder()?" disabled":"")+'><span>'+esc(!canOrder()?(S.settings.paused?l.pausedT:(DELIV?(PICK?l.pickOff:l.delivOff):l.closedS)):(DELIV?l.sendDel:l.send))+'</span><span>→</span></button>';
@@ -982,7 +985,7 @@ function ask(q){
  S.chat.push({role:"user",content:q});S.busy=true;openSheet&&openSheet.rerender();
  var langName={pt:"português europeu",en:"English",fr:"français",de:"Deutsch"}[S.lang];
  var sys="És o assistente do restaurante "+(S.settings.name||"Menu Real")+" (Cabo Verde), dentro do Menu Real. Ajudas o cliente a escolher pratos e bebidas.\n"+
-  "Regras: usa APENAS os itens do MENU abaixo; nunca inventes pratos, preços, ingredientes ou disponibilidade. As calorias são aproximadas: diz isso quando falares delas. Se houver alergia, avisa que a informação deve ser confirmada com o empregado. Sê breve e simpático (máx. 3 frases). Sugere no máximo 3 itens, com ids exatos. Responde em "+langName+". Consumo mínimo: 1500$ por pessoa.\n"+
+  "Regras: usa APENAS os itens do MENU abaixo; nunca inventes pratos, preços, ingredientes ou disponibilidade. As calorias são aproximadas: diz isso quando falares delas. Se houver alergia, avisa que a informação deve ser confirmada com o empregado. Sê breve e simpático (máx. 3 frases). Sugere no máximo 3 itens, com ids exatos. Responde em "+langName+". "+(minPP()?"Consumo mínimo: "+minPP()+"$ por pessoa.":"")+"\n"+
   "Responde só com JSON: {\"reply\": string, \"items\": [ids]}\nMENU: "+JSON.stringify(menuForAI());
  var msgs=[{role:"user",content:sys+"\n\nPergunta do cliente: "+S.chat[0].content}];
  var hist=S.chat.slice(1,-1);
@@ -1043,7 +1046,7 @@ function tableSheet(mesa){tsSt={};
    var bc=b.querySelector("#tClose");if(bc)bc.onclick=function(){store.setTable(mesa,false).then(function(){toast("Mesa "+mesa+" fechada");closeSheet();}).catch(pinErr);};
    b.querySelector("#tOrder").onclick=function(){orderForTable(mesa);};return;}
   var by={};os.forEach(function(o){var k=o.guest==="Garçom"?"__staff":o.gid;(by[k]=by[k]||{name:o.guest==="Garçom"?"Pedido pelo garçom":o.guest,items:[],total:0,gid:o.gid});o.items.forEach(function(it){by[k].items.push(it);by[k].total+=it.unit*it.qty;});});
-  var keys=Object.keys(by),tot=keys.reduce(function(a,k){return a+by[k].total;},0),np=Math.max(1,keys.filter(function(k){return k!=="__staff";}).length),minT=np*MIN_PP;
+  var keys=Object.keys(by),tot=keys.reduce(function(a,k){return a+by[k].total;},0),np=Math.max(1,keys.filter(function(k){return k!=="__staff";}).length),minT=np*minPP();
   b.innerHTML=keys.map(function(k){var g=by[k];return '<div><div class="row" style="justify-content:space-between"><b>'+esc(g.name)+'</b><b class="num">'+money(g.total)+'</b></div>'+g.items.map(function(it){return '<div class="line" style="padding:8px 0"><span>'+esc(it.qty)+'× '+esc(it.name)+(it.opts&&it.opts.length?'<small>'+esc(it.opts.join(" · "))+'</small>':'')+'</span><span class="num muted">'+money(it.unit*it.qty)+'</span></div>';}).join("")+(k!=="__staff"&&keys.length>1?'<button type="button" class="ghost payg" data-pg="'+esc(g.gid)+'">💵 '+esc(g.name)+' pagou a parte dele ('+money(g.total)+')</button>':'')+'</div>';}).join("")+
    '<div class="total"><span>Total da mesa</span><span class="num">'+money(tot)+'</span></div>'+
    '<p class="hint num">Dividido por '+np+': '+money(Math.ceil(tot/np))+' cada'+(tot<minT?' · abaixo do consumo mínimo ('+money(minT)+')':'')+'</p>'+
@@ -1121,7 +1124,7 @@ function pinSheet(next){
   b.innerHTML='<p class="muted">Cozinha, Sala e Gestão são só para a equipa. Escreve o PIN.</p><form id="pinF" class="row"><input type="text" inputmode="numeric" autocomplete="off" id="pinIn" maxlength="8" placeholder="PIN" style="font-size:22px;letter-spacing:.3em;text-align:center"><button type="submit" class="primary" style="flex:none"><span>Entrar</span></button></form><p class="fine" id="pinMsg"></p>';
   b.querySelector("#pinF").onsubmit=function(e){e.preventDefault();var v=b.querySelector("#pinIn").value.trim();if(!v)return;
    var ok=sb?sb.rpc("mr_pin_ok",{p_rid:RID,p_pin:v}).then(function(r){return !r.error&&r.data===true;}):Promise.resolve(v===String(S.settings.staffPin||"4465"));
-   ok.then(function(good){if(!good){b.querySelector("#pinMsg").textContent="PIN errado.";return;}S.pin=v;ls("pin",v);S.staff=true;closeSheet(true);S.view=next;sdAt=0;render();window.scrollTo(0,0);});};
+   ok.then(function(good){if(!good){b.querySelector("#pinMsg").textContent="PIN errado.";return;}S.pin=v;ls("pin",v);S.staff=true;closeSheet(true);S.view=next;ssSet("view",next);sdAt=0;render();window.scrollTo(0,0);});};
   setTimeout(function(){var i=b.querySelector("#pinIn");i&&i.focus();},50);
  });
 }
@@ -1362,7 +1365,7 @@ function qrSheet(id){var url=APP_URL+"#mesa-"+id;
 /* ---------- Eventos ---------- */
 document.addEventListener("click",function(e){
  var t;
- if((t=e.target.closest(".seg button[data-view]"))){if(t.dataset.view!=="client"&&!S.pin){pinSheet(t.dataset.view);return;}S.view=t.dataset.view;closeSheet(true);render();window.scrollTo(0,0);return;}
+ if((t=e.target.closest(".seg button[data-view]"))){if(t.dataset.view!=="client"&&!S.pin){pinSheet(t.dataset.view);return;}S.view=t.dataset.view;ssSet("view",S.view);closeSheet(true);render();window.scrollTo(0,0);return;}
  if(openSheet&&openSheet.el.contains(e.target))return;
  if((t=e.target.closest("[data-lang]"))){S.lang=t.dataset.lang;ls("lang",S.lang);render();return;}
  if((t=e.target.closest("[data-cat]"))){var nc=t.dataset.cat;if(nc===S.cat)return;var ci=CATS.map(function(c){return c.id;}),d=ci.indexOf(nc)>=ci.indexOf(S.cat)?1:-1;S.cat=nc;document.querySelectorAll("[data-cat]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.cat===nc));});var first=catItems(nc)[0];var r=document.getElementById("rail");if(r){r.innerHTML=railItems();anim(r,[{opacity:0,transform:"translateX("+(d*30)+"px)"},{opacity:1,transform:"none"}],{duration:600,easing:EZ});}if(first)transitionTo(first.id,d);return;}

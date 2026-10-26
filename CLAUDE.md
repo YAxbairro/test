@@ -22,10 +22,14 @@ sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto
 - Tabelas: `mr_orders`, `mr_requests` (conta/garçom/água/gelo/talheres/guardanapos), `mr_items`, `mr_settings` (programa do dia, entregas),
   `mr_payments`, `mr_feedback`, `mr_delivery` (estas 3 só se leem com PIN via `mr_staff_data`). Fechar conta: `mr_pay` (fecha a mesa).
 - `mr_tables`: mesa aberta/fechada (`mr_set_table`). O servidor só aceita pedidos de mesas abertas e sem pausa. PIN muda-se com `mr_change_pin`.
-- Links: mesa `#mesa-NN`, entrega `#entrega`, equipa `#equipa`, garçom `#garcom` (ecrã de tarefas no telemóvel).
+- **Vários restaurantes**: cada um tem `rid` (Quintal = `quintal`, sem `?r=`; Churrasqueira BCL = `?r=bcl`). Todas as tabelas `mr_*` têm `rid`;
+  definições em `mr_settings` (id = rid), PIN em `mr_secrets` (id = rid; nunca escrever PINs neste ficheiro, o repositório é público). Todas as funções levam `p_rid`.
+  Restaurantes novos: menu em `mr_menu` (rid, cat, pos, data.img/créditos) + categorias em `mr_settings.data.cats`; opções `oneStation`, `pickupOn`, `minPP`.
+- Links: mesa `#mesa-NN`, entrega `#entrega`, levantar no balcão `#balcao`, equipa `#equipa`, garçom `#garcom`. Para outro restaurante: `?r=<rid>#...`.
+- As funções antigas (sem p_rid) ficaram sem permissão (revoke); apagá-las quando o Yanick aprovar o pedido de confirmação do Supabase.
 - Pedidos só entram por `mr_checkout` (o servidor calcula preços a partir de `mr_menu` + `mr_items`, recusa esgotados, mesa fechada e pausa).
   Pedidos ao garçom por `mr_request`. Estados por `mr_advance` (com estado esperado). Pagar por pessoa: `mr_pay_guest`. Confirmar telemóvel: `mr_ack`.
   Fotos: Edge Function `mr-upload` (precisa do PIN). Inserção anónima direta nas tabelas e no bucket está fechada.
-- Testes: scratchpad `web/*.js` (e2e, v2, v3, wt, real, aud) + `clean.sh` para limpar dados de teste.
+- Testes: scratchpad `web/*.js` (e2e, v2, v3, wt, real, aud, bcl) + `clean.sh` para limpar dados de teste (os dois restaurantes).
 - Não tocar em tabelas que não sejam `mr_*`. DELETE e SQL com vários comandos bloqueiam o MCP: usar 1 comando por chamada.
 - Fala em português de Cabo Verde/Portugal, respostas curtas e sinceras.
