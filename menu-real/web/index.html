@@ -8,8 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="vendor/qrcode-1.0.0.min.js"></script>
+<script>window.QRCode||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>')</script>
+<script src="vendor/supabase-2.45.4.min.js"></script>
+<script>window.supabase||document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>')</script>
 <meta name="theme-color" content="#e8e6e3">
 <meta name="description" content="Menu Real: vê o prato real antes de pedir e pede direto da mesa.">
 <style>
@@ -361,6 +363,7 @@ input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--bg)
 .sw[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
 .banner{font-size:13px;color:var(--muted);text-align:center}
 [hidden]{display:none!important}
+#offline{position:fixed;inset:0;z-index:90;background:rgba(10,12,16,.55);display:flex;align-items:center;justify-content:center;padding:16px}.offbox{background:var(--surface);border-radius:20px;padding:22px;max-width:420px;display:grid;gap:12px}.offbox b{font-size:18px}.offbox p{margin:0;color:var(--muted)}
 button.qr{font:inherit;cursor:pointer;text-align:center}button.qr:active{transform:scale(.98)}
 .qrbig{display:flex;justify-content:center;padding:8px;background:#fff;border-radius:16px}.qrbig img,.qrbig canvas{width:240px;height:240px}
 .staffbar{display:grid;gap:8px;margin-bottom:12px}.soundbar{border:0;border-radius:14px;background:#f6d36b;color:#3a2f00;font-weight:700;padding:12px 14px;text-align:left}
@@ -619,6 +622,7 @@ function thumbHtml(m,big){var u=photo(m.id);if(u)return '<img src="'+esc(u)+'" a
 var db=null, sample=null, assets=null, downloads=null, subs={};
 var SB_URL="https://ktdbdhsjznajrlklmmri.supabase.co", SB_KEY="sb_publishable_J625B8RTQGC9U5xtGs7MXg_DqIvS9Pq";
 var sb=(window.supabase&&!(window.claude&&window.claude.use))?window.supabase.createClient(SB_URL,SB_KEY):null;
+var OFFLINE=!sb&&!(window.claude&&window.claude.use);
 function normItems(a){return (Array.isArray(a)?a:[]).map(function(it){it=it||{};return {id:String(it.id||""),name:String(it.name||""),qty:Math.max(0,parseInt(it.qty,10)||0),unit:Math.max(0,+it.unit||0),opts:(Array.isArray(it.opts)?it.opts:[]).map(String),note:String(it.note||"")};});}
 function rowOrder(r){return {payMethod:r.pay_method,id:r.id,mesa:String(r.mesa||""),guest:String(r.guest||""),gid:String(r.gid||""),station:r.station==="bar"?"bar":"cozinha",items:normItems(r.items),total:+r.total||0,status:String(r.status||""),batch:String(r.batch||""),paid:!!r.paid,createdAt:+r.created_at,updatedAt:+r.updated_at};}
 var RQ_TYPES=["conta","garcom","agua","gelo","talheres","guardanapos"];
@@ -1119,7 +1123,7 @@ function shrink(file){return new Promise(function(res){var img=new Image(),u=URL
 
 /* ---------- Equipa: PIN ---------- */
 function pinErr(e){var m=e&&(e.message||"");if(/pin/i.test(m)){S.pin="";ls("pin","");toast("PIN errado ou expirado. Volta a entrar.");pinSheet(S.view);}else toast("Não foi possível guardar. Verifica a ligação.");}
-function pinSheet(next){
+function pinSheet(next){if(OFFLINE){offlineNotice();return;}
  sheet("Acesso da equipa",function(b){
   b.innerHTML='<p class="muted">Cozinha, Sala e Gestão são só para a equipa. Escreve o PIN.</p><form id="pinF" class="row"><input type="text" inputmode="numeric" autocomplete="off" id="pinIn" maxlength="8" placeholder="PIN" style="font-size:22px;letter-spacing:.3em;text-align:center"><button type="submit" class="primary" style="flex:none"><span>Entrar</span></button></form><p class="fine" id="pinMsg"></p>';
   b.querySelector("#pinF").onsubmit=function(e){e.preventDefault();var v=b.querySelector("#pinIn").value.trim();if(!v)return;
@@ -1362,6 +1366,8 @@ function qrSheet(id){var url=APP_URL+"#mesa-"+id;
   b.querySelector("#qCopy").onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){toast("✓ Link copiado");}).catch(function(){prompt("Copia o link:",url);});};
   var sh=b.querySelector("#qShare");if(sh)sh.onclick=function(){navigator.share({title:"Mesa "+id+" · "+(S.settings.name||"Menu Real"),url:url}).catch(function(){});};
  });}
+function offlineNotice(){var d=document.getElementById("offline");if(d)return;d=document.createElement("div");d.id="offline";d.setAttribute("role","alert");
+ d.innerHTML='<div class="offbox"><b>Sem ligação ao servidor</b><p>A página não conseguiu ligar-se ao Menu Real. Verifica a internet e tenta outra vez. Se estiveres numa rede do trabalho, experimenta os dados móveis.</p><button type="button" class="primary" onclick="location.reload()"><span>Tentar outra vez</span><span>↻</span></button></div>';document.body.appendChild(d);}
 /* ---------- Eventos ---------- */
 document.addEventListener("click",function(e){
  var t;
@@ -1434,6 +1440,7 @@ applyOverrides();
 loadCart();
 render();
 if(sb)sbStart();
+if(OFFLINE)offlineNotice();
 if(window.claude&&window.claude.use){
  window.claude.use("db").then(function(d){if(d){db=d;subscribe();render();}});
  window.claude.use("sample").then(function(s){sample=s;});
