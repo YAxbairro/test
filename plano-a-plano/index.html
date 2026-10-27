@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Plano a Plano</title>
+  <meta name="description" content="Pré-produção de videoclipes: realizador com IA, storyboard e modo de rodagem.">
+  <meta name="theme-color" content="#0f1115">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Ecrã de projetos -->
+  <section id="home" class="screen">
+    <header class="home-head">
+      <div class="logo">🎬 <span>Plano a Plano</span></div>
+      <button class="icon-btn" data-action="settings" title="Definições">⚙️</button>
+    </header>
+    <div class="home-body">
+      <p class="muted">Pré-produção de videoclipes. Falas com o realizador, ele cria o storyboard e no set tens tudo plano a plano.</p>
+      <button class="btn primary big" data-action="new-project">＋ Novo videoclipe</button>
+      <div id="project-list" class="project-list"></div>
+      <label class="btn ghost small import-btn">Importar projeto (.json)
+        <input type="file" id="import-file" accept=".json,application/json" hidden>
+      </label>
+    </div>
+  </section>
+
+  <!-- Ecrã de projeto -->
+  <section id="project" class="screen hidden">
+    <header class="top">
+      <button class="icon-btn" data-action="home" title="Projetos">‹</button>
+      <input id="project-name" class="project-name" aria-label="Nome do projeto">
+      <div id="queue-status" class="queue-status hidden"></div>
+      <button class="icon-btn" data-action="settings" title="Definições">⚙️</button>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button data-tab="chat" class="tab-chat">🎬<span>Realizador</span></button>
+      <button data-tab="board">🖼️<span>Storyboard</span></button>
+      <button data-tab="prod">📋<span>Produção</span></button>
+      <button data-tab="set">🎥<span>Rodagem</span></button>
+    </nav>
+
+    <main class="workspace">
+      <!-- Chat do realizador -->
+      <aside id="panel-chat" class="panel chat-panel">
+        <div class="chat-head">
+          <strong>🎬 Realizador</strong>
+          <span id="provider-badge" class="badge"></span>
+        </div>
+        <div id="chat-log" class="chat-log"></div>
+        <div id="chat-chips" class="chips"></div>
+        <form id="chat-form" class="composer">
+          <label class="icon-btn attach" title="Carregar música">🎵
+            <input type="file" id="audio-file" accept="audio/*" hidden>
+          </label>
+          <textarea id="chat-input" rows="1" placeholder="Escreve ao realizador… (cola aqui a letra)"></textarea>
+          <button class="btn primary" type="submit" id="chat-send">➤</button>
+        </form>
+      </aside>
+
+      <section id="panel-board" class="panel main-panel"></section>
+      <section id="panel-prod" class="panel main-panel"></section>
+      <section id="panel-set" class="panel main-panel"></section>
+    </main>
+  </section>
+
+  <!-- Modal genérico -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="icon-btn modal-close" data-action="close-modal" title="Fechar">✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <audio id="player" preload="auto"></audio>
+
+  <script src="js/db.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
