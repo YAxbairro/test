@@ -30,6 +30,8 @@ sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto
 - Pedidos só entram por `mr_checkout` (o servidor calcula preços a partir de `mr_menu` + `mr_items`, recusa esgotados, mesa fechada e pausa).
   Pedidos ao garçom por `mr_request`. Estados por `mr_advance` (com estado esperado). Pagar por pessoa: `mr_pay_guest`. Confirmar telemóvel: `mr_ack`.
   Fotos: Edge Function `mr-upload` (precisa do PIN). Inserção anónima direta nas tabelas e no bucket está fechada.
+- IA: Edge Function `mr-ai` (Gemini, segredo `GEMINI_API_KEY` no Supabase): `nutri` (valor nutricional, precisa PIN) e `ask` (assistente).
+  Sem IA o site usa a tabela local (`nutriLocal`) e o `localAsk`. Fotos melhoradas no próprio telemóvel (`photoFlow`, sem custos).
 - Testes: scratchpad `web/*.js` (e2e, v2, v3, wt, real, aud, bcl) + `clean.sh` para limpar dados de teste (os dois restaurantes).
 - Não tocar em tabelas que não sejam `mr_*`. DELETE e SQL com vários comandos bloqueiam o MCP: usar 1 comando por chamada.
 - Fala em português de Cabo Verde/Portugal, respostas curtas e sinceras.
