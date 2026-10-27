@@ -14,7 +14,8 @@ sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto
 | GitHub | utilizador **YAxbairro** — EMAIL AINDA DESCONHECIDO (a API não mostra; perguntar ao Yanick e escrever aqui) |
 | Supabase | organização "yaxtechcv@gmail.com's Org" → **yaxtechcv@gmail.com** (plano grátis) |
 | Vercel | equipa "afroberd-gmailcom's projects" → **afroberd@gmail.com** (sem permissão para criar projetos) |
-| Canva, ElevenLabs, Higgsfield, Gemini | email não visível; ElevenLabs/Higgsfield/Gemini sem créditos |
+| Google AI Studio (Gemini do Menu Real) | **yanickdrs@gmail.com** — projeto `menu-real-gratis` (nível gratuito); os outros projetos estão em pré-pagamento sem saldo |
+| Canva, ElevenLabs, Higgsfield | email não visível; ElevenLabs/Higgsfield sem créditos |
 
 ## Projeto Menu Real
 - Código: `menu-real/` neste repositório, branch `claude/cabo-verde-delivery-app-1gfxg1`.
