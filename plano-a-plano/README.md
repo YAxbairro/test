@@ -25,6 +25,11 @@ Para passar um projeto do portátil para o telemóvel: ⚙️ → **Exportar pro
 
 > As imagens do Gemini não têm plano grátis. A opção existe nas opções avançadas para quem tiver faturação ativa: é a única que usa a imagem de referência da personagem para manter a mesma cara em todos os planos.
 
+## Testar já (um só ficheiro)
+
+`plano-a-plano.html` é a app inteira num só ficheiro: descarrega-o e abre-o no Chrome ou no Safari. O botão **👀 Ver exemplo** abre um videoclipe de exemplo completo.
+Para gerar de novo este ficheiro depois de mudares o código: `python3 build.py`.
+
 ## Correr localmente
 
 É uma app estática, sem build:

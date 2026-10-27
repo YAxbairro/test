@@ -777,6 +777,10 @@
         if (!AI.hasGemini() || !AI.settings().pollinationsKey) openSettings(SETUP_INTRO);
         return;
       }
+      case 'demo': {
+        const p = { ...newProjectData(), ...structuredClone(DEMO_PROJECT) };
+        await DB.saveProject(p); return openProject(p.id);
+      }
       case 'home': return goHome();
       case 'settings': return openSettings();
       case 'close-modal': return closeModal();

@@ -1,0 +1,2075 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Plano a Plano</title>
+  <meta name="description" content="Pré-produção de videoclipes: realizador com IA, storyboard e modo de rodagem.">
+  <meta name="theme-color" content="#0f1115">
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzBmMTExNSIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmYjAyMCIgc3Ryb2tlLXdpZHRoPSIyOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgICA8cmVjdCB4PSI5NiIgeT0iMTc2IiB3aWR0aD0iMzIwIiBoZWlnaHQ9IjIyMCIgcng9IjI0Ii8+CiAgICA8cGF0aCBkPSJNOTYgMTc2IEwxMzYgMTA0IEw0MTYgMTA0IEw0MTYgMTc2Ii8+CiAgPC9nPgogIDxwYXRoIGQ9Ik0xNzYgMTA0IEwxNDggMTc2IE0yNTYgMTA0IEwyMjggMTc2IE0zMzYgMTA0IEwzMDggMTc2IiBzdHJva2U9IiNmZmIwMjAiIHN0cm9rZS13aWR0aD0iMjIiLz4KICA8cGF0aCBkPSJNMjI2IDIzNiBMMzE2IDI4NiBMMjI2IDMzNiBaIiBmaWxsPSIjZmZiMDIwIi8+Cjwvc3ZnPgo=" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIgZmlsbD0iIzBmMTExNSIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmYjAyMCIgc3Ryb2tlLXdpZHRoPSIyOCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgICA8cmVjdCB4PSI5NiIgeT0iMTc2IiB3aWR0aD0iMzIwIiBoZWlnaHQ9IjIyMCIgcng9IjI0Ii8+CiAgICA8cGF0aCBkPSJNOTYgMTc2IEwxMzYgMTA0IEw0MTYgMTA0IEw0MTYgMTc2Ii8+CiAgPC9nPgogIDxwYXRoIGQ9Ik0xNzYgMTA0IEwxNDggMTc2IE0yNTYgMTA0IEwyMjggMTc2IE0zMzYgMTA0IEwzMDggMTc2IiBzdHJva2U9IiNmZmIwMjAiIHN0cm9rZS13aWR0aD0iMjIiLz4KICA8cGF0aCBkPSJNMjI2IDIzNiBMMzE2IDI4NiBMMjI2IDMzNiBaIiBmaWxsPSIjZmZiMDIwIi8+Cjwvc3ZnPgo=">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+:root {
+  --bg: #0f1115;
+  --bg2: #171a21;
+  --bg3: #1f232c;
+  --line: #2b303b;
+  --text: #e9ebef;
+  --muted: #8b93a3;
+  --accent: #ffb020;
+  --accent-ink: #1a1200;
+  --ok: #3ccf7a;
+  --danger: #ff5d5d;
+  --radius: 12px;
+  --tabs-h: 60px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+h2, h3, h4 { margin: 0 0 6px; line-height: 1.2; }
+a { color: var(--accent); }
+input, textarea, select {
+  font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 10px; width: 100%;
+}
+textarea { resize: vertical; }
+input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+/* botões */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font: inherit; font-weight: 600; color: var(--text); background: var(--bg3);
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { border-color: #444b5a; }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.ghost { background: transparent; }
+.btn.danger { color: var(--danger); }
+.btn.small { padding: 6px 10px; font-size: 13px; }
+.btn.big { padding: 14px 18px; font-size: 17px; width: 100%; }
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 40px; height: 40px; border-radius: 10px; border: 0; background: transparent;
+  color: var(--text); font-size: 20px; cursor: pointer;
+}
+.icon-btn:hover { background: var(--bg3); }
+.badge { font-size: 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; }
+
+/* ecrã inicial */
+.screen { height: 100%; }
+#home { max-width: 640px; margin: 0 auto; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); }
+.home-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.logo { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.home-body { display: flex; flex-direction: column; gap: 14px; }
+.project-list { display: flex; flex-direction: column; gap: 10px; }
+.project-card {
+  display: flex; gap: 12px; align-items: center; text-align: left; width: 100%;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 10px; color: var(--text); font: inherit; cursor: pointer;
+}
+.project-card:hover { border-color: #444b5a; }
+.project-card .thumb {
+  width: 96px; aspect-ratio: 16/9; border-radius: 8px; background: var(--bg3); flex: none;
+  display: grid; place-items: center; font-size: 26px; overflow: hidden;
+}
+.project-card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.project-card .info { display: flex; flex-direction: column; min-width: 0; }
+.project-card .info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty-home { text-align: center; padding: 30px 0; }
+.import-btn { align-self: center; }
+
+/* ecrã de projeto */
+#project { display: flex; flex-direction: column; height: 100dvh; }
+.top {
+  display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+  padding-top: max(6px, env(safe-area-inset-top)); border-bottom: 1px solid var(--line); background: var(--bg);
+}
+.top .icon-btn:first-child { font-size: 30px; }
+.project-name { flex: 1; min-width: 0; background: transparent; border-color: transparent; font-weight: 700; font-size: 16px; }
+.project-name:hover { border-color: var(--line); }
+.queue-status { font-size: 12px; color: var(--accent); white-space: nowrap; padding: 0 4px; animation: pulse 1.4s infinite; }
+@keyframes pulse { 50% { opacity: .5; } }
+
+.tabs {
+  order: 3; display: flex; border-top: 1px solid var(--line); background: var(--bg2);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tabs button {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; height: var(--tabs-h);
+  justify-content: center; background: transparent; border: 0; color: var(--muted); font: inherit; font-size: 18px; cursor: pointer;
+}
+.tabs button span { font-size: 11px; font-weight: 600; }
+.tabs button.active { color: var(--accent); }
+.workspace { flex: 1; min-height: 0; display: flex; }
+.panel { flex: 1; min-width: 0; overflow-y: auto; display: none; }
+.workspace.tab-chat #panel-chat,
+.workspace.tab-board #panel-board,
+.workspace.tab-prod #panel-prod,
+.workspace.tab-set #panel-set { display: flex; }
+.main-panel { flex-direction: column; padding: 14px; gap: 10px; }
+.main-panel > * { flex-shrink: 0; }
+
+/* chat */
+.chat-panel { flex-direction: column; overflow: hidden; background: var(--bg2); }
+.chat-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.chat-log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.msg { display: flex; flex-direction: column; max-width: 88%; }
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.bubble { padding: 9px 12px; border-radius: 14px; background: var(--bg3); overflow-wrap: anywhere; }
+.msg.user .bubble { background: #3a2f12; border: 1px solid #5a4614; }
+.msg.assistant .bubble { border-bottom-left-radius: 4px; }
+.msg.user .bubble { border-bottom-right-radius: 4px; }
+.bubble p { margin: 0 0 6px; } .bubble p:last-child { margin: 0; }
+.bubble ul { margin: 4px 0 6px; padding-left: 20px; }
+.attachment { font-size: 12px; color: var(--accent); margin-bottom: 4px; }
+.typing { display: flex; gap: 4px; padding: 12px 14px; }
+.typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: .2s; } .typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 50% { opacity: .25; } }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 12px 8px; }
+.chips:empty { display: none; }
+.chip {
+  font: inherit; font-size: 13px; color: var(--text); background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 99px; padding: 6px 12px; cursor: pointer;
+}
+.chip.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+.composer { display: flex; gap: 6px; align-items: flex-end; padding: 8px 10px; border-top: 1px solid var(--line); }
+.composer textarea { min-height: 40px; max-height: 160px; resize: none; border-radius: 20px; padding: 9px 14px; }
+.composer .btn { border-radius: 50%; width: 40px; height: 40px; padding: 0; }
+.attach { cursor: pointer; }
+
+/* storyboard */
+.board-head { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: flex-start; }
+.board-title p { margin: 0; }
+.board-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.board-actions select { width: auto; padding: 6px 8px; font-size: 13px; }
+.section-title { margin: 10px 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); grid-column: 1 / -1; }
+.shot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.shot-card {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; cursor: pointer;
+  display: flex; flex-direction: column;
+}
+.shot-card:hover { border-color: #4a5160; }
+.frame { position: relative; background: #e9e6df; overflow: hidden; width: 100%; }
+.frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.frame.big { border-radius: 10px; }
+.framing { width: 100%; height: 100%; display: block; }
+.framing .fig { fill: #9a958b; }
+.framing .hz { stroke: #bdb8ad; stroke-width: 1; }
+.framing .grid { stroke: #000; stroke-opacity: .08; stroke-width: .6; }
+.frame-busy {
+  position: absolute; inset: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center;
+  background: rgba(15, 17, 21, .6); color: #fff; font-size: 12px;
+}
+.stale { position: absolute; top: 6px; left: 6px; background: var(--accent); color: var(--accent-ink); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+.shot-meta { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.num { font-weight: 800; font-size: 15px; }
+.num.big { font-size: 22px; }
+.time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.play {
+  margin-left: auto; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--bg3); color: var(--text); cursor: pointer; font-size: 12px;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: 11px; background: var(--bg3); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; color: #c8ccd4; }
+.tag.size { background: #3a2f12; border-color: #5a4614; color: var(--accent); font-weight: 700; }
+.action { margin: 0; font-size: 14px; }
+.lyrics { margin: 0; font-size: 13px; font-style: italic; color: var(--muted); }
+
+.empty { text-align: center; margin: auto; max-width: 420px; display: flex; flex-direction: column; gap: 10px; align-items: center; padding: 30px 10px; }
+.empty-icon { font-size: 44px; }
+.spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,.25); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; }
+.spinner.big { width: 42px; height: 42px; border-width: 4px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* modal */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
+.modal-card {
+  position: relative; background: var(--bg2); width: 100%; max-width: 720px; max-height: 92dvh; overflow-y: auto;
+  border-radius: 16px 16px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+}
+.modal-close { position: absolute; top: 8px; right: 8px; }
+.shot-form, .settings { display: flex; flex-direction: column; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field span { font-size: 12px; color: var(--muted); font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.row-btns.end { justify-content: flex-end; }
+details summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+.key-row { display: flex; gap: 6px; }
+.card { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
+.settings .card { background: var(--bg); }
+
+/* produção */
+.prod { display: flex; flex-direction: column; gap: 12px; }
+.prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.checklist { list-style: none; margin: 6px 0; padding: 0; }
+.checklist li { display: flex; align-items: flex-start; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.checklist label { display: flex; gap: 8px; flex: 1; cursor: pointer; }
+.checklist input { width: 18px; height: 18px; flex: none; margin-top: 2px; accent-color: var(--accent); }
+.checklist input:checked + span { text-decoration: line-through; color: var(--muted); }
+.checklist .x { background: none; border: 0; color: var(--muted); cursor: pointer; }
+.add-item { display: flex; gap: 6px; }
+.add-item input { padding: 6px 8px; font-size: 13px; }
+.char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 8px; }
+.char { display: flex; gap: 10px; }
+.char > div:last-child { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.char textarea { font-size: 12px; }
+.char-img { position: relative; width: 90px; height: 90px; border-radius: 10px; background: var(--bg3); display: grid; place-items: center; font-size: 34px; overflow: hidden; flex: none; }
+.char-img img { width: 100%; height: 100%; object-fit: cover; }
+.brief { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 10px 0; }
+.brief dt { color: var(--muted); font-size: 13px; }
+.brief dd { margin: 0; }
+.structure { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+.structure td { padding: 4px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+.structure td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--muted); }
+.lyrics-full { white-space: pre-wrap; font: inherit; color: var(--muted); }
+.schedule { margin: 6px 0 0; padding-left: 20px; } .schedule li { padding: 3px 0; }
+
+/* rodagem */
+.set-head { position: sticky; top: -14px; background: var(--bg); padding: 4px 0 8px; z-index: 2; margin-top: -4px; }
+.progress { height: 8px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.progress div { height: 100%; background: var(--ok); transition: width .3s; }
+.set-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
+.toggle { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
+.set-card { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: grid; grid-template-columns: 1fr; }
+.set-card.done { opacity: .55; }
+.set-card.done .num::after { content: " ✅"; }
+.set-info { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.set-info .action { font-size: 16px; }
+.set-note { font-size: 14px; }
+.set-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.set-actions > .btn:last-child { margin-left: auto; padding: 12px 18px; }
+.takes { display: flex; align-items: center; gap: 6px; font-size: 14px; font-variant-numeric: tabular-nums; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(var(--tabs-h) + 16px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  background: #2a2f3a; color: var(--text); padding: 10px 16px; border-radius: 10px; z-index: 60;
+  max-width: calc(100% - 32px); box-shadow: 0 8px 30px rgba(0,0,0,.4); font-size: 14px;
+}
+.toast.error { background: #4a1f22; border: 1px solid #7a2f33; }
+
+/* computador: realizador sempre ao lado */
+@media (min-width: 1000px) {
+  .tabs { order: 0; border-top: 0; border-bottom: 1px solid var(--line); padding: 0 12px 0 392px; background: var(--bg); }
+  .tabs button { flex: none; flex-direction: row; gap: 6px; height: 44px; padding: 0 16px; font-size: 15px; border-bottom: 2px solid transparent; }
+  .tabs button span { font-size: 14px; }
+  .tabs button.active { border-bottom-color: var(--accent); }
+  .tabs .tab-chat { display: none; }
+  #panel-chat { display: flex !important; flex: none; width: 380px; border-right: 1px solid var(--line); }
+  .main-panel { padding: 18px 22px; }
+  .modal { align-items: center; }
+  .modal-card { border-radius: 16px; }
+  .toast { bottom: 24px; }
+  .set-card { grid-template-columns: minmax(280px, 42%) 1fr; }
+  .set-card .frame { height: 100%; }
+}
+
+@media (max-width: 420px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* impressão / PDF do storyboard */
+@media print {
+  body { background: #fff; color: #000; }
+  .top, .tabs, #panel-chat, .board-actions, .play, .stale, .toast, #home { display: none !important; }
+  #project { height: auto; display: block; }
+  .workspace, .panel { display: block !important; overflow: visible; }
+  #panel-prod, #panel-set { display: none !important; }
+  .main-panel { padding: 0; }
+  .shot-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .shot-card { break-inside: avoid; border-color: #bbb; background: #fff; }
+  .tag { background: #f2f2f2; border-color: #ccc; color: #000; }
+  .tag.size { background: #fff3d6; color: #000; }
+  .muted, .lyrics, .time { color: #555; }
+  .section-title { color: #000; }
+}
+.ok-badge { font-size: 11px; color: var(--ok); border: 1px solid currentColor; border-radius: 99px; padding: 1px 7px; margin-left: 4px; vertical-align: middle; }
+
+</style>
+</head>
+<body>
+  <!-- Ecrã de projetos -->
+  <section id="home" class="screen">
+    <header class="home-head">
+      <div class="logo">🎬 <span>Plano a Plano</span></div>
+      <button class="icon-btn" data-action="settings" title="Definições">⚙️</button>
+    </header>
+    <div class="home-body">
+      <p class="muted">Pré-produção de videoclipes. Falas com o realizador, ele cria o storyboard e no set tens tudo plano a plano.</p>
+      <button class="btn primary big" data-action="new-project">＋ Novo videoclipe</button>
+      <button class="btn big" data-action="demo">👀 Ver exemplo</button>
+      <div id="project-list" class="project-list"></div>
+      <label class="btn ghost small import-btn">Importar projeto (.json)
+        <input type="file" id="import-file" accept=".json,application/json" hidden>
+      </label>
+    </div>
+  </section>
+
+  <!-- Ecrã de projeto -->
+  <section id="project" class="screen hidden">
+    <header class="top">
+      <button class="icon-btn" data-action="home" title="Projetos">‹</button>
+      <input id="project-name" class="project-name" aria-label="Nome do projeto">
+      <div id="queue-status" class="queue-status hidden"></div>
+      <button class="icon-btn" data-action="settings" title="Definições">⚙️</button>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button data-tab="chat" class="tab-chat">🎬<span>Realizador</span></button>
+      <button data-tab="board">🖼️<span>Storyboard</span></button>
+      <button data-tab="prod">📋<span>Produção</span></button>
+      <button data-tab="set">🎥<span>Rodagem</span></button>
+    </nav>
+
+    <main class="workspace">
+      <!-- Chat do realizador -->
+      <aside id="panel-chat" class="panel chat-panel">
+        <div class="chat-head">
+          <strong>🎬 Realizador</strong>
+          <span id="provider-badge" class="badge"></span>
+        </div>
+        <div id="chat-log" class="chat-log"></div>
+        <div id="chat-chips" class="chips"></div>
+        <form id="chat-form" class="composer">
+          <label class="icon-btn attach" title="Carregar música">🎵
+            <input type="file" id="audio-file" accept="audio/*" hidden>
+          </label>
+          <textarea id="chat-input" rows="1" placeholder="Escreve ao realizador… (cola aqui a letra)"></textarea>
+          <button class="btn primary" type="submit" id="chat-send">➤</button>
+        </form>
+      </aside>
+
+      <section id="panel-board" class="panel main-panel"></section>
+      <section id="panel-prod" class="panel main-panel"></section>
+      <section id="panel-set" class="panel main-panel"></section>
+    </main>
+  </section>
+
+  <!-- Modal genérico -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="icon-btn modal-close" data-action="close-modal" title="Fechar">✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <audio id="player" preload="auto"></audio>
+
+  <script>
+// Armazenamento local (IndexedDB): projetos e ficheiros de áudio.
+// Tudo fica no dispositivo — funciona offline no set.
+const DB = (() => {
+  const NAME = 'plano-a-plano';
+  let dbp;
+
+  function open() {
+    if (dbp) return dbp;
+    dbp = new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error('sem IndexedDB'));
+      let req;
+      try { req = indexedDB.open(NAME, 1); } catch (e) { return reject(e); }
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        db.createObjectStore('projects', { keyPath: 'id' });
+        db.createObjectStore('audio');
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return dbp;
+  }
+
+  // Se o browser bloquear o IndexedDB (ex.: pré-visualização), usa memória e avisa.
+  const mem = { projects: new Map(), audio: new Map() };
+  let memoryOnly = false;
+  function memTx(store, fn) {
+    const m = mem[store];
+    const s = {
+      getAll: () => ({ result: [...m.values()].map(v => structuredClone(v)) }),
+      get: k => ({ result: m.has(k) ? (store === 'audio' ? m.get(k) : structuredClone(m.get(k))) : undefined }),
+      put: (v, k) => { m.set(k ?? v.id, store === 'audio' ? v : structuredClone(v)); return {}; },
+      delete: k => { m.delete(k); return {}; },
+    };
+    return Promise.resolve(fn(s).result);
+  }
+
+  async function tx(store, mode, fn) {
+    if (memoryOnly) return memTx(store, fn);
+    let db;
+    try { db = await open(); }
+    catch {
+      memoryOnly = true;
+      setTimeout(() => window.dispatchEvent(new CustomEvent('pap-notice', { detail: 'Este visualizador não deixa guardar dados: o projeto perde-se ao fechar. Abre o ficheiro no Chrome/Safari para guardar.' })), 500);
+      return memTx(store, fn);
+    }
+    return new Promise((resolve, reject) => {
+      const t = db.transaction(store, mode);
+      const req = fn(t.objectStore(store));
+      t.oncomplete = () => resolve(req && req.result);
+      t.onerror = () => reject(t.error);
+    });
+  }
+
+  return {
+    listProjects: () => tx('projects', 'readonly', s => s.getAll()),
+    getProject: id => tx('projects', 'readonly', s => s.get(id)),
+    saveProject: p => tx('projects', 'readwrite', s => s.put(p)),
+    deleteProject: id => tx('projects', 'readwrite', s => s.delete(id)),
+    getAudio: id => tx('audio', 'readonly', s => s.get(id)),
+    saveAudio: (id, blob) => tx('audio', 'readwrite', s => s.put(blob, id)),
+    deleteAudio: id => tx('audio', 'readwrite', s => s.delete(id)),
+  };
+})();
+
+</script>
+  <script>
+// Camada de IA: texto (Gemini ou Pollinations) e imagens (Gemini ou Pollinations).
+// A chave Gemini é guardada UMA vez no dispositivo e nunca mais é pedida.
+const AI = (() => {
+  const SETTINGS_KEY = 'pap-settings';
+  const DEFAULTS = {
+    geminiKey: '',
+    textModel: 'gemini-2.5-flash',
+    pollinationsKey: '',
+    pollinationsModel: 'zimage',
+    imageProvider: 'auto',          // auto | gemini | pollinations
+    imageModel: 'gemini-2.5-flash-image',
+  };
+  let geminiImageBlocked = false;   // as imagens Gemini não têm plano grátis: se falharem, deixamos de tentar nesta sessão
+
+  function settings() {
+    try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') }; }
+    catch { return { ...DEFAULTS }; }
+  }
+  function saveSettings(s) {
+    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...settings(), ...s })); } catch {}
+    geminiImageBlocked = false;
+  }
+  const hasGemini = () => !!settings().geminiKey;
+  const hasImages = () => !!(settings().pollinationsKey || settings().geminiKey);
+  const textProviderName = () => hasGemini() ? 'Gemini' : 'sem chave';
+
+  // ---------- utilitários ----------
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  function parseJSON(text) {
+    if (!text) throw new Error('Resposta vazia da IA.');
+    let t = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+    try { return JSON.parse(t); } catch {}
+    const a = t.indexOf('{'), b = t.lastIndexOf('}');
+    if (a >= 0 && b > a) return JSON.parse(t.slice(a, b + 1));
+    throw new Error('A IA não devolveu JSON válido.');
+  }
+
+  function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result).split(',')[1]);
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(blob);
+    });
+  }
+
+  // Reduz e converte para JPEG para não encher o dispositivo.
+  function compressImage(src, maxW = 1024) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const scale = Math.min(1, maxW / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * scale);
+        c.height = Math.round(img.height * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = () => reject(new Error('Não consegui ler a imagem gerada.'));
+      img.src = src;
+    });
+  }
+
+  // ---------- Gemini ----------
+  async function gemini(model, body, { retries = 1 } = {}) {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': settings().geminiKey },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.error?.message || `Erro ${res.status}`;
+      if ((res.status === 429 || res.status === 503) && retries > 0) {
+        await sleep(res.status === 429 ? 20000 : 5000);
+        return gemini(model, body, { retries: retries - 1 });
+      }
+      const err = new Error(friendlyGeminiError(res.status, msg));
+      err.status = res.status;
+      throw err;
+    }
+    return data;
+  }
+
+  function friendlyGeminiError(status, msg) {
+    if (status === 400 && /API key/i.test(msg)) return 'A chave Gemini é inválida. Verifica-a nas Definições.';
+    if (status === 403) return 'A chave Gemini não tem permissão para este modelo. ' + msg;
+    if (status === 429) return 'Limite do plano grátis do Gemini atingido. Espera um minuto e tenta outra vez.';
+    return 'Gemini: ' + msg;
+  }
+
+  const geminiText = data => (data.candidates?.[0]?.content?.parts || [])
+    .filter(p => p.text && !p.thought).map(p => p.text).join('');
+
+  // ---------- API pública: chat em JSON ----------
+  // messages: [{role:'user'|'assistant', text, audio?:{mime, base64}}]
+  async function chatJSON(system, messages) {
+    if (!hasGemini()) {
+      const err = new Error('Falta a chave Gemini (grátis). Abre as Definições ⚙️ e cola-a. Só tens de o fazer uma vez.');
+      err.needsKey = true;
+      throw err;
+    }
+    {
+      const contents = messages.map(m => {
+        const parts = [];
+        if (m.audio) parts.push({ inlineData: { mimeType: m.audio.mime, data: m.audio.base64 } });
+        parts.push({ text: m.text || '(sem texto)' });
+        return { role: m.role === 'assistant' ? 'model' : 'user', parts };
+      });
+      const data = await gemini(settings().textModel, {
+        systemInstruction: { parts: [{ text: system }] },
+        contents,
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.8, maxOutputTokens: 32768 },
+      });
+      return parseJSON(geminiText(data));
+    }
+  }
+
+  // ---------- Imagens ----------
+  const ASPECTS = {
+    '16:9': { w: 1024, h: 576, gemini: '16:9' },
+    '9:16': { w: 576, h: 1024, gemini: '9:16' },
+    '1:1': { w: 768, h: 768, gemini: '1:1' },
+    '4:5': { w: 768, h: 960, gemini: '4:5' },
+    '2.39:1': { w: 1176, h: 504, gemini: '21:9' },
+  };
+  const aspectOf = a => ASPECTS[a] || ASPECTS['16:9'];
+
+  async function geminiImage(prompt, aspect, refs = []) {
+    const parts = [];
+    if (refs.length) {
+      parts.push({ text: 'Reference image(s) of the character(s). Keep face, hair, body and clothing IDENTICAL in the new frame:' });
+      for (const r of refs) parts.push({ inlineData: { mimeType: 'image/jpeg', data: r.split(',')[1] } });
+    }
+    parts.push({ text: prompt });
+    const data = await gemini(settings().imageModel, {
+      contents: [{ role: 'user', parts }],
+      generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: aspectOf(aspect).gemini } },
+    });
+    const img = (data.candidates?.[0]?.content?.parts || []).find(p => p.inlineData);
+    if (!img) throw new Error('O Gemini não devolveu imagem (pode ter sido bloqueada pelos filtros). Ajusta o prompt.');
+    return compressImage(`data:${img.inlineData.mimeType};base64,${img.inlineData.data}`);
+  }
+
+  async function pollinationsImage(prompt, aspect, seed, retries = 2) {
+    const { w, h } = aspectOf(aspect);
+    const s = settings();
+    const url = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt.slice(0, 1800))}` +
+      `?model=${encodeURIComponent(s.pollinationsModel)}&width=${w}&height=${h}&seed=${seed}&nologo=true&key=${encodeURIComponent(s.pollinationsKey)}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      const msg = (await res.json().catch(() => ({}))).error?.message || '';
+      if (res.status === 401) throw new Error('A chave Pollinations é inválida. Verifica-a nas Definições.');
+      if (res.status === 402) throw new Error('Acabou o saldo grátis da Pollinations por hoje. ' + msg);
+      if (retries > 0 && (res.status === 429 || res.status >= 500)) { await sleep(8000); return pollinationsImage(prompt, aspect, seed, retries - 1); }
+      throw new Error(`Pollinations: erro ${res.status}. ${msg}`);
+    }
+    const blob = await res.blob();
+    const local = URL.createObjectURL(blob);
+    try { return await compressImage(local); } finally { URL.revokeObjectURL(local); }
+  }
+
+  // Devolve { image, provider }.
+  // auto: Pollinations se houver chave (grátis); senão Gemini (só funciona com faturação ativa).
+  async function image(prompt, { aspect, seed, refs } = {}) {
+    const s = settings();
+    const sd = seed ?? Math.floor(Math.random() * 1e6);
+    const usePollinations = s.pollinationsKey && (s.imageProvider === 'pollinations' || s.imageProvider === 'auto');
+    if (usePollinations) return { image: await pollinationsImage(prompt, aspect, sd), provider: 'pollinations' };
+    if (!s.geminiKey) {
+      const err = new Error('Para gerar imagens falta a chave Pollinations (grátis). Abre as Definições ⚙️.');
+      err.needsKey = true;
+      throw err;
+    }
+    if (geminiImageBlocked) throw new Error('As imagens Gemini não estão disponíveis com a tua chave (não têm plano grátis). Põe a chave Pollinations nas Definições ⚙️.');
+    try {
+      return { image: await geminiImage(prompt, aspect, refs || []), provider: 'gemini' };
+    } catch (e) {
+      if (e.status && e.status !== 429 && e.status !== 503) {
+        geminiImageBlocked = true;
+        throw new Error('As imagens Gemini precisam de faturação ativa na Google. Põe a chave Pollinations (grátis) nas Definições ⚙️ para gerar as imagens.');
+      }
+      throw e;
+    }
+  }
+
+  async function testKey(key) {
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1', { headers: { 'x-goog-api-key': key } });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      throw new Error(d.error?.message || `Erro ${res.status}`);
+    }
+    return true;
+  }
+
+  async function testPollinationsKey(key) {
+    const res = await fetch(`https://gen.pollinations.ai/account/balance?key=${encodeURIComponent(key)}`);
+    if (res.status === 401 || res.status === 403) throw new Error('chave recusada');
+    return true;
+  }
+
+  return { settings, saveSettings, hasGemini, hasImages, textProviderName, chatJSON, image, testKey, testPollinationsKey, blobToBase64, aspects: Object.keys(ASPECTS) };
+})();
+
+// ---------- Linguagem de cinema e prompts ----------
+const CINE = {
+  sizes: {
+    EWS: { pt: 'Plano Geral Extremo', short: 'PGE', en: 'extreme wide shot, tiny figure in vast environment' },
+    WS: { pt: 'Plano Geral', short: 'PG', en: 'wide shot, full body visible with environment' },
+    MWS: { pt: 'Plano Americano', short: 'PA', en: 'medium wide shot framed from the knees up' },
+    MS: { pt: 'Plano Médio', short: 'PM', en: 'medium shot framed from the waist up' },
+    MCU: { pt: 'Plano Próximo', short: 'PP', en: 'medium close-up framed from the chest up' },
+    CU: { pt: 'Grande Plano', short: 'GP', en: 'close-up on the face' },
+    ECU: { pt: 'Muito Grande Plano', short: 'MGP', en: 'extreme close-up detail' },
+    INSERT: { pt: 'Insert / Detalhe', short: 'INS', en: 'insert detail shot of an object' },
+    OTS: { pt: 'Sobre o Ombro', short: 'OTS', en: 'over-the-shoulder shot' },
+    POV: { pt: 'Plano Subjetivo', short: 'POV', en: 'point-of-view shot' },
+    TWO: { pt: 'Plano a Dois', short: '2S', en: 'two-shot, two people in frame' },
+  },
+  styles: {
+    realista: { pt: 'Realista (frame de filme)', en: 'cinematic film still, photorealistic, shot on cinema camera, anamorphic lens, natural skin texture, subtle film grain' },
+    esboco: { pt: 'Esboço de storyboard', en: 'hand-drawn storyboard panel, black and white pencil sketch, loose confident lines, grey marker shading, clean white background around the frame' },
+    ilustracao: { pt: 'Ilustração', en: 'cinematic digital illustration, graphic novel style, bold shapes, dramatic colour' },
+  },
+};
+
+const PROMPTS = {
+  BRIEF_FIELDS: 'song_title, artist, genre, bpm, duration, lyrics, structure [{"name","start","end","lyrics"}], concept, mood, visual_style, references, aspect_ratio (16:9 | 9:16 | 1:1 | 4:5 | 2.39:1), locations [{"name","description"}], cast [{"name","role","look"}], wardrobe, props, equipment, crew, shoot_days, budget, constraints, notes',
+
+  SHOT_FIELDS: 'id, section, start (m:ss), end (m:ss), lyrics, shot_size (EWS|WS|MWS|MS|MCU|CU|ECU|INSERT|OTS|POV|TWO), angle, movement, lens, action, location (nome de um local), characters (array de nomes), lighting, notes, frame_en',
+
+  director(brief, board) {
+    const edit = board ? `
+JÁ EXISTE UM STORYBOARD (resumo abaixo). Se ele pedir alterações, aplica-as em "edits":
+{"update":[{"id":"P05", ...só os campos alterados}], "add":[{"after":"P05", ...todos os campos do plano}], "delete":["P07"]}
+Campos de um plano: ${this.SHOT_FIELDS}.
+frame_en = descrição em INGLÊS, objetiva e visual, do que se VÊ no enquadramento (quem, pose, expressão, cenário, luz, ângulo). É usada para gerar a imagem, por isso sempre que mudares algo visível atualiza também o frame_en.
+Se ele pedir para refazer tudo do zero, põe "regenerate": true.
+
+STORYBOARD ATUAL:
+Personagens: ${(board.characters || []).map(c => `${c.name} (${c.look_en})`).join('; ') || '—'}
+Locais: ${(board.locations || []).map(l => l.name).join('; ') || '—'}
+${(board.shots || []).map(s => `${s.id} [${s.start}-${s.end}] ${s.section} | ${s.shot_size} | ${s.movement} | ${s.location} | ${s.action}`).join('\n')}
+` : '';
+    return `És o "Realizador": um realizador de videoclipes experiente que também faz de 1.º assistente de realização. Trabalhas com um videógrafo que fala português de Portugal (informal, trata-o por "tu"). Objetivo: reunir tudo o que é preciso para criar o storyboard completo e a lista de produção de um videoclipe, que ele vai replicar plano a plano no dia de rodagem.
+
+COMO TRABALHAS
+- PRIMEIRO extrai para o brief TUDO o que ele já disse (conceito, locais, pessoas e aspeto, roupa, equipamento, formato, tempos…). Nunca perguntes o que ele já respondeu.
+- Depois, no máximo 2 perguntas por mensagem, curtas e concretas, sobre o que falta e é essencial. Nunca um questionário enorme.
+- Quando ele não tem ideias, propõe 2–3 conceitos visuais concretos (locais, luz, movimento, cor) para ele escolher.
+- Pensa como quem filma com orçamento baixo: locais realistas, luz disponível, o equipamento que ele tem, dias de rodagem, segurança.
+- Vais preenchendo o brief. Essencial: a música (letra e/ou estrutura com tempos), conceito/história, estética, locais, quem aparece (e o aspeto físico), guarda-roupa, equipamento, formato, dias de rodagem.
+- Quando tiveres o essencial, põe "ready": true e diz-lhe que pode carregar em "Criar storyboard". Não esperes pela perfeição; o resto ajusta-se depois.
+- Se receberes um ficheiro de áudio: ouve-o, transcreve a letra, identifica a estrutura (intro, verso, pré-refrão, refrão, ponte, outro) com tempos m:ss, BPM aproximado, género e ambiente. Guarda tudo no brief, resume-lhe o que ouviste e sugere ideias que encaixem na música.
+- Se ele colar uma letra, guarda-a em brief.lyrics e estrutura-a.
+${edit}
+RESPONDE SEMPRE SÓ COM JSON VÁLIDO:
+{"reply":"mensagem para ele, em português de Portugal (podes usar **negrito** e listas com -)","brief":{...brief COMPLETO e atualizado...},"ready":true|false,"suggestions":["até 4 respostas curtas que ELE te pode dar, escritas na voz dele (ex.: \"Só a artista\", \"Propõe-me tu\")"],"edits":null,"regenerate":false}
+Campos do brief (usa só os que souberes): ${this.BRIEF_FIELDS}
+
+BRIEF ATUAL:
+${JSON.stringify(brief || {})}`;
+  },
+
+  generator(brief) {
+    return `És um realizador de videoclipes. A partir do brief, cria o storyboard completo e a lista de produção, prontos para filmar.
+
+REGRAS
+- Cobre a música TODA, do início ao fim, sem buracos nos tempos (start/end em m:ss). Sem tempos no brief, estima pela estrutura e pelo BPM.
+- Entre 18 e 40 planos (setups de câmara), conforme a duração. Varia tamanhos, ângulos e movimentos; mais energia nos refrões; inclui planos de performance (playback) e de narrativa/b-roll.
+- Tudo tem de ser realista de filmar com o equipamento, os locais e os dias do brief.
+- Textos em português de Portugal, EXCETO os campos *_en, que são em inglês.
+- characters[].look_en: aspeto físico FIXO em inglês (idade, género, cabelo, pele, constituição, roupa). Vai ser usado em todas as imagens para as personagens se manterem iguais.
+- locations[].look_en: descrição visual do local em inglês.
+- shots[].frame_en: em inglês, só o que se VÊ no enquadramento: quem (pelo nome da personagem), pose, expressão, cenário, ângulo, luz. Não descrevas movimento de câmara. 1–3 frases.
+- visual_style_en: palavras-chave em inglês da estética (paleta, luz, textura, época).
+- ids dos planos: P01, P02, ...
+- production.schedule: plano de rodagem agrupado por dia e local (ex.: "Dia 1 · Manhã · Rooftop — P01, P05, P12"), para filmar com o mínimo de mudanças de local.
+
+RESPONDE SÓ COM JSON VÁLIDO:
+{"title":"","logline":"","visual_style_en":"","aspect_ratio":"16:9","characters":[{"name":"","role":"","look_en":""}],"locations":[{"name":"","description":"","look_en":""}],"shots":[{"id":"P01","section":"","start":"0:00","end":"0:06","lyrics":"","shot_size":"WS","angle":"","movement":"","lens":"","action":"","location":"","characters":[],"lighting":"","notes":"","frame_en":""}],"production":{"equipment":[],"props":[],"wardrobe":[],"cast":[],"crew":[],"locations":[],"schedule":[],"notes":[]}}
+
+BRIEF:
+${JSON.stringify(brief || {})}`;
+  },
+
+  // O prompt da imagem é construído a partir dos MESMOS campos que vês no cartão do plano.
+  image(shot, board, style) {
+    const clean = t => String(t || '').trim().replace(/[\s.]+$/, '');
+    const size = CINE.sizes[shot.shot_size]?.en || shot.shot_size || '';
+    const loc = (board.locations || []).find(l => l.name === shot.location);
+    const chars = (board.characters || []).filter(c => (shot.characters || []).includes(c.name));
+    const look = c => clean(c.look_en).toLowerCase().startsWith(c.name.toLowerCase()) ? clean(c.look_en) : `${c.name} is ${clean(c.look_en)}`;
+    return [
+      CINE.styles[style]?.en || CINE.styles.realista.en,
+      size,
+      clean(shot.frame_en || shot.action),
+      chars.length ? 'Characters: ' + chars.map(look).join('; ') : '',
+      loc?.look_en ? 'Location: ' + clean(loc.look_en) : '',
+      board.visual_style_en ? 'Look: ' + clean(board.visual_style_en) : '',
+      'no text, no captions, no watermark',
+    ].filter(Boolean).join('. ');
+  },
+
+  characterRef(c, board, style) {
+    return [
+      CINE.styles[style]?.en || CINE.styles.realista.en,
+      `character reference portrait, medium shot, front facing, neutral background: ${c.look_en}`,
+      board.visual_style_en ? 'Look: ' + board.visual_style_en : '',
+      'no text, no watermark',
+    ].filter(Boolean).join('. ');
+  },
+};
+
+</script>
+  <script>
+// Projeto de exemplo para ver a app a funcionar antes de configurar as chaves.
+const DEMO_PROJECT = {
+ "name": "Exemplo · Luzes da Cidade — MAYA",
+ "brief": {
+  "song_title": "Luzes da Cidade",
+  "artist": "MAYA",
+  "genre": "R&B/pop",
+  "bpm": 90,
+  "duration": "2:40",
+  "structure": [
+   {
+    "name": "Intro",
+    "start": "0:00",
+    "end": "0:12"
+   },
+   {
+    "name": "Verso 1",
+    "start": "0:12",
+    "end": "0:40",
+    "lyrics": "Ando sozinha pelas ruas de Lisboa"
+   },
+   {
+    "name": "Refrão",
+    "start": "0:40",
+    "end": "1:05",
+    "lyrics": "Luzes da cidade, levam-me contigo"
+   }
+  ],
+  "concept": "MAYA passeia sozinha por Lisboa à noite e acaba a dançar no Cais do Sodré ao nascer do sol.",
+  "mood": "melancólico que vira libertação",
+  "visual_style": "néon quente, luz de rua, grão de película",
+  "aspect_ratio": "16:9",
+  "locations": [
+   {
+    "name": "Alfama",
+    "description": "ruas estreitas"
+   },
+   {
+    "name": "Miradouro",
+    "description": "Sra. do Monte"
+   },
+   {
+    "name": "Cais do Sodré",
+    "description": "rio ao nascer do sol"
+   }
+  ],
+  "cast": [
+   {
+    "name": "MAYA",
+    "role": "artista",
+    "look": "24 anos, cabelo encaracolado escuro, casaco de cabedal bordeaux"
+   }
+  ],
+  "equipment": "Sony FX3, gimbal, 35mm, 85mm, 2 painéis LED",
+  "shoot_days": "1 (noite + madrugada)"
+ },
+ "ready": true,
+ "board": {
+  "title": "Luzes da Cidade",
+  "logline": "Uma noite sozinha em Lisboa que termina em libertação ao nascer do sol.",
+  "visual_style_en": "warm sodium streetlights, teal shadows, 35mm film grain, shallow depth of field",
+  "characters": [
+   {
+    "name": "MAYA",
+    "role": "Artista",
+    "look_en": "MAYA, a 24-year-old woman with dark curly shoulder-length hair, warm brown skin, burgundy leather jacket, black top, gold hoops",
+    "ref": null
+   }
+  ],
+  "locations": [
+   {
+    "name": "Alfama",
+    "description": "Ruas estreitas e escadinhas",
+    "look_en": "narrow cobblestone streets, azulejo walls, yellow street lamps"
+   },
+   {
+    "name": "Miradouro",
+    "description": "Miradouro da Senhora do Monte",
+    "look_en": "stone viewpoint overlooking Lisbon"
+   },
+   {
+    "name": "Elétrico 28",
+    "description": "Interior do elétrico",
+    "look_en": "vintage wooden tram interior"
+   },
+   {
+    "name": "Cais do Sodré",
+    "description": "Cais junto ao rio",
+    "look_en": "riverside quay, Tagus river, 25 de Abril bridge"
+   }
+  ],
+  "shots": [
+   {
+    "id": "P01",
+    "section": "Intro",
+    "start": "0:00",
+    "end": "0:06",
+    "lyrics": "",
+    "shot_size": "EWS",
+    "angle": "Picado",
+    "movement": "Estático (tripé)",
+    "lens": "35mm",
+    "action": "Lisboa à noite vista do miradouro, MAYA pequena de costas no muro.",
+    "location": "Miradouro",
+    "characters": [
+     "MAYA"
+    ],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "High angle extreme wide shot of Lisbon at night from a viewpoint, city lights and the river, MAYA small from behind leaning on the stone wall.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   },
+   {
+    "id": "P02",
+    "section": "Intro",
+    "start": "0:06",
+    "end": "0:12",
+    "lyrics": "",
+    "shot_size": "CU",
+    "angle": "Normal",
+    "movement": "Push-in lento (gimbal)",
+    "lens": "85mm",
+    "action": "MAYA vira-se para a câmara, olhar perdido.",
+    "location": "Miradouro",
+    "characters": [
+     "MAYA"
+    ],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "Close-up of MAYA turning towards camera, distant gaze, city bokeh behind her, warm streetlight on her face.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   },
+   {
+    "id": "P03",
+    "section": "Verso 1",
+    "start": "0:12",
+    "end": "0:20",
+    "lyrics": "Ando sozinha pelas ruas de Lisboa",
+    "shot_size": "WS",
+    "angle": "Normal",
+    "movement": "Travelling para trás (gimbal)",
+    "lens": "35mm",
+    "action": "MAYA desce uma rua de Alfama a cantar.",
+    "location": "Alfama",
+    "characters": [
+     "MAYA"
+    ],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "Wide shot of MAYA walking down a narrow cobblestone street in Alfama at night, singing, yellow streetlamps, laundry lines above.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   },
+   {
+    "id": "P04",
+    "section": "Verso 1",
+    "start": "0:20",
+    "end": "0:28",
+    "lyrics": "as luzes acendem",
+    "shot_size": "INSERT",
+    "angle": "Normal",
+    "movement": "Estático",
+    "lens": "85mm",
+    "action": "Candeeiro de rua a acender.",
+    "location": "Alfama",
+    "characters": [],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "Insert detail of an old Lisbon street lamp flickering on against dark blue sky.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   },
+   {
+    "id": "P05",
+    "section": "Verso 1",
+    "start": "0:28",
+    "end": "0:40",
+    "lyrics": "mas ninguém me vê",
+    "shot_size": "MS",
+    "angle": "Contrapicado",
+    "movement": "Orbital lento (gimbal)",
+    "lens": "35mm",
+    "action": "MAYA canta encostada a uma parede de azulejos.",
+    "location": "Alfama",
+    "characters": [
+     "MAYA"
+    ],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "Low angle medium shot of MAYA singing against a blue azulejo tiled wall, LED side light.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   },
+   {
+    "id": "P06",
+    "section": "Refrão",
+    "start": "0:40",
+    "end": "0:52",
+    "lyrics": "Luzes da cidade, levam-me contigo",
+    "shot_size": "MCU",
+    "angle": "Normal",
+    "movement": "Handheld com energia",
+    "lens": "35mm",
+    "action": "Playback do refrão no elétrico 28, luzes a passar.",
+    "location": "Elétrico 28",
+    "characters": [
+     "MAYA"
+    ],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "Medium close-up of MAYA singing inside a vintage yellow Lisbon tram at night, city lights streaking past the window.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   },
+   {
+    "id": "P07",
+    "section": "Refrão",
+    "start": "0:52",
+    "end": "1:05",
+    "lyrics": "esta noite eu não quero voltar",
+    "shot_size": "TWO",
+    "angle": "Normal",
+    "movement": "Estático",
+    "lens": "35mm",
+    "action": "Reflexo da MAYA na janela do elétrico.",
+    "location": "Elétrico 28",
+    "characters": [
+     "MAYA"
+    ],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "MAYA and her reflection in the tram window, two figures in frame, neon reflections.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   },
+   {
+    "id": "P08",
+    "section": "Ponte",
+    "start": "2:00",
+    "end": "2:20",
+    "lyrics": "E se o sol nascer",
+    "shot_size": "WS",
+    "angle": "Normal",
+    "movement": "Grua manual / gimbal alto",
+    "lens": "35mm",
+    "action": "MAYA dança sozinha no cais ao nascer do sol.",
+    "location": "Cais do Sodré",
+    "characters": [
+     "MAYA"
+    ],
+    "lighting": "Luz de rua + LED lateral",
+    "notes": "",
+    "frame_en": "Wide shot of MAYA dancing alone on the riverside quay at sunrise, golden light, the Tagus river and bridge behind.",
+    "image": null,
+    "stale": false,
+    "done": false,
+    "takes": 0,
+    "setNote": "",
+    "prompt_override": null
+   }
+  ],
+  "production": {
+   "equipment": [
+    {
+     "text": "Sony FX3 + 2 baterias extra",
+     "done": false
+    },
+    {
+     "text": "Gimbal",
+     "done": false
+    },
+    {
+     "text": "35mm",
+     "done": false
+    },
+    {
+     "text": "85mm",
+     "done": false
+    },
+    {
+     "text": "2 painéis LED + baterias",
+     "done": false
+    },
+    {
+     "text": "Coluna bluetooth para playback",
+     "done": false
+    }
+   ],
+   "props": [
+    {
+     "text": "Auscultadores antigos",
+     "done": false
+    }
+   ],
+   "wardrobe": [
+    {
+     "text": "Casaco de cabedal bordeaux",
+     "done": false
+    },
+    {
+     "text": "Top preto",
+     "done": false
+    },
+    {
+     "text": "Argolas douradas",
+     "done": false
+    }
+   ],
+   "cast": [
+    {
+     "text": "MAYA",
+     "done": false
+    }
+   ],
+   "crew": [
+    {
+     "text": "Tu (câmara)",
+     "done": false
+    },
+    {
+     "text": "MAYA",
+     "done": false
+    }
+   ],
+   "locations": [
+    {
+     "text": "Alfama",
+     "done": false
+    },
+    {
+     "text": "Miradouro da Sra. do Monte",
+     "done": false
+    },
+    {
+     "text": "Elétrico 28 (pedir autorização Carris)",
+     "done": false
+    },
+    {
+     "text": "Cais do Sodré",
+     "done": false
+    }
+   ],
+   "notes": [
+    {
+     "text": "Ver hora do nascer do sol",
+     "done": false
+    }
+   ],
+   "schedule": [
+    "Dia 1 · 21h · Miradouro — P01, P02",
+    "Dia 1 · 22h · Alfama — P03, P04, P05",
+    "Dia 1 · 23h · Elétrico 28 — P06, P07",
+    "Dia 2 · 6h30 · Cais do Sodré — P08"
+   ]
+  },
+  "seed": 4242
+ },
+ "hasAudio": false,
+ "audioName": "",
+ "settings": {
+  "style": "realista",
+  "aspect": "16:9"
+ },
+ "chat": [
+  {
+   "role": "assistant",
+   "local": true,
+   "text": "Isto é um **projeto de exemplo** para veres como funciona. As imagens ainda não estão geradas: vês o desenho do enquadramento de cada plano. Põe as chaves nas Definições ⚙️ e carrega em **Gerar imagens** no Storyboard."
+  },
+  {
+   "role": "user",
+   "text": "Música \"Luzes da Cidade\" da MAYA, R&B, 90 BPM. Ela passeia à noite por Lisboa e acaba a dançar no Cais do Sodré ao nascer do sol. Tenho FX3, gimbal, 35 e 85mm."
+  },
+  {
+   "role": "assistant",
+   "text": "Ouvi a música: **90 BPM**, R&B com um refrão que abre muito. Já tenho o essencial:\n- conceito: noite sozinha em Lisboa → dança ao nascer do sol\n- 3 locais: Alfama, Miradouro, Cais do Sodré\n- FX3 + gimbal, 35 e 85mm\n\nSó uma pergunta: a MAYA canta em playback em todos os locais, ou só nos refrões?",
+   "suggestions": []
+  },
+  {
+   "role": "assistant",
+   "text": "✅ Storyboard criado: **8 planos**, 4 locais. Se quiseres mudar alguma coisa, diz-me aqui.",
+   "suggestions": []
+  }
+ ]
+};
+
+</script>
+  <script>
+// Plano a Plano — app principal.
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+  let P = null;              // projeto aberto
+  let tab = 'chat';
+  let pendingAudio = null;   // { mime, base64 } a enviar ao realizador na próxima mensagem
+  let thinking = false;
+  let generating = false;
+  let audioURL = null;
+  let setPendingOnly = false;
+  let wakeLock = null;
+  const busy = new Set();    // `${projectId}:${kind}:${id}` em geração
+
+  const isDesktop = () => matchMedia('(min-width: 1000px)').matches;
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  const pad = n => String(n).padStart(2, '0');
+
+  // ---------- utilitários ----------
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function md(s) {
+    const lines = esc(s).split('\n');
+    let html = '', inList = false;
+    for (const line of lines) {
+      const li = line.match(/^\s*[-•*]\s+(.*)/);
+      if (li) { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${li[1]}</li>`; continue; }
+      if (inList) { html += '</ul>'; inList = false; }
+      html += line.trim() ? `<p>${line}</p>` : '';
+    }
+    if (inList) html += '</ul>';
+    return html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+  }
+  function toSec(t) {
+    if (t == null || t === '') return null;
+    if (typeof t === 'number') return t;
+    const parts = String(t).trim().split(':').map(Number);
+    if (parts.some(isNaN)) return null;
+    return parts.reduce((acc, v) => acc * 60 + v, 0);
+  }
+  let toastTimer;
+  function toast(msg, type = '') {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.className = `toast ${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.add('hidden'), type === 'error' ? 7000 : 3500);
+  }
+  window.addEventListener('pap-notice', e => toast(e.detail));
+
+  let saveTimer;
+  function save(now = false) {
+    if (!P) return;
+    P.updatedAt = Date.now();
+    clearTimeout(saveTimer);
+    const p = P;
+    const run = () => DB.saveProject(p).catch(e => toast('Erro a guardar: ' + e.message, 'error'));
+    now ? run() : (saveTimer = setTimeout(run, 400));
+  }
+
+  // ---------- projetos ----------
+  function newProjectData() {
+    return {
+      id: uid(), name: 'Novo videoclipe', createdAt: Date.now(), updatedAt: Date.now(),
+      chat: [{ role: 'assistant', local: true, text: 'Olá! Sou o teu **realizador**. Vamos preparar este videoclipe juntos até teres todos os planos prontos para filmar.\n\nPara começar:\n- carrega a música no botão 🎵 (eu ouço-a e tiro a letra, a estrutura e os tempos), **ou** cola aqui a letra\n- e conta-me a ideia que tens, mesmo que seja vaga. Se não tiveres nenhuma, eu proponho.', suggestions: ['Ainda não tenho ideia nenhuma', 'Já tenho um conceito'] }],
+      brief: {}, ready: false, board: null, hasAudio: false, audioName: '',
+      settings: { style: 'realista', aspect: '16:9' },
+    };
+  }
+
+  async function renderHome() {
+    const list = (await DB.listProjects()).sort((a, b) => b.updatedAt - a.updatedAt);
+    $('#project-list').innerHTML = list.length ? list.map(p => {
+      const thumb = p.board?.shots?.find(s => s.image)?.image;
+      const n = p.board?.shots?.length || 0;
+      const done = p.board?.shots?.filter(s => s.done).length || 0;
+      return `<button class="project-card" data-open="${p.id}">
+        <div class="thumb">${thumb ? `<img src="${thumb}" alt="">` : '🎞️'}</div>
+        <div class="info"><strong>${esc(p.name)}</strong>
+          <span class="muted">${n ? `${n} planos · ${done} filmados` : 'Em preparação'} · ${new Date(p.updatedAt).toLocaleDateString('pt-PT')}</span></div>
+      </button>`;
+    }).join('') : '<p class="muted empty-home">Ainda não tens projetos. Cria o primeiro 👆</p>';
+  }
+
+  function showScreen(id) {
+    $$('.screen').forEach(s => s.classList.toggle('hidden', s.id !== id));
+  }
+
+  async function openProject(id) {
+    P = await DB.getProject(id);
+    if (!P) return toast('Projeto não encontrado.', 'error');
+    pendingAudio = null;
+    if (audioURL) { URL.revokeObjectURL(audioURL); audioURL = null; }
+    if (P.hasAudio) {
+      const blob = await DB.getAudio(P.id);
+      if (blob) { audioURL = URL.createObjectURL(blob); $('#player').src = audioURL; }
+    }
+    $('#project-name').value = P.name;
+    showScreen('project');
+    setTab(P.board ? 'board' : 'chat');
+  }
+
+  function goHome() {
+    $('#player').pause();
+    P = null;
+    showScreen('home');
+    renderHome();
+  }
+
+  // ---------- separadores ----------
+  function setTab(t) {
+    if (t === 'chat' && isDesktop()) t = 'board';
+    tab = t;
+    $$('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    $('.workspace').className = `workspace tab-${tab}`;
+    render();
+  }
+
+  function render() {
+    if (!P) return;
+    renderChat();
+    if (tab === 'board' || isDesktop()) renderBoard();
+    if (tab === 'prod') renderProd();
+    if (tab === 'set') renderSet();
+    updateQueueStatus();
+  }
+
+  // ---------- chat do realizador ----------
+  function renderChat() {
+    $('#provider-badge').textContent = AI.textProviderName();
+    const log = $('#chat-log');
+    log.innerHTML = P.chat.map(m => `
+      <div class="msg ${m.role}">
+        ${m.audio ? `<div class="attachment">🎵 ${esc(m.audioName || 'música')}</div>` : ''}
+        <div class="bubble">${m.role === 'assistant' ? md(m.text) : esc(m.text).replace(/\n/g, '<br>')}</div>
+      </div>`).join('') + (thinking ? '<div class="msg assistant"><div class="bubble typing"><span></span><span></span><span></span></div></div>' : '');
+    log.scrollTop = log.scrollHeight;
+
+    const last = [...P.chat].reverse().find(m => m.role === 'assistant');
+    const chips = [];
+    if (!thinking && last) {
+      (last.suggestions || []).slice(0, 4).forEach(s => chips.push(`<button class="chip" data-chip="${esc(s)}">${esc(s)}</button>`));
+      const hasMaterial = P.brief && (P.brief.lyrics || P.brief.concept || P.brief.structure);
+      if (!P.board && (P.ready || hasMaterial)) chips.push(`<button class="chip accent" data-action="generate">🎬 Criar storyboard</button>`);
+      if (P.board && last.regenerate) chips.push(`<button class="chip accent" data-action="regenerate">🔁 Refazer storyboard</button>`);
+    }
+    $('#chat-chips').innerHTML = chips.join('');
+    $('#chat-send').disabled = thinking;
+  }
+
+  async function sendMessage(text) {
+    text = (text || '').trim();
+    if ((!text && !pendingAudio) || thinking || !P) return;
+    const msg = { role: 'user', text: text || 'Carreguei a música. Ouve-a e diz-me o que achas.' };
+    const audio = pendingAudio;
+    if (audio) { msg.audio = true; msg.audioName = P.audioName; }
+    pendingAudio = null;
+    P.chat.push(msg);
+    thinking = true;
+    renderChat();
+    save();
+
+    try {
+      const history = P.chat.filter(m => !m.local).slice(-24).map(m => ({ role: m.role, text: m.text }));
+      if (audio) history[history.length - 1].audio = audio;
+      const r = await AI.chatJSON(PROMPTS.director(P.brief, P.board), history);
+      if (r.brief && typeof r.brief === 'object') {
+        P.brief = { ...P.brief, ...r.brief };
+        if (AI.aspects.includes(P.brief.aspect_ratio) && !P.board) P.settings.aspect = P.brief.aspect_ratio;
+        if (P.name === 'Novo videoclipe' && P.brief.song_title) {
+          P.name = P.brief.song_title + (P.brief.artist ? ' — ' + P.brief.artist : '');
+          $('#project-name').value = P.name;
+        }
+      }
+      if (r.ready) P.ready = true;
+      let note = '';
+      if (r.edits && P.board) note = applyEdits(r.edits);
+      P.chat.push({ role: 'assistant', text: (r.reply || '…') + (note ? `\n\n*${note}*` : ''), suggestions: r.suggestions || [], regenerate: !!r.regenerate });
+    } catch (e) {
+      P.chat.push({ role: 'assistant', local: true, text: '⚠️ ' + e.message });
+      if (audio) pendingAudio = audio; // para poder tentar outra vez
+      if (e.needsKey) openSettings(SETUP_INTRO);
+    } finally {
+      thinking = false;
+      save(true);
+      render();
+    }
+  }
+
+  async function handleAudio(file) {
+    if (!file || !P) return;
+    if (file.size > 18 * 1024 * 1024) {
+      toast('O ficheiro tem mais de 18 MB. Exporta em MP3 (128–192 kbps) e tenta outra vez.', 'error');
+      return;
+    }
+    await DB.saveAudio(P.id, file);
+    P.hasAudio = true;
+    P.audioName = file.name;
+    if (audioURL) URL.revokeObjectURL(audioURL);
+    audioURL = URL.createObjectURL(file);
+    $('#player').src = audioURL;
+    save(true);
+    if (!AI.hasGemini()) {
+      P.chat.push({ role: 'assistant', local: true, text: `🎵 Guardei **${file.name}**. Já dá para ouvir cada plano no storyboard e no set.\n\nPara eu **ouvir** a música e tirar a letra e os tempos sozinho, precisas da chave Gemini (grátis) nas Definições ⚙️. Entretanto cola aqui a letra.` });
+      render();
+      return;
+    }
+    pendingAudio = { mime: file.type || 'audio/mpeg', base64: await AI.blobToBase64(file) };
+    sendMessage($('#chat-input').value);
+    $('#chat-input').value = '';
+  }
+
+  // ---------- storyboard: geração e edição ----------
+  const SHOT_KEYS = ['section', 'start', 'end', 'lyrics', 'shot_size', 'angle', 'movement', 'lens', 'action', 'location', 'characters', 'lighting', 'notes', 'frame_en'];
+  const VISUAL_KEYS = ['frame_en', 'shot_size', 'characters', 'location'];
+
+  function nextShotId() {
+    const max = Math.max(0, ...P.board.shots.map(s => parseInt(String(s.id).replace(/\D/g, '')) || 0));
+    return 'P' + pad(max + 1);
+  }
+
+  function normShot(s, id) {
+    const shot = { id, image: null, stale: false, done: false, takes: 0, setNote: '', prompt_override: null };
+    for (const k of SHOT_KEYS) shot[k] = s[k] ?? (k === 'characters' ? [] : '');
+    if (typeof shot.characters === 'string') shot.characters = shot.characters.split(',').map(x => x.trim()).filter(Boolean);
+    shot.shot_size = String(shot.shot_size || 'MS').toUpperCase();
+    return shot;
+  }
+
+  function normBoard(r) {
+    const items = arr => (Array.isArray(arr) ? arr : []).map(x => ({ text: typeof x === 'string' ? x : (x.name || x.text || JSON.stringify(x)), done: false }));
+    const prod = r.production || {};
+    const seen = new Set();
+    return {
+      title: r.title || P.name, logline: r.logline || '', visual_style_en: r.visual_style_en || '',
+      characters: (r.characters || []).map(c => ({ name: c.name || 'Personagem', role: c.role || '', look_en: c.look_en || '', ref: null })),
+      locations: (r.locations || []).map(l => ({ name: l.name || 'Local', description: l.description || '', look_en: l.look_en || '' })),
+      shots: (r.shots || []).map((s, i) => {
+        let id = s.id || 'P' + pad(i + 1);
+        if (seen.has(id)) id = 'P' + pad(i + 1) + 'b';
+        seen.add(id);
+        return normShot(s, id);
+      }),
+      production: {
+        equipment: items(prod.equipment), props: items(prod.props), wardrobe: items(prod.wardrobe), cast: items(prod.cast),
+        crew: items(prod.crew), locations: items(prod.locations), notes: items(prod.notes),
+        schedule: (prod.schedule || []).map(x => typeof x === 'string' ? x : JSON.stringify(x)),
+      },
+      seed: Math.floor(Math.random() * 1e6),
+    };
+  }
+
+  async function generateBoard(force = false) {
+    if (!P || generating) return;
+    if (P.board && !force) return setTab('board');
+    if (P.board && !confirm('Refazer o storyboard do zero? Os planos e imagens atuais são substituídos.')) return;
+    generating = true;
+    setTab('board');
+    try {
+      const r = await AI.chatJSON(PROMPTS.generator(P.brief), [{ role: 'user', text: 'Cria agora o storyboard completo e a lista de produção.' }]);
+      const board = normBoard(r);
+      if (!board.shots.length) throw new Error('A IA não devolveu planos. Tenta outra vez.');
+      if (AI.aspects.includes(r.aspect_ratio)) P.settings.aspect = r.aspect_ratio;
+      P.board = board;
+      P.chat.push({ role: 'assistant', text: `✅ Storyboard criado: **${board.shots.length} planos**, ${board.locations.length} locais. Estou a gerar as imagens de cada plano.\n\nSe quiseres mudar alguma coisa, diz-me aqui (ex.: *"o P05 em contrapicado com gimbal"* ou *"não tenho drone"*) e eu atualizo os planos e as imagens.`, suggestions: [] });
+      save(true);
+      generating = false;
+      render();
+      board.shots.forEach(s => enqueue('shot', s.id));
+    } catch (e) {
+      toast(e.message, 'error');
+    } finally {
+      generating = false;
+      render();
+    }
+  }
+
+  function applyEdits(edits) {
+    const shots = P.board.shots;
+    let changed = 0, added = 0, removed = 0;
+    for (const u of edits.update || []) {
+      const s = shots.find(x => x.id === u.id);
+      if (!s) continue;
+      const visual = VISUAL_KEYS.some(k => k in u);
+      for (const k of SHOT_KEYS) if (k in u) s[k] = u[k];
+      if (typeof s.characters === 'string') s.characters = s.characters.split(',').map(x => x.trim()).filter(Boolean);
+      s.shot_size = String(s.shot_size || 'MS').toUpperCase();
+      if (visual) { s.prompt_override = null; if (s.image) s.stale = true; enqueue('shot', s.id); }
+      changed++;
+    }
+    for (const a of edits.add || []) {
+      const shot = normShot(a, nextShotId());
+      const i = a.after ? shots.findIndex(x => x.id === a.after) : -1;
+      shots.splice(i >= 0 ? i + 1 : shots.length, 0, shot);
+      enqueue('shot', shot.id);
+      added++;
+    }
+    for (const id of edits.delete || []) {
+      const i = shots.findIndex(x => x.id === id);
+      if (i >= 0) { shots.splice(i, 1); removed++; }
+    }
+    const parts = [];
+    if (changed) parts.push(`${changed} plano(s) alterado(s)`);
+    if (added) parts.push(`${added} adicionado(s)`);
+    if (removed) parts.push(`${removed} removido(s)`);
+    return parts.length ? 'Storyboard atualizado: ' + parts.join(', ') + '.' : '';
+  }
+
+  // ---------- fila de imagens ----------
+  const Q = { items: [], running: false, total: 0, done: 0 };
+
+  function enqueue(kind, id, pid = P?.id) {
+    const key = `${pid}:${kind}:${id}`;
+    if (busy.has(key)) return;
+    busy.add(key);
+    Q.items.push({ pid, kind, id, key });
+    Q.total++;
+    updateQueueStatus();
+    runQueue();
+  }
+
+  async function runQueue() {
+    if (Q.running) return;
+    Q.running = true;
+    while (Q.items.length) {
+      const job = Q.items.shift();
+      refreshFrames();
+      try { await runJob(job); }
+      catch (e) {
+        toast(e.message, 'error');
+        if (e.needsKey || /Definições/.test(e.message)) {
+          // sem chave ou fornecedor indisponível: pára a fila em vez de repetir o mesmo erro
+          Q.items.forEach(j => busy.delete(j.key));
+          Q.done += Q.items.length;
+          Q.items = [];
+          if (e.needsKey) openSettings(SETUP_INTRO);
+        }
+      }
+      busy.delete(job.key);
+      Q.done++;
+      updateQueueStatus();
+      refreshFrames();
+    }
+    Q.running = false;
+    Q.total = Q.done = 0;
+    updateQueueStatus();
+  }
+
+  async function runJob(job) {
+    const proj = P && P.id === job.pid ? P : await DB.getProject(job.pid);
+    if (!proj?.board) return;
+    const b = proj.board, style = proj.settings.style, aspect = proj.settings.aspect;
+    if (job.kind === 'char') {
+      const c = b.characters.find(x => x.name === job.id);
+      if (!c) return;
+      const { image } = await AI.image(PROMPTS.characterRef(c, b, style), { aspect: '1:1', seed: b.seed });
+      c.ref = image;
+    } else {
+      const s = b.shots.find(x => x.id === job.id);
+      if (!s) return;
+      const prompt = s.prompt_override || PROMPTS.image(s, b, style);
+      const refs = b.characters.filter(c => c.ref && s.characters.includes(c.name)).map(c => c.ref);
+      const { image, provider } = await AI.image(prompt, { aspect, seed: s.seed ?? b.seed, refs });
+      s.image = image; s.stale = false; s.imageProvider = provider;
+    }
+    if (P && P.id === proj.id) { save(); } else { proj.updatedAt = Date.now(); await DB.saveProject(proj); }
+  }
+
+  function updateQueueStatus() {
+    const el = $('#queue-status');
+    if (!el) return;
+    if (Q.running || Q.items.length) {
+      el.classList.remove('hidden');
+      el.textContent = `🖼️ ${Math.min(Q.done + 1, Q.total)}/${Q.total}`;
+      el.title = 'A gerar imagens';
+    } else el.classList.add('hidden');
+  }
+
+  // Atualiza só as molduras (sem perder o scroll).
+  function refreshFrames() {
+    if (!P?.board) return;
+    if (tab === 'prod') return renderProd();
+    $$('[data-frame]').forEach(el => {
+      const s = P.board.shots.find(x => x.id === el.dataset.frame);
+      if (s) el.innerHTML = frameHTML(s);
+    });
+  }
+
+  // ---------- desenho de enquadramento (antes da imagem existir) ----------
+  function framingSVG(shot) {
+    const [aw, ah] = (P.settings.aspect === '2.39:1' ? '2.39:1' : P.settings.aspect).split(':').map(Number);
+    const W = 160, H = Math.round(W * ah / aw);
+    const scale = { EWS: 0.12, WS: 0.3, MWS: 0.55, MS: 0.8, TWO: 0.8, OTS: 0.95, MCU: 1.2, CU: 1.8, ECU: 3.2, POV: 0, INSERT: 0 }[shot.shot_size] ?? 0.8;
+    const horizon = Math.round(H * 0.62);
+    let body = '';
+    const fig = (cx, s) => {
+      const h = H * s * 2.2, head = h * 0.13, top = H - h * 0.95 + (s > 1 ? h * 0.18 : 0);
+      return `<circle cx="${cx}" cy="${top + head}" r="${head}" />
+        <path d="M${cx - head * 2.1} ${top + head * 2 + h} Q${cx - head * 2} ${top + head * 2.4} ${cx} ${top + head * 2.3} Q${cx + head * 2} ${top + head * 2.4} ${cx + head * 2.1} ${top + head * 2 + h} Z" />`;
+    };
+    if (shot.shot_size === 'INSERT') body = `<rect x="${W * 0.35}" y="${H * 0.35}" width="${W * 0.3}" height="${H * 0.3}" rx="4" />`;
+    else if (shot.shot_size === 'POV') body = `<path d="M${W * 0.3} ${H} L${W * 0.42} ${H * 0.7} L${W * 0.5} ${H * 0.72} L${W * 0.46} ${H} Z" /><path d="M${W * 0.7} ${H} L${W * 0.6} ${H * 0.72} L${W * 0.52} ${H * 0.74} L${W * 0.56} ${H} Z" />`;
+    else if (shot.shot_size === 'TWO') body = fig(W * 0.36, scale) + fig(W * 0.64, scale);
+    else if (shot.shot_size === 'OTS') body = `<g opacity=".5">${fig(W * 0.18, 1.3)}</g>` + fig(W * 0.62, 0.75);
+    else body = fig(W / 2, scale);
+    return `<svg viewBox="0 0 ${W} ${H}" class="framing" aria-hidden="true">
+      <line x1="0" y1="${horizon}" x2="${W}" y2="${horizon}" class="hz"/>
+      <g class="fig">${body}</g>
+      <line x1="${W / 3}" y1="0" x2="${W / 3}" y2="${H}" class="grid"/><line x1="${W * 2 / 3}" y1="0" x2="${W * 2 / 3}" y2="${H}" class="grid"/>
+      <line x1="0" y1="${H / 3}" x2="${W}" y2="${H / 3}" class="grid"/><line x1="0" y1="${H * 2 / 3}" x2="${W}" y2="${H * 2 / 3}" class="grid"/>
+    </svg>`;
+  }
+
+  function frameHTML(s) {
+    const isBusy = busy.has(`${P.id}:shot:${s.id}`);
+    return (s.image ? `<img src="${s.image}" alt="${esc(s.id)}" loading="lazy">` : framingSVG(s)) +
+      (isBusy ? '<div class="frame-busy"><span class="spinner"></span>a gerar…</div>' : '') +
+      (s.stale && !isBusy ? '<span class="stale">desatualizada</span>' : '');
+  }
+
+  const sizeLabel = s => CINE.sizes[s.shot_size]?.short || s.shot_size;
+  const sizeName = s => CINE.sizes[s.shot_size]?.pt || s.shot_size;
+  const aspectCSS = () => P.settings.aspect.replace(':', ' / ');
+
+  // ---------- separador Storyboard ----------
+  function renderBoard() {
+    const el = $('#panel-board');
+    if (generating) {
+      el.innerHTML = `<div class="empty"><span class="spinner big"></span><h3>A criar o storyboard…</h3><p class="muted">O realizador está a dividir a música em planos. Pode demorar até um minuto.</p></div>`;
+      return;
+    }
+    if (!P.board) {
+      el.innerHTML = `<div class="empty">
+        <div class="empty-icon">🎞️</div>
+        <h3>Ainda não há storyboard</h3>
+        <p class="muted">Fala com o realizador: carrega a música ou cola a letra e conta a ideia. Quando ele tiver o essencial, crias o storyboard.</p>
+        ${isDesktop() ? '' : '<button class="btn" data-tab-go="chat">🎬 Falar com o realizador</button>'}
+        <button class="btn primary" data-action="generate">Criar storyboard com o que já existe</button>
+      </div>`;
+      return;
+    }
+    const b = P.board;
+    const missing = b.shots.filter(s => !s.image || s.stale).length;
+    let html = `<div class="board-head">
+      <div class="board-title"><h2>${esc(b.title)}</h2><p class="muted">${esc(b.logline)}</p></div>
+      <div class="board-actions">
+        <select data-setting="style" title="Estilo das imagens">${Object.entries(CINE.styles).map(([k, v]) => `<option value="${k}" ${P.settings.style === k ? 'selected' : ''}>${v.pt}</option>`).join('')}</select>
+        <select data-setting="aspect" title="Formato">${AI.aspects.map(a => `<option ${P.settings.aspect === a ? 'selected' : ''}>${a}</option>`).join('')}</select>
+        ${missing ? `<button class="btn primary small" data-action="gen-missing">🖼️ Gerar ${missing} imagem(ns)</button>` : ''}
+        <button class="btn small" data-action="regen-all">🔄 Refazer todas as imagens</button>
+        <button class="btn small" data-action="print">🖨️ PDF</button>
+        <button class="btn ghost small" data-action="regenerate">🔁 Refazer storyboard</button>
+      </div>
+    </div>
+    <p class="muted small">${b.shots.length} planos · toca num plano para editar ou mudar a imagem${P.hasAudio ? ' · ▶ ouve o trecho da música' : ''}</p>`;
+    let section = null;
+    html += '<div class="shot-grid">';
+    for (const s of b.shots) {
+      if (s.section !== section) {
+        section = s.section;
+        html += `<h3 class="section-title">${esc(section || 'Sem secção')}</h3>`;
+      }
+      html += `<article class="shot-card" data-shot="${esc(s.id)}">
+        <div class="frame" data-frame="${esc(s.id)}" style="aspect-ratio:${aspectCSS()}">${frameHTML(s)}</div>
+        <div class="shot-meta">
+          <div class="row"><span class="num">${esc(s.id)}</span><span class="time">${esc(s.start)}–${esc(s.end)}</span>
+            ${P.hasAudio ? `<button class="play" data-play="${esc(s.id)}" title="Ouvir trecho">▶</button>` : ''}</div>
+          <div class="tags"><span class="tag size" title="${esc(sizeName(s))}">${esc(sizeLabel(s))}</span>${s.movement ? `<span class="tag">${esc(s.movement)}</span>` : ''}${s.lens ? `<span class="tag">${esc(s.lens)}</span>` : ''}</div>
+          <p class="action">${esc(s.action)}</p>
+          ${s.lyrics ? `<p class="lyrics">“${esc(s.lyrics)}”</p>` : ''}
+        </div>
+      </article>`;
+    }
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  // ---------- modal de plano ----------
+  function openShot(id) {
+    const s = P.board.shots.find(x => x.id === id);
+    if (!s) return;
+    const b = P.board;
+    const autoPrompt = PROMPTS.image(s, b, P.settings.style);
+    const field = (k, label, type = 'text') => `<label class="field"><span>${label}</span>${type === 'area'
+      ? `<textarea name="${k}" rows="2">${esc(s[k])}</textarea>` : `<input name="${k}" value="${esc(s[k])}">`}</label>`;
+    openModal(`
+      <form id="shot-form" class="shot-form">
+        <h3>${esc(s.id)} · ${esc(sizeName(s))} <span class="muted">${esc(s.start)}–${esc(s.end)}</span></h3>
+        <div class="frame big" data-frame="${esc(s.id)}" style="aspect-ratio:${aspectCSS()}">${frameHTML(s)}</div>
+        <div class="row-btns">
+          <button type="button" class="btn primary" data-action="shot-image" data-id="${esc(s.id)}">🖼️ Nova imagem</button>
+          ${P.hasAudio ? `<button type="button" class="btn" data-play="${esc(s.id)}">▶ Ouvir trecho</button>` : ''}
+        </div>
+        <div class="grid2">
+          ${field('section', 'Secção')}
+          <label class="field"><span>Tamanho do plano</span><select name="shot_size">${Object.entries(CINE.sizes).map(([k, v]) => `<option value="${k}" ${s.shot_size === k ? 'selected' : ''}>${v.short} — ${v.pt}</option>`).join('')}</select></label>
+          ${field('start', 'Início (m:ss)')}${field('end', 'Fim (m:ss)')}
+          ${field('angle', 'Ângulo')}${field('movement', 'Movimento')}
+          ${field('lens', 'Lente')}${field('location', 'Local')}
+          ${field('lighting', 'Luz')}
+          <label class="field"><span>Personagens (separadas por vírgula)</span><input name="characters" value="${esc(s.characters.join(', '))}"></label>
+        </div>
+        ${field('action', 'Ação', 'area')}
+        ${field('lyrics', 'Letra', 'area')}
+        ${field('notes', 'Notas', 'area')}
+        ${field('frame_en', 'O que se vê no plano (em inglês, é a base da imagem)', 'area')}
+        <details ${s.prompt_override ? 'open' : ''}><summary>Prompt final da imagem</summary>
+          <p class="muted small">Gerado a partir dos campos acima. Se o editares à mão, fica fixo até mudares o plano.</p>
+          <textarea name="prompt" rows="5" data-auto="${esc(autoPrompt)}">${esc(s.prompt_override || autoPrompt)}</textarea>
+        </details>
+        <div class="row-btns end">
+          <button type="button" class="btn ghost danger" data-action="shot-delete" data-id="${esc(s.id)}">Apagar</button>
+          <button type="button" class="btn ghost" data-action="shot-duplicate" data-id="${esc(s.id)}">Duplicar</button>
+          <button type="submit" class="btn">Guardar</button>
+          <button type="submit" class="btn primary" data-regen="1">Guardar e gerar imagem</button>
+        </div>
+      </form>`);
+    $('#shot-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const before = JSON.stringify(VISUAL_KEYS.map(k => s[k]));
+      for (const k of SHOT_KEYS) if (f.has(k)) s[k] = f.get(k);
+      s.characters = String(f.get('characters') || '').split(',').map(x => x.trim()).filter(Boolean);
+      const prompt = f.get('prompt').trim();
+      const visualChanged = before !== JSON.stringify(VISUAL_KEYS.map(k => s[k]));
+      const auto = e.target.prompt.dataset.auto;
+      s.prompt_override = prompt && prompt !== auto && !visualChanged ? prompt : (visualChanged ? null : s.prompt_override);
+      if (prompt === auto) s.prompt_override = null;
+      if ((visualChanged || s.prompt_override) && s.image) s.stale = true;
+      save();
+      closeModal();
+      if (e.submitter?.dataset.regen) { s.seed = Math.floor(Math.random() * 1e6); enqueue('shot', s.id); }
+      render();
+    });
+  }
+
+  function openModal(html) {
+    $('#modal-body').innerHTML = html;
+    $('#modal').classList.remove('hidden');
+  }
+  function closeModal() { $('#modal').classList.add('hidden'); $('#modal-body').innerHTML = ''; }
+
+  // ---------- separador Produção ----------
+  const PROD_SECTIONS = [
+    ['equipment', '🎥 Equipamento'], ['props', '🧸 Adereços'], ['wardrobe', '👕 Guarda-roupa'],
+    ['cast', '🧑‍🎤 Elenco'], ['crew', '👥 Equipa'], ['locations', '📍 Locais'], ['notes', '📝 Notas'],
+  ];
+
+  function renderProd() {
+    const el = $('#panel-prod');
+    const br = P.brief || {};
+    const structure = Array.isArray(br.structure) ? br.structure : [];
+    const briefHTML = `<details class="card" ${P.board ? '' : 'open'}><summary><strong>🎵 Brief e música</strong></summary>
+      <dl class="brief">
+        ${[['Música', [br.song_title, br.artist].filter(Boolean).join(' — ')], ['Género / BPM', [br.genre, br.bpm && br.bpm + ' BPM'].filter(Boolean).join(' · ')],
+          ['Duração', br.duration], ['Conceito', br.concept], ['Ambiente', br.mood], ['Estética', br.visual_style], ['Referências', br.references],
+          ['Dias de rodagem', br.shoot_days], ['Orçamento', br.budget], ['Limitações', br.constraints]]
+          .filter(([, v]) => v).map(([k, v]) => `<dt>${k}</dt><dd>${esc(typeof v === 'string' ? v : JSON.stringify(v))}</dd>`).join('') || '<p class="muted">Ainda vazio. Fala com o realizador.</p>'}
+      </dl>
+      ${structure.length ? `<table class="structure"><tbody>${structure.map(x => `<tr><td>${esc(x.start)}–${esc(x.end)}</td><td><strong>${esc(x.name)}</strong></td><td class="muted">${esc(x.lyrics || '')}</td></tr>`).join('')}</tbody></table>` : ''}
+      ${br.lyrics ? `<details><summary>Letra</summary><pre class="lyrics-full">${esc(br.lyrics)}</pre></details>` : ''}
+    </details>`;
+
+    if (!P.board) { el.innerHTML = briefHTML + '<div class="empty"><p class="muted">A lista de produção aparece quando criares o storyboard.</p></div>'; return; }
+    const b = P.board, pr = b.production;
+    const charHTML = `<div class="card"><h3>🧑 Personagens <span class="muted small">— a referência mantém a cara igual em todos os planos (com imagens Gemini)</span></h3>
+      <div class="char-grid">${b.characters.map((c, i) => {
+        const isBusy = busy.has(`${P.id}:char:${c.name}`);
+        return `<div class="char">
+          <div class="char-img">${c.ref ? `<img src="${c.ref}" alt="">` : '👤'}${isBusy ? '<div class="frame-busy"><span class="spinner"></span></div>' : ''}</div>
+          <div><strong>${esc(c.name)}</strong> <span class="muted">${esc(c.role)}</span>
+          <textarea data-char="${i}" rows="3" title="Aspeto (inglês)">${esc(c.look_en)}</textarea>
+          <button class="btn small" data-action="char-ref" data-i="${i}">${c.ref ? '🔄 Nova referência' : '🖼️ Gerar referência'}</button></div>
+        </div>`;
+      }).join('') || '<p class="muted">Sem personagens.</p>'}</div></div>`;
+
+    const lists = PROD_SECTIONS.map(([k, label]) => {
+      const list = pr[k] || [];
+      const done = list.filter(x => x.done).length;
+      return `<div class="card"><h3>${label} <span class="muted small">${list.length ? `${done}/${list.length}` : ''}</span></h3>
+        <ul class="checklist">${list.map((x, i) => `<li><label><input type="checkbox" data-check="${k}" data-i="${i}" ${x.done ? 'checked' : ''}><span>${esc(x.text)}</span></label><button class="x" data-del="${k}" data-i="${i}" title="Remover">✕</button></li>`).join('')}</ul>
+        <form class="add-item" data-add="${k}"><input placeholder="Adicionar…"><button class="btn small">＋</button></form></div>`;
+    }).join('');
+
+    const schedule = pr.schedule?.length ? `<div class="card"><h3>🗓️ Plano de rodagem</h3><ol class="schedule">${pr.schedule.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>` : '';
+    el.innerHTML = `<div class="prod">${briefHTML}${charHTML}${schedule}<div class="prod-grid">${lists}</div></div>`;
+  }
+
+  // ---------- separador Rodagem (no set, no telemóvel) ----------
+  function renderSet() {
+    const el = $('#panel-set');
+    if (!P.board) { el.innerHTML = '<div class="empty"><div class="empty-icon">🎥</div><h3>Sem planos ainda</h3><p class="muted">Cria o storyboard primeiro.</p></div>'; return; }
+    const shots = P.board.shots;
+    const done = shots.filter(s => s.done).length;
+    const groups = new Map();
+    for (const s of shots) {
+      const k = s.location || 'Sem local';
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k).push(s);
+    }
+    let html = `<div class="set-head">
+      <div class="progress"><div style="width:${shots.length ? done / shots.length * 100 : 0}%"></div></div>
+      <div class="set-bar"><strong>${done}/${shots.length} filmados</strong>
+        <label class="toggle"><input type="checkbox" data-action="pending-only" ${setPendingOnly ? 'checked' : ''}> Só pendentes</label>
+        <button class="btn small ${wakeLock ? 'primary' : ''}" data-action="wake">${wakeLock ? '☀️ Ecrã sempre ligado' : '🌙 Manter ecrã ligado'}</button>
+      </div></div>`;
+    for (const [loc, list] of groups) {
+      const visible = setPendingOnly ? list.filter(s => !s.done) : list;
+      if (!visible.length) continue;
+      html += `<h3 class="section-title">📍 ${esc(loc)} <span class="muted small">${list.filter(s => s.done).length}/${list.length}</span></h3>`;
+      for (const s of visible) {
+        html += `<article class="set-card ${s.done ? 'done' : ''}">
+          <div class="frame" data-frame="${esc(s.id)}" style="aspect-ratio:${aspectCSS()}">${frameHTML(s)}</div>
+          <div class="set-info">
+            <div class="row"><span class="num big">${esc(s.id)}</span><span class="time">${esc(s.start)}–${esc(s.end)}</span><span class="tag size">${esc(sizeName(s))}</span></div>
+            <div class="tags">${[s.angle, s.movement, s.lens].filter(Boolean).map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div>
+            <p class="action">${esc(s.action)}</p>
+            ${s.lyrics ? `<p class="lyrics">“${esc(s.lyrics)}”</p>` : ''}
+            <p class="muted small">${[s.characters.join(', '), s.lighting && '💡 ' + s.lighting, s.notes].filter(Boolean).map(esc).join(' · ')}</p>
+            <input class="set-note" data-note="${esc(s.id)}" placeholder="Nota do set…" value="${esc(s.setNote)}">
+            <div class="set-actions">
+              ${P.hasAudio ? `<button class="btn" data-play="${esc(s.id)}" data-preroll="1">▶ Playback</button>` : ''}
+              <div class="takes"><button class="btn small" data-take="${esc(s.id)}" data-d="-1">−</button><span>Take ${s.takes || 0}</span><button class="btn small" data-take="${esc(s.id)}" data-d="1">＋</button></div>
+              <button class="btn ${s.done ? '' : 'primary'}" data-done="${esc(s.id)}">${s.done ? '↩︎ Desfazer' : '✅ Feito'}</button>
+            </div>
+          </div>
+        </article>`;
+      }
+    }
+    if (setPendingOnly && done === shots.length) html += '<div class="empty"><div class="empty-icon">🎉</div><h3>Tudo filmado!</h3></div>';
+    el.innerHTML = html;
+  }
+
+  async function toggleWake() {
+    try {
+      if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+      else if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => { wakeLock = null; if (tab === 'set') renderSet(); });
+      } else toast('Este browser não suporta manter o ecrã ligado.');
+    } catch (e) { toast(e.message, 'error'); }
+    renderSet();
+  }
+
+  // ---------- áudio por plano ----------
+  let stopAt = null;
+  function playSegment(id, preroll) {
+    const s = P.board?.shots.find(x => x.id === id);
+    const player = $('#player');
+    if (!s || !audioURL) return;
+    const start = toSec(s.start), end = toSec(s.end);
+    if (start == null) return toast('Este plano não tem tempo de início.');
+    if (!player.paused && player.dataset.shot === id) { player.pause(); return; }
+    player.dataset.shot = id;
+    player.currentTime = Math.max(0, start - (preroll ? 2 : 0));
+    stopAt = end && end > start ? end : null;
+    player.play().catch(e => toast(e.message, 'error'));
+  }
+  $('#player').addEventListener('timeupdate', e => {
+    if (stopAt != null && e.target.currentTime >= stopAt) { e.target.pause(); stopAt = null; }
+  });
+
+  // ---------- definições ----------
+  const SETUP_INTRO = '👋 <strong>Configuração única (2 minutos).</strong> A app usa duas chaves grátis: uma para o realizador e outra para as imagens. Depois de as colares, nunca mais te são pedidas.';
+  function openSettings(intro = '') {
+    const s = AI.settings();
+    const ok = v => v ? '<span class="ok-badge">✔︎ configurada</span>' : '';
+    openModal(`
+      <form id="settings-form" class="settings">
+        <h3>⚙️ Definições</h3>
+        ${intro ? `<p>${intro}</p>` : ''}
+        <div class="card">
+          <h4>1 · Realizador: chave Gemini (grátis) ${ok(s.geminiKey)}</h4>
+          <p class="muted small">É o cérebro: ouve a música, faz as perguntas e cria os planos.
+          Abre <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>, entra com a tua conta Google, carrega em <strong>Create API key</strong> e cola-a aqui.</p>
+          <div class="key-row"><input name="geminiKey" type="password" value="${esc(s.geminiKey)}" placeholder="AIza…" autocomplete="off">
+            <button type="button" class="btn small" data-action="toggle-key" data-for="geminiKey">👁️</button>
+            <button type="button" class="btn small" data-action="test-key">Testar</button></div>
+        </div>
+        <div class="card">
+          <h4>2 · Imagens: chave Pollinations (grátis) ${ok(s.pollinationsKey)}</h4>
+          <p class="muted small">Desenha cada plano. Abre <a href="https://enter.pollinations.ai/keys" target="_blank" rel="noopener">enter.pollinations.ai/keys</a>, entra (GitHub ou Google), cria uma chave <strong>publishable (pk_…)</strong> e cola-a aqui. O modelo Z-Image Turbo é muito barato e usa o saldo grátis da conta.</p>
+          <div class="key-row"><input name="pollinationsKey" type="password" value="${esc(s.pollinationsKey)}" placeholder="pk_…" autocomplete="off">
+            <button type="button" class="btn small" data-action="toggle-key" data-for="pollinationsKey">👁️</button>
+            <button type="button" class="btn small" data-action="test-pkey">Testar</button></div>
+        </div>
+        <p class="muted small">As chaves ficam guardadas só neste dispositivo e não te voltam a ser pedidas.</p>
+        <details class="card"><summary>Opções avançadas</summary>
+          <label class="field"><span>Modelo de texto (Gemini)</span><select name="textModel">
+            ${['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-2.5-pro'].map(m => `<option ${s.textModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+          </select></label>
+          <label class="field"><span>Modelo de imagem (Pollinations)</span><select name="pollinationsModel">
+            ${[['zimage', 'Z-Image Turbo (rápido, barato)'], ['black-forest-labs/flux.1.1-pro', 'FLUX 1.1 Pro (melhor, mais caro)'], ['microsoft/mai-image-2.6-flash', 'MAI Image Flash']].map(([v, l]) => `<option value="${v}" ${s.pollinationsModel === v ? 'selected' : ''}>${l}</option>`).join('')}
+          </select></label>
+          <label class="field"><span>Fornecedor de imagens</span><select name="imageProvider">
+            <option value="auto" ${s.imageProvider !== 'gemini' ? 'selected' : ''}>Pollinations</option>
+            <option value="gemini" ${s.imageProvider === 'gemini' ? 'selected' : ''}>Gemini (precisa de faturação ativa na Google; mantém a cara das personagens)</option>
+          </select></label>
+          <label class="field"><span>Modelo de imagem Gemini</span><select name="imageModel">
+            ${['gemini-2.5-flash-image', 'gemini-3.1-flash-image', 'gemini-3-pro-image'].map(m => `<option ${s.imageModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+          </select></label>
+        </details>
+        ${P ? `<div class="card"><h4>Este projeto</h4>
+          <p class="muted small">Para passar o projeto do portátil para o telemóvel: exporta aqui e importa no outro dispositivo, no ecrã inicial.</p>
+          <div class="row-btns"><button type="button" class="btn" data-action="export">⬇️ Exportar projeto</button>
+          <button type="button" class="btn ghost danger" data-action="delete-project">Apagar projeto</button></div></div>` : ''}
+        <div class="row-btns end"><button class="btn primary">Guardar</button></div>
+      </form>`);
+    $('#settings-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      AI.saveSettings({
+        geminiKey: f.get('geminiKey').trim(), pollinationsKey: f.get('pollinationsKey').trim(),
+        textModel: f.get('textModel'), pollinationsModel: f.get('pollinationsModel'),
+        imageProvider: f.get('imageProvider'), imageModel: f.get('imageModel'),
+      });
+      closeModal();
+      toast('Definições guardadas ✔︎');
+      if (P) render();
+    });
+  }
+
+  // ---------- exportar / importar ----------
+  async function exportProject() {
+    const blob = P.hasAudio ? await DB.getAudio(P.id) : null;
+    const data = { app: 'plano-a-plano', version: 1, project: P, audio: blob ? { name: P.audioName, mime: blob.type, base64: await AI.blobToBase64(blob) } : null };
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    a.download = (P.name || 'projeto').replace(/[^\w\- ]+/g, '').trim() + '.plano.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  async function importProject(file) {
+    try {
+      const data = JSON.parse(await file.text());
+      if (data.app !== 'plano-a-plano' || !data.project?.id) throw new Error('Este ficheiro não é um projeto do Plano a Plano.');
+      const exists = await DB.getProject(data.project.id);
+      if (exists && !confirm(`Já tens "${exists.name}" neste dispositivo. Substituir pela versão importada?`)) return;
+      if (data.audio) {
+        const bytes = Uint8Array.from(atob(data.audio.base64), c => c.charCodeAt(0));
+        await DB.saveAudio(data.project.id, new Blob([bytes], { type: data.audio.mime }));
+      }
+      await DB.saveProject(data.project);
+      toast('Projeto importado ✔︎');
+      renderHome();
+    } catch (e) { toast(e.message, 'error'); }
+  }
+
+  // ---------- eventos ----------
+  document.addEventListener('click', async e => {
+    const t = e.target.closest('button, [data-shot], [data-open]');
+    if (!t) return;
+    if (t.dataset.open) return openProject(t.dataset.open);
+    if (t.dataset.tab) return setTab(t.dataset.tab);
+    if (t.dataset.tabGo) return setTab(t.dataset.tabGo);
+    if (t.dataset.chip) return sendMessage(t.dataset.chip);
+    if (t.dataset.play) { e.stopPropagation(); return playSegment(t.dataset.play, !!t.dataset.preroll); }
+    if (t.dataset.done) {
+      const s = P.board.shots.find(x => x.id === t.dataset.done);
+      s.done = !s.done; save(); return renderSet();
+    }
+    if (t.dataset.take) {
+      const s = P.board.shots.find(x => x.id === t.dataset.take);
+      s.takes = Math.max(0, (s.takes || 0) + Number(t.dataset.d)); save(); return renderSet();
+    }
+    if (t.dataset.del) {
+      P.board.production[t.dataset.del].splice(Number(t.dataset.i), 1); save(); return renderProd();
+    }
+    if (t.dataset.shot && !t.dataset.action) return openShot(t.dataset.shot);
+
+    switch (t.dataset.action) {
+      case 'new-project': {
+        const p = newProjectData(); await DB.saveProject(p); await openProject(p.id);
+        if (!AI.hasGemini() || !AI.settings().pollinationsKey) openSettings(SETUP_INTRO);
+        return;
+      }
+      case 'demo': {
+        const p = { ...newProjectData(), ...structuredClone(DEMO_PROJECT) };
+        await DB.saveProject(p); return openProject(p.id);
+      }
+      case 'home': return goHome();
+      case 'settings': return openSettings();
+      case 'close-modal': return closeModal();
+      case 'generate': return generateBoard();
+      case 'regenerate': return generateBoard(true);
+      case 'gen-missing': P.board.shots.filter(s => !s.image || s.stale).forEach(s => enqueue('shot', s.id)); return renderBoard();
+      case 'regen-all':
+        if (!confirm('Gerar de novo as imagens de todos os planos?')) return;
+        P.board.shots.forEach(s => { s.seed = Math.floor(Math.random() * 1e6); enqueue('shot', s.id); }); return renderBoard();
+      case 'print': return printBoard();
+      case 'shot-image': {
+        const s = P.board.shots.find(x => x.id === t.dataset.id);
+        s.seed = Math.floor(Math.random() * 1e6); enqueue('shot', s.id); return refreshFrames();
+      }
+      case 'shot-delete': {
+        if (!confirm('Apagar este plano?')) return;
+        P.board.shots = P.board.shots.filter(x => x.id !== t.dataset.id); save(); closeModal(); return render();
+      }
+      case 'shot-duplicate': {
+        const i = P.board.shots.findIndex(x => x.id === t.dataset.id);
+        const copy = { ...structuredClone(P.board.shots[i]), id: nextShotId(), done: false, takes: 0, setNote: '' };
+        P.board.shots.splice(i + 1, 0, copy); save(); closeModal(); render(); return openShot(copy.id);
+      }
+      case 'char-ref': return enqueue('char', P.board.characters[Number(t.dataset.i)].name), renderProd();
+      case 'wake': return toggleWake();
+      case 'export': return exportProject();
+      case 'delete-project':
+        if (!confirm(`Apagar "${P.name}" deste dispositivo? Não dá para desfazer.`)) return;
+        await DB.deleteProject(P.id); await DB.deleteAudio(P.id); closeModal(); return goHome();
+      case 'toggle-key': { const i = $(`[name=${t.dataset.for}]`); i.type = i.type === 'password' ? 'text' : 'password'; return; }
+      case 'test-pkey': {
+        const key = $('[name=pollinationsKey]').value.trim();
+        if (!key) return toast('Cola primeiro a chave.');
+        t.textContent = '…';
+        try { await AI.testPollinationsKey(key); toast('Chave Pollinations válida ✔︎'); } catch (err) { toast('Chave Pollinations não funciona: ' + err.message, 'error'); }
+        t.textContent = 'Testar'; return;
+      }
+      case 'test-key': {
+        const key = $('[name=geminiKey]').value.trim();
+        if (!key) return toast('Cola primeiro a chave.');
+        t.textContent = '…';
+        try { await AI.testKey(key); toast('Chave Gemini válida ✔︎'); } catch (err) { toast('Chave não funciona: ' + err.message, 'error'); }
+        t.textContent = 'Testar'; return;
+      }
+    }
+  });
+
+  document.addEventListener('change', e => {
+    const t = e.target;
+    if (t.id === 'audio-file') { handleAudio(t.files[0]); t.value = ''; }
+    else if (t.id === 'import-file') { importProject(t.files[0]); t.value = ''; }
+    else if (t.dataset.setting) {
+      P.settings[t.dataset.setting] = t.value;
+      if (P.board) P.board.shots.forEach(s => { if (s.image) s.stale = true; });
+      save(); renderBoard();
+      if (P.board?.shots.length) toast('Carrega em "Gerar imagens" para aplicar a todas.');
+    }
+    else if (t.dataset.check) { P.board.production[t.dataset.check][Number(t.dataset.i)].done = t.checked; save(); renderProd(); }
+    else if (t.dataset.action === 'pending-only') { setPendingOnly = t.checked; renderSet(); }
+    else if (t.dataset.note) { P.board.shots.find(x => x.id === t.dataset.note).setNote = t.value; save(); }
+    else if (t.dataset.char) {
+      const c = P.board.characters[Number(t.dataset.char)];
+      c.look_en = t.value;
+      P.board.shots.forEach(s => { if (s.image && s.characters.includes(c.name)) s.stale = true; });
+      save();
+    }
+  });
+
+  document.addEventListener('submit', e => {
+    const f = e.target.closest('[data-add]');
+    if (!f) return;
+    e.preventDefault();
+    const v = f.querySelector('input').value.trim();
+    if (!v) return;
+    P.board.production[f.dataset.add].push({ text: v, done: false });
+    save(); renderProd();
+  });
+
+  $('#chat-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const i = $('#chat-input');
+    sendMessage(i.value);
+    i.value = ''; i.style.height = '';
+  });
+  $('#chat-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey && !matchMedia('(pointer: coarse)').matches) { e.preventDefault(); $('#chat-form').requestSubmit(); }
+  });
+  $('#chat-input').addEventListener('input', e => { e.target.style.height = ''; e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px'; });
+  $('#project-name').addEventListener('change', e => { P.name = e.target.value.trim() || 'Sem nome'; save(); });
+  $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  matchMedia('(min-width: 1000px)').addEventListener('change', () => P && setTab(tab));
+
+  function printBoard() {
+    const prev = tab;
+    document.body.classList.add('print-board');
+    setTab('board');
+    setTimeout(() => {
+      window.print();
+      document.body.classList.remove('print-board');
+      setTab(prev);
+    }, 300);
+  }
+
+  // Grava logo quando a app vai para segundo plano ou fecha (telemóvel).
+  document.addEventListener('visibilitychange', () => { if (document.hidden) save(true); });
+  window.addEventListener('pagehide', () => save(true));
+
+  // ---------- arranque ----------
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+  renderHome();
+})();
+
+</script>
+</body>
+</html>
