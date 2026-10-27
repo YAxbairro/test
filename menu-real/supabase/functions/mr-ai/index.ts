@@ -34,7 +34,7 @@ async function gemini(prompt: string, maxTokens: number) {
     }
     // guarda o erro mais útil (um 404 de um modelo de reserva não esconde o 402/429 do principal)
     if (r.status !== 404 || last === "gemini") last = r.status === 429 ? "limit" : "gemini_" + r.status + ":" + String(j?.error?.message || j?.error?.status || "").slice(0, 60);
-    if (![402, 403, 404, 429].includes(r.status)) break;
+    if (![402, 403, 404, 429, 500, 503].includes(r.status)) break;
   }
   throw new Error(last);
 }
