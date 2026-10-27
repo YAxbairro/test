@@ -11,7 +11,7 @@ sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto
 |---|---|
 | Claude (claude.ai, artifacts) | yanickdrs@gmail.com |
 | Google Drive | yanickdrs@gmail.com |
-| GitHub | utilizador **YAxbairro** — EMAIL AINDA DESCONHECIDO (a API não mostra; perguntar ao Yanick e escrever aqui) |
+| GitHub | utilizador **YAxbairro** → **yanickdrs@gmail.com** (confirmado pelo Yanick) |
 | Supabase | organização "yaxtechcv@gmail.com's Org" → **yaxtechcv@gmail.com** (plano grátis) |
 | Vercel | equipa "afroberd-gmailcom's projects" → **afroberd@gmail.com** (sem permissão para criar projetos) |
 | Google AI Studio (Gemini do Menu Real) | **yanickdrs@gmail.com** — projeto `menu-real-gratis` (nível gratuito); os outros projetos estão em pré-pagamento sem saldo |
