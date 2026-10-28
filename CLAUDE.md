@@ -36,6 +36,6 @@ sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto
 - Stock: `mr_items.data.stock` (sem chave = não controlado). Só muda por `mr_set_stock`, `mr_checkout` (desconta, recusa se faltar) e cancelamento em `mr_advance` (devolve). `mr_put_item` preserva o stock.
   Cozinha tem "Agora | 📋 Hoje" (histórico do dia com vendido/pago/por pagar). Gestão tem aba "Stock" (aviso de stock baixo: `settings.lowStock`, padrão 5).
 - ⚠️ NUNCA correr `clean.sh` nem testes na BCL/Quintal quando o restaurante está a usar a app: o clean cancela TODOS os pedidos e fecha as mesas (aconteceu a 28/10).
-- Testes: scratchpad `web/*.js` (e2e, v2, v3, wt, real, aud, bcl) + `clean.sh` para limpar dados de teste (os dois restaurantes).
+- Testes: SÓ no restaurante de teste `?r=teste` (cópia do menu da BCL). Scratchpad `web/*.js` (bcl, stock, ai, bg apontam para `teste`) + `clean.sh` (agora só limpa `teste`).
 - Não tocar em tabelas que não sejam `mr_*`. DELETE e SQL com vários comandos bloqueiam o MCP: usar 1 comando por chamada.
 - Fala em português de Cabo Verde/Portugal, respostas curtas e sinceras.
