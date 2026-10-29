@@ -173,6 +173,7 @@ textarea{min-height:64px;resize:vertical}
 .stkn{display:flex;flex-direction:column;min-width:0}.stkn small{color:var(--muted);font-size:13px}.stkb{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.stkr .stkb input{width:76px!important;flex:none;text-align:center}.stkb .ghost{min-width:44px;padding:8px 10px}
 #netbar{position:fixed;left:0;right:0;top:0;z-index:60;background:#b3261e;color:#fff;text-align:center;font-weight:600;font-size:14px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px}
 .dnav{display:flex;align-items:center;justify-content:center;gap:14px;margin:4px 0 12px}.dnav b{min-width:130px;text-align:center;font-size:17px}.dnav .ghost{min-width:48px}
+.hlog{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted);border-left:3px solid var(--line);padding-left:8px}.hact{display:flex;gap:8px;flex-wrap:wrap}.linkbtn.danger{color:#b3261e}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:720px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -635,7 +636,7 @@ var SB_URL="https://ktdbdhsjznajrlklmmri.supabase.co", SB_KEY="sb_publishable_J6
 var sb=(window.supabase&&!(window.claude&&window.claude.use))?window.supabase.createClient(SB_URL,SB_KEY):null;
 var OFFLINE=!sb&&!(window.claude&&window.claude.use);
 function normItems(a){return (Array.isArray(a)?a:[]).map(function(it){it=it||{};return {id:String(it.id||""),name:String(it.name||""),qty:Math.max(0,parseInt(it.qty,10)||0),unit:Math.max(0,+it.unit||0),opts:(Array.isArray(it.opts)?it.opts:[]).map(String),note:String(it.note||"")};});}
-function rowOrder(r){return {payMethod:r.pay_method,id:r.id,mesa:String(r.mesa||""),guest:String(r.guest||""),gid:String(r.gid||""),station:r.station==="bar"?"bar":"cozinha",items:normItems(r.items),total:+r.total||0,status:String(r.status||""),batch:String(r.batch||""),paid:!!r.paid,createdAt:+r.created_at,updatedAt:+r.updated_at};}
+function rowOrder(r){return {payMethod:r.pay_method,id:r.id,mesa:String(r.mesa||""),guest:String(r.guest||""),gid:String(r.gid||""),station:r.station==="bar"?"bar":"cozinha",items:normItems(r.items),total:+r.total||0,status:String(r.status||""),batch:String(r.batch||""),paid:!!r.paid,createdAt:+r.created_at,updatedAt:+r.updated_at,log:(Array.isArray(r.log)?r.log:[]).map(function(e){e=e||{};return {f:String(e.f||""),t:String(e.t||""),at:+e.at||0,why:String(e.why||""),by:String(e.by||"")};})};}
 var RQ_TYPES=["conta","garcom","agua","gelo","talheres","guardanapos"];
 function normInfo(i){i=i||{};return {abrir:!!i.abrir,mode:["mine","split","all"].indexOf(i.mode)>-1?i.mode:"",tipPct:[0,5,10,15].indexOf(+i.tipPct)>-1?+i.tipPct:0,tip:Math.max(0,+i.tip||0),method:["dinheiro","multibanco"].indexOf(i.method)>-1?i.method:"",amount:Math.max(0,+i.amount||0),people:Math.max(1,parseInt(i.people,10)||1)};}
 function rowReq(r){return {info:normInfo(r.info),id:r.id,mesa:String(r.mesa||""),guest:String(r.guest||""),gid:String(r.gid||""),type:RQ_TYPES.indexOf(r.type)>-1?r.type:"garcom",total:+r.total||0,done:!!r.done,createdAt:+r.created_at};}
@@ -662,7 +663,7 @@ var local={orders:[],requests:[]};
 function useLocal(){S.orders=local.orders.slice();S.requests=local.requests.slice();}
 var store={
  addOrder:function(o){if(sb)return sb.from("mr_orders").insert({mesa:o.mesa,guest:o.guest,gid:o.gid,station:o.station,items:o.items,total:o.total,status:"novo",batch:o.batch,paid:false,created_at:o.createdAt,updated_at:o.updatedAt}).then(chk).then(function(){sbRefresh("orders");});if(db)return db.collection("orders").add(o);o.id="l"+Date.now()+Math.random();local.orders.push(o);useLocal();render();return Promise.resolve();},
- setStatus:function(id,st,from){if(sb)return rpc("mr_advance",{p_id:id,p_from:from||null,p_to:st}).then(function(ok){sbRefresh("orders");if(ok===false){toast("Este pedido já foi atualizado noutro ecrã.");}return ok;});if(db)return db.doc("orders/"+id).update({status:st,updatedAt:Date.now()});local.orders.forEach(function(o){if(o.id===id)o.status=st;});useLocal();render();return Promise.resolve();},
+ setStatus:function(id,st,from,why){if(sb)return rpc("mr_status",{p_id:id,p_from:from||null,p_to:st,p_why:why||null,p_by:S.view}).then(function(ok){sbRefresh("orders");if(ok===false){toast("Este pedido já foi atualizado noutro ecrã.");}return ok;});if(db)return db.doc("orders/"+id).update({status:st,updatedAt:Date.now()});local.orders.forEach(function(o){if(o.id===id)o.status=st;});useLocal();render();return Promise.resolve();},
  addRequest:function(r){if(sb)return sb.rpc("mr_request",{p_rid:RID,p_mesa:r.mesa,p_gid:r.gid,p_guest:r.guest||"",p_type:r.type,p_info:r.info||{}}).then(chk).then(function(){sbRefresh("requests");});if(db)return db.collection("requests").add(r);r.id="r"+Date.now();local.requests.push(r);useLocal();render();return Promise.resolve();},
  doneRequest:function(id){if(sb)return rpc("mr_done_request",{p_id:id}).then(function(){sbRefresh("requests");});if(db)return db.doc("requests/"+id).update({done:true});local.requests.forEach(function(r){if(r.id===id)r.done=true;});useLocal();render();return Promise.resolve();},
  setItem:function(id,patch){var next=Object.assign({},S.items[id]||{},patch,{updatedAt:Date.now()});Object.keys(next).forEach(function(k){if(next[k]===null)delete next[k];});if(sb)return rpc("mr_put_item",{p_id:id,p_data:next}).then(function(){S.items[id]=next;applyOverrides();render();sbRefresh("items");});if(db)return db.doc("items/"+id).set(next);S.items[id]=next;applyOverrides();render();return Promise.resolve();},
@@ -1060,14 +1061,15 @@ function histHtml(){
  var ok=os.filter(function(o){return o.status!=="cancelado";}),sold=0,paid=0,acc={},cnt={},val={},tickets={};
  ok.forEach(function(o){sold+=o.total||0;if(o.paid)paid+=o.total||0;acc[o.id]=sold;tickets[o.mesa+"|"+o.batch]=1;o.items.forEach(function(it){cnt[it.id]=(cnt[it.id]||0)+it.qty;val[it.id]=(val[it.id]||0)+it.qty*it.unit;});});
  var nameOf={};ok.forEach(function(o){o.items.forEach(function(it){nameOf[it.id]=it.name;});});
- var h=nav+'<div class="kpis"><div class="kpi"><small>Vendido '+(off?esc(dayName(off,t0).toLowerCase()):'hoje')+'</small><b class="num">'+money(sold)+'</b></div><div class="kpi"><small>Já pago</small><b class="num">'+money(paid)+'</b></div><div class="kpi"><small>Por pagar</small><b class="num">'+money(sold-paid)+'</b></div><div class="kpi"><small>Pedidos</small><b class="num">'+Object.keys(tickets).length+'</b></div></div>';
+ var cr=cashData(os,t0,hd.b),bym=Object.keys(cr.by).map(function(k){return PAYM[k]+' '+money(cr.by[k]);}).join(' · ');var h=nav+'<div class="kpis"><div class="kpi"><small>Vendido '+(off?esc(dayName(off,t0).toLowerCase()):'hoje')+'</small><b class="num">'+money(sold)+'</b></div><div class="kpi"><small>Já pago</small><b class="num">'+money(paid)+'</b></div><div class="kpi"><small>Por pagar</small><b class="num">'+money(sold-paid)+'</b></div><div class="kpi"><small>Pedidos</small><b class="num">'+Object.keys(tickets).length+'</b></div></div>';
  var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];});
  if(top.length)h+='<details class="hsum" open><summary>O que saiu</summary>'+top.map(function(id){return '<div class="hrow2"><span><b class="num">'+cnt[id]+'×</b> '+esc(nameOf[id]||id)+'</span><span class="num muted">'+money(val[id])+'</span></div>';}).join("")+'</details>';
  if(!os.length)return h+'<p class="muted" style="text-align:center;padding:30px 0">'+(off?'Não houve pedidos neste dia.':'Ainda não há pedidos hoje.')+'</p>';
+ h+='<div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px"><span class="muted">'+(bym?'Pago: '+esc(bym):'Ainda nada pago')+(cr.nc?' · '+cr.nc+' cancelado(s)':'')+'</span><button type="button" class="ghost" data-cash="1">🧾 Fecho de caixa</button></div>';
  h+='<div class="hist">'+os.slice().reverse().map(function(o){var cx=o.status==="cancelado";
   return '<article class="hrow'+(cx?" hcx":"")+'"><div class="hh"><b class="num">'+hhmm(o.createdAt)+'</b> <b>'+esc(mesaLbl(o.mesa))+'</b>'+(o.guest?' · '+esc(o.guest):'')+(S.settings.oneStation?'':' · '+(o.station==="bar"?"Bar":"Cozinha"))+'<span class="pill'+(o.status==="entregue"?"":" on")+'">'+KST[o.status]+'</span></div>'+
    '<div class="hi">'+o.items.map(function(it){return '<span>'+it.qty+'× '+esc(it.name)+(it.opts&&it.opts.length?' <small>('+esc(it.opts.join(", "))+')</small>':'')+'</span>';}).join("")+'</div>'+
-   '<div class="hf"><span>'+(cx?'Não conta':o.paid?'✓ Pago'+(o.payMethod&&PAYM[o.payMethod]?' · '+PAYM[o.payMethod]:''):'Por pagar')+'</span><span class="num"><b>'+money(o.total||0)+'</b>'+(cx?'':' <small class="muted">· acumulado '+money(acc[o.id])+'</small>')+'</span></div></article>';}).join("")+'</div>';
+   logHtml(o)+(S.pin&&sb?'<div class="hact">'+(cx?'<button type="button" class="ghost" data-restore="'+o.id+'">↩ Repor pedido</button>':(o.paid?'':'<button type="button" class="linkbtn danger" data-cancel="'+o.id+'" data-cur="'+esc(o.status)+'">Cancelar…</button>'))+'</div>':'')+'<div class="hf"><span>'+(cx?'Não conta':o.paid?'✓ Pago'+(o.payMethod&&PAYM[o.payMethod]?' · '+PAYM[o.payMethod]:''):'Por pagar')+'</span><span class="num"><b>'+money(o.total||0)+'</b>'+(cx?'':' <small class="muted">· acumulado '+money(acc[o.id])+'</small>')+'</span></div></article>';}).join("")+'</div>';
  return h;}
 function stockHtml(){
  var list=MENU.filter(function(m){return !(S.items[m.id]||{}).deleted;}),lo=lowStock();
@@ -1080,6 +1082,29 @@ function stockHtml(){
     '<span class="stkb">'+(s!==null?'<button type="button" class="ghost" data-sk="'+m.id+'" data-d="-1" aria-label="Menos 1">−</button>':'')+'<input type="number" inputmode="numeric" min="0" data-skset="'+m.id+'" value="'+(s===null?"":s)+'" placeholder="—" aria-label="Stock de '+esc(m.n.pt)+'">'+
     (s!==null?'<button type="button" class="ghost" data-sk="'+m.id+'" data-d="1" aria-label="Mais 1">+</button><button type="button" class="ghost" data-sk="'+m.id+'" data-d="10">+10</button><button type="button" class="linkbtn" data-skoff="'+m.id+'">Não controlar</button>':'')+'</span></div>';}).join("");});
  return h+'</div>';}
+/* ---------- Controlo: motivo para cancelar, repor, registo e fecho de caixa ---------- */
+var WHY=["Cliente desistiu","Pedido errado / repetido","Falta produto","Teste"];
+function reasonSheet(title,cb){var why="";
+ sheet(title,function(b){b.innerHTML='<p class="muted">Escolhe o motivo. Fica registado no histórico com a hora.</p><div class="chips">'+WHY.map(function(w){return '<button type="button" class="chip" data-w="'+esc(w)+'" aria-pressed="'+(why===w)+'">'+esc(w)+'</button>';}).join("")+'</div>'+
+  '<label class="opt"><h4>Outro motivo</h4><input type="text" id="whyIn" maxlength="100" value="'+esc(WHY.indexOf(why)<0?why:"")+'" placeholder="Escreve aqui"></label><button type="button" class="primary" id="whyOk"><span>Confirmar cancelamento</span><span>✕</span></button>';
+  b.querySelectorAll("[data-w]").forEach(function(c){c.onclick=function(){why=c.dataset.w;openSheet.rerender();};});
+  b.querySelector("#whyIn").oninput=function(){why=this.value;};
+  b.querySelector("#whyOk").onclick=function(){var w=(why||"").trim();if(!w){toast("Escolhe ou escreve o motivo.");return;}this.disabled=true;closeSheet();cb(w);};});}
+function logHtml(o){var L=o.log||[];if(!L.length)return "";return '<div class="hlog">'+L.map(function(e){return '<span>'+hhmm(e.at)+' · '+esc(KST[e.t]||e.t)+(e.why?' — '+esc(e.why):'')+(e.by&&e.by!=="sistema"&&e.by!=="antigo"?' <small>('+esc(VNAME[e.by]||e.by)+')</small>':'')+'</span>';}).join("")+'</div>';}
+var VNAME={kitchen:"cozinha",waiter:"garçom",room:"sala",manage:"gestão"};
+function prevStatus(o){var L=(o.log||[]).filter(function(e){return e.t==="cancelado";});var f=L.length?L[L.length-1].f:"novo";return KST[f]&&f!=="cancelado"?f:"novo";}
+function cashData(list,a,b){var os=list.filter(function(o){return o.createdAt>=a&&o.createdAt<b&&o.status!=="cancelado";}),r={total:0,paid:0,by:{},nc:0,vc:0,n:{}};
+ list.filter(function(o){return o.createdAt>=a&&o.createdAt<b&&o.status==="cancelado";}).forEach(function(o){r.nc++;r.vc+=o.total||0;});
+ os.forEach(function(o){r.total+=o.total||0;r.n[o.mesa+"|"+o.batch]=1;if(o.paid){r.paid+=o.total||0;var m=PAYM[o.payMethod]?o.payMethod:"outro";r.by[m]=(r.by[m]||0)+(o.total||0);}});r.tickets=Object.keys(r.n).length;return r;}
+function cashText(r,label){var L=["🧾 Fecho de caixa · "+(S.settings.name||"")+" · "+label,"Vendido: "+money(r.total),"Pago: "+money(r.paid)];Object.keys(r.by).forEach(function(k){L.push("  · "+PAYM[k]+": "+money(r.by[k]));});L.push("Por pagar: "+money(r.total-r.paid),"Pedidos: "+r.tickets,"Cancelados: "+r.nc+" ("+money(r.vc)+")");return L.join("\n");}
+function cashSheet(off){var hd=histDay(off);if(!hd.list)return;var r=cashData(hd.list,hd.a,hd.b),label=dayName(off,hd.a)+" "+new Date(hd.a).toLocaleDateString("pt-PT");
+ sheet("Fecho de caixa · "+label,function(b){b.innerHTML='<div class="line"><span>Vendido</span><b class="num">'+money(r.total)+'</b></div><div class="line"><span>Já pago</span><b class="num">'+money(r.paid)+'</b></div>'+Object.keys(r.by).map(function(k){return '<div class="line" style="padding-left:14px"><span>'+PAYM[k]+'</span><span class="num">'+money(r.by[k])+'</span></div>';}).join("")+
+  '<div class="line"><span>Por pagar</span><b class="num"'+(r.total-r.paid?' style="color:var(--acc)"':'')+'>'+money(r.total-r.paid)+'</b></div><div class="line"><span>Pedidos</span><span class="num">'+r.tickets+'</span></div><div class="line"><span>Cancelados</span><span class="num">'+r.nc+' · '+money(r.vc)+'</span></div>'+
+  (r.total-r.paid?'<p class="hint">⚠️ Há '+money(r.total-r.paid)+' por pagar. Fecha as contas na Sala antes de fechar a caixa.</p>':'')+
+  '<button type="button" class="primary" id="cashWa"><span>Enviar por WhatsApp</span><span>↗</span></button><button type="button" class="ghost" id="cashCp">Copiar texto</button>';
+  var txt=cashText(r,label);
+  b.querySelector("#cashWa").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");};
+  b.querySelector("#cashCp").onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast("✓ Copiado");},function(){prompt("Copia o texto:",txt);});};});}
 /* ---------- Gestão ---------- */
 function todayOrders(){var d=new Date();d.setHours(0,0,0,0);return S.orders.filter(function(o){return o.createdAt>=d.getTime()&&o.status!=="cancelado";});}
 function openByTable(){var t={};S.orders.forEach(function(o){if(o.paid||o.status==="cancelado")return;(t[o.mesa]=t[o.mesa]||[]).push(o);});return t;}
@@ -1549,14 +1574,16 @@ document.addEventListener("click",function(e){
  if((t=e.target.closest("[data-table]"))){tableSheet(t.dataset.table);return;}
  if((t=e.target.closest("[data-edit]"))){editSheet(t.dataset.edit);return;}
  if((t=e.target.closest("[data-mtab]"))){S.mtab=t.dataset.mtab;sdAt=0;render();return;}
- if((t=e.target.closest("[data-cancel]"))){if(!confirm("Cancelar este pedido? O cliente vai ver que foi cancelado."))return;store.setStatus(t.dataset.cancel,"cancelado","novo").catch(pinErr);return;}
+ if((t=e.target.closest("[data-cancel]"))){var cid=t.dataset.cancel,cfrom=t.dataset.cur||"novo";reasonSheet("Cancelar pedido",function(w){store.setStatus(cid,"cancelado",cfrom,w).then(function(ok){if(ok!==false)toast("Pedido cancelado · fica no histórico");}).catch(pinErr);});return;}
+ if((t=e.target.closest("[data-restore]"))){var ro=S.orders.concat(histCache[S.kday]||[]).filter(function(o){return o.id===t.dataset.restore;})[0];if(!ro)return;var to=prevStatus(ro);if(!confirm("Repor este pedido como «"+KST[to]+"»?"))return;store.setStatus(ro.id,to,"cancelado","reposto").then(function(){toast("↩ Pedido reposto");delete histCache[S.kday];delete histCache["l"+S.kday];render();}).catch(pinErr);return;}
+ if((t=e.target.closest("[data-cash]"))){cashSheet(S.kday||0);return;}
  if(e.target.closest("#dlqr")){if(!downloads){qrSheetPng().then(function(blob){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="menu-real-qr-mesas.png";document.body.appendChild(a);a.click();a.remove();toast("✓ QR guardados nas Transferências do telemóvel");});return;}qrSheetPng().then(function(blob){return downloads.save({filename:"menu-real-qr-mesas.png",data:blob});}).then(function(){toast("✓ Ficheiro pronto");}).catch(function(){toast("Download cancelado.");});return;}
  if((t=e.target.closest("[data-sold]"))){var id=t.dataset.sold;store.setItem(id,{soldOut:!soldOut(id)}).catch(pinErr);return;}
  if((t=e.target.closest("[data-hide]"))){var hid=t.dataset.hide;store.setItem(hid,{hidden:!(S.items[hid]&&S.items[hid].hidden)}).catch(pinErr);return;}
  if((t=e.target.closest("[data-qrm]"))){qrSheet(t.dataset.qrm);return;}
  if(e.target.closest("#addDish")){newDish();return;}
  if((t=e.target.closest("[data-ack]"))){var pa=t.dataset.ack.split("|");ackDevice(pa[0],pa[1]);render();return;}
- if((t=e.target.closest("[data-kick]"))){var pk=t.dataset.kick.split("|");if(!confirm("Cancelar os pedidos ainda não preparados deste telemóvel na mesa "+pk[0]+"?"))return;ackDevice(pk[0],pk[1]);Promise.all(S.orders.filter(function(o){return o.mesa===pk[0]&&o.gid===pk[1]&&o.status==="novo";}).map(function(o){return store.setStatus(o.id,"cancelado","novo");})).then(function(){toast("Pedidos cancelados");render();}).catch(pinErr);return;}
+ if((t=e.target.closest("[data-kick]"))){var pk=t.dataset.kick.split("|");if(!confirm("Cancelar os pedidos ainda não preparados deste telemóvel na mesa "+pk[0]+"?"))return;ackDevice(pk[0],pk[1]);Promise.all(S.orders.filter(function(o){return o.mesa===pk[0]&&o.gid===pk[1]&&o.status==="novo";}).map(function(o){return store.setStatus(o.id,"cancelado","novo","Telemóvel não autorizado");})).then(function(){toast("Pedidos cancelados");render();}).catch(pinErr);return;}
  if((t=e.target.closest("[data-openm]"))){var po=t.dataset.openm.split("|");t.disabled=true;store.setTable(po[0],true).then(function(){return store.doneRequest(po[1]);}).then(function(){toast("🔓 Mesa "+po[0]+" aberta");}).catch(pinErr);return;}
  if((t=e.target.closest("[data-print]"))){var oo=S.orders.filter(function(o){return o.id===t.dataset.print;})[0];if(oo)printTicket(oo);return;}
  if(e.target.closest("#npSave")){changePin();return;}
