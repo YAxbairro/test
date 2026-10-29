@@ -12,6 +12,7 @@
   let setPendingOnly = false;
   let wakeLock = null;
   const busy = new Set();    // `${projectId}:${kind}:${id}` em geração
+  const progress = new Map(); // mesma chave → texto de progresso (ex.: "na fila #120")
 
   const isDesktop = () => matchMedia('(min-width: 1000px)').matches;
   const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
@@ -202,8 +203,8 @@
     audioURL = URL.createObjectURL(file);
     $('#player').src = audioURL;
     save(true);
-    if (!AI.hasGemini()) {
-      P.chat.push({ role: 'assistant', local: true, text: `🎵 Guardei **${file.name}**. Já dá para ouvir cada plano no storyboard e no set.\n\nPara eu **ouvir** a música e tirar a letra e os tempos sozinho, precisas da chave Gemini (grátis) nas Definições ⚙️. Entretanto cola aqui a letra.` });
+    if (!AI.hasText()) {
+      P.chat.push({ role: 'assistant', local: true, text: `🎵 Guardei **${file.name}**. Já dá para ouvir cada plano no storyboard e no set.\n\nPara eu **ouvir** a música e tirar a letra e os tempos sozinho, falta a chave do realizador (OpenRouter, grátis) nas Definições ⚙️. Entretanto cola aqui a letra.` });
       render();
       return;
     }
@@ -264,11 +265,11 @@
       if (!board.shots.length) throw new Error('A IA não devolveu planos. Tenta outra vez.');
       if (AI.aspects.includes(r.aspect_ratio)) P.settings.aspect = r.aspect_ratio;
       P.board = board;
-      P.chat.push({ role: 'assistant', text: `✅ Storyboard criado: **${board.shots.length} planos**, ${board.locations.length} locais. Estou a gerar as imagens de cada plano.\n\nSe quiseres mudar alguma coisa, diz-me aqui (ex.: *"o P05 em contrapicado com gimbal"* ou *"não tenho drone"*) e eu atualizo os planos e as imagens.`, suggestions: [] });
+      P.chat.push({ role: 'assistant', text: `✅ Storyboard criado: **${board.shots.length} planos**, ${board.locations.length} locais. ${AI.hasImages() ? 'Estou a gerar as imagens de cada plano (com a AI Horde grátis podem demorar uns minutos; entretanto vês o desenho do enquadramento).' : 'Para gerar as imagens, escolhe um fornecedor de imagens nas Definições ⚙️.'}\n\nSe quiseres mudar alguma coisa, diz-me aqui (ex.: *"o P05 em contrapicado com gimbal"* ou *"não tenho drone"*) e eu atualizo os planos e as imagens.`, suggestions: [] });
       save(true);
       generating = false;
       render();
-      board.shots.forEach(s => enqueue('shot', s.id));
+      if (AI.hasImages()) board.shots.forEach(s => enqueue('shot', s.id));
     } catch (e) {
       toast(e.message, 'error');
     } finally {
@@ -324,25 +325,29 @@
   async function runQueue() {
     if (Q.running) return;
     Q.running = true;
-    while (Q.items.length) {
-      const job = Q.items.shift();
-      refreshFrames();
-      try { await runJob(job); }
-      catch (e) {
-        toast(e.message, 'error');
-        if (e.needsKey || /Definições/.test(e.message)) {
-          // sem chave ou fornecedor indisponível: pára a fila em vez de repetir o mesmo erro
-          Q.items.forEach(j => busy.delete(j.key));
-          Q.done += Q.items.length;
-          Q.items = [];
-          if (e.needsKey) openSettings(SETUP_INTRO);
+    const worker = async () => {
+      while (Q.items.length) {
+        const job = Q.items.shift();
+        refreshFrames();
+        try { await runJob(job); }
+        catch (e) {
+          toast(e.message, 'error');
+          if (e.needsKey || e.noImageKey || /Definições/.test(e.message)) {
+            // sem chave ou fornecedor indisponível: pára a fila em vez de repetir o mesmo erro
+            Q.items.forEach(j => busy.delete(j.key));
+            Q.done += Q.items.length;
+            Q.items = [];
+            if (e.needsKey) openSettings(SETUP_INTRO);
+          }
         }
+        busy.delete(job.key);
+        progress.delete(job.key);
+        Q.done++;
+        updateQueueStatus();
+        refreshFrames();
       }
-      busy.delete(job.key);
-      Q.done++;
-      updateQueueStatus();
-      refreshFrames();
-    }
+    };
+    await Promise.all(Array.from({ length: AI.imageConcurrency() }, worker));
     Q.running = false;
     Q.total = Q.done = 0;
     updateQueueStatus();
@@ -355,17 +360,23 @@
     if (job.kind === 'char') {
       const c = b.characters.find(x => x.name === job.id);
       if (!c) return;
-      const { image } = await AI.image(PROMPTS.characterRef(c, b, style), { aspect: '1:1', seed: b.seed });
+      const { image } = await AI.image(PROMPTS.characterRef(c, b, style), { aspect: '1:1', seed: b.seed, onProgress: t => setProgress(job.key, t) });
       c.ref = image;
     } else {
       const s = b.shots.find(x => x.id === job.id);
       if (!s) return;
       const prompt = s.prompt_override || PROMPTS.image(s, b, style);
       const refs = b.characters.filter(c => c.ref && s.characters.includes(c.name)).map(c => c.ref);
-      const { image, provider } = await AI.image(prompt, { aspect, seed: s.seed ?? b.seed, refs });
+      const { image, provider } = await AI.image(prompt, { aspect, seed: s.seed ?? b.seed, refs, onProgress: t => setProgress(job.key, t) });
       s.image = image; s.stale = false; s.imageProvider = provider;
     }
     if (P && P.id === proj.id) { save(); } else { proj.updatedAt = Date.now(); await DB.saveProject(proj); }
+  }
+
+  function setProgress(key, text) {
+    progress.set(key, text);
+    const [, kind, id] = key.split(':');
+    if (kind === 'shot') $$(`[data-frame="${CSS.escape(id)}"] .frame-busy em`).forEach(el => { el.textContent = text; });
   }
 
   function updateQueueStatus() {
@@ -416,7 +427,7 @@
   function frameHTML(s) {
     const isBusy = busy.has(`${P.id}:shot:${s.id}`);
     return (s.image ? `<img src="${s.image}" alt="${esc(s.id)}" loading="lazy">` : framingSVG(s)) +
-      (isBusy ? '<div class="frame-busy"><span class="spinner"></span>a gerar…</div>' : '') +
+      (isBusy ? `<div class="frame-busy"><span class="spinner"></span><em>${esc(progress.get(`${P.id}:shot:${s.id}`) || 'a gerar…')}</em></div>` : '') +
       (s.stale && !isBusy ? '<span class="stale">desatualizada</span>' : '');
   }
 
@@ -442,7 +453,7 @@
       return;
     }
     const b = P.board;
-    const missing = b.shots.filter(s => !s.image || s.stale).length;
+    const missing = b.shots.filter(s => (!s.image || s.stale) && !busy.has(`${P.id}:shot:${s.id}`)).length;
     let html = `<div class="board-head">
       <div class="board-title"><h2>${esc(b.title)}</h2><p class="muted">${esc(b.logline)}</p></div>
       <div class="board-actions">
@@ -565,7 +576,7 @@
 
     if (!P.board) { el.innerHTML = briefHTML + '<div class="empty"><p class="muted">A lista de produção aparece quando criares o storyboard.</p></div>'; return; }
     const b = P.board, pr = b.production;
-    const charHTML = `<div class="card"><h3>🧑 Personagens <span class="muted small">— a referência mantém a cara igual em todos os planos (com imagens Gemini)</span></h3>
+    const charHTML = `<div class="card"><h3>🧑 Personagens <span class="muted small">— a referência mantém a cara igual em todos os planos (só com imagens Gemini ou OpenRouter)</span></h3>
       <div class="char-grid">${b.characters.map((c, i) => {
         const isBusy = busy.has(`${P.id}:char:${c.name}`);
         return `<div class="char">
@@ -663,43 +674,69 @@
   });
 
   // ---------- definições ----------
-  const SETUP_INTRO = '👋 <strong>Configuração única (2 minutos).</strong> A app usa duas chaves grátis: uma para o realizador e outra para as imagens. Depois de as colares, nunca mais te são pedidas.';
+  const SETUP_INTRO = '👋 <strong>Configuração única (1 minuto).</strong> Só precisas de uma chave grátis para o realizador (OpenRouter). As imagens já funcionam sem chave, com a AI Horde. Depois de colares a chave, nunca mais te é pedida.';
   function openSettings(intro = '') {
     const s = AI.settings();
     const ok = v => v ? '<span class="ok-badge">✔︎ configurada</span>' : '';
+    const opt = (name, value, label) => `<option value="${value}" ${s[name] === value ? 'selected' : ''}>${label}</option>`;
+    const keyRow = (name, placeholder, test) => `<div class="key-row"><input name="${name}" type="password" value="${esc(s[name])}" placeholder="${placeholder}" autocomplete="off">
+      <button type="button" class="btn small" data-action="toggle-key" data-for="${name}">👁️</button>
+      ${test ? `<button type="button" class="btn small" data-action="${test}">Testar</button>` : ''}</div>`;
     openModal(`
       <form id="settings-form" class="settings">
         <h3>⚙️ Definições</h3>
         ${intro ? `<p>${intro}</p>` : ''}
         <div class="card">
-          <h4>1 · Realizador: chave Gemini (grátis) ${ok(s.geminiKey)}</h4>
-          <p class="muted small">É o cérebro: ouve a música, faz as perguntas e cria os planos.
-          Abre <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>, entra com a tua conta Google, carrega em <strong>Create API key</strong> e cola-a aqui.</p>
-          <div class="key-row"><input name="geminiKey" type="password" value="${esc(s.geminiKey)}" placeholder="AIza…" autocomplete="off">
-            <button type="button" class="btn small" data-action="toggle-key" data-for="geminiKey">👁️</button>
-            <button type="button" class="btn small" data-action="test-key">Testar</button></div>
+          <h4>🎬 Realizador: OpenRouter (grátis) ${ok(s.openrouterKey)}</h4>
+          <p class="muted small">Ouve a música, faz as perguntas e cria os planos. A app vai buscar sozinha o melhor modelo <strong>grátis</strong> disponível e troca de modelo se algum falhar.
+          Abre <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>, entra, carrega em <strong>Create Key</strong> e cola-a aqui.</p>
+          ${keyRow('openrouterKey', 'sk-or-…', 'test-orkey')}
+          <label class="field"><span>Modelo</span><select name="openrouterModel" id="or-model">
+            <option value="auto" ${s.openrouterModel === 'auto' ? 'selected' : ''}>Automático: o melhor grátis disponível</option>
+            ${s.openrouterModel !== 'auto' ? `<option value="${esc(s.openrouterModel)}" selected>${esc(s.openrouterModel)}</option>` : ''}
+          </select></label>
+          <p class="muted small" id="or-free-info"></p>
         </div>
         <div class="card">
-          <h4>2 · Imagens: chave Pollinations (grátis) ${ok(s.pollinationsKey)}</h4>
-          <p class="muted small">Desenha cada plano. Abre <a href="https://enter.pollinations.ai/keys" target="_blank" rel="noopener">enter.pollinations.ai/keys</a>, entra (GitHub ou Google), cria uma chave <strong>publishable (pk_…)</strong> e cola-a aqui. O modelo Z-Image Turbo é muito barato e usa o saldo grátis da conta.</p>
-          <div class="key-row"><input name="pollinationsKey" type="password" value="${esc(s.pollinationsKey)}" placeholder="pk_…" autocomplete="off">
-            <button type="button" class="btn small" data-action="toggle-key" data-for="pollinationsKey">👁️</button>
-            <button type="button" class="btn small" data-action="test-pkey">Testar</button></div>
+          <h4>🖼️ Imagens</h4>
+          <label class="field"><span>Fornecedor</span><select name="imageProvider" id="img-provider">
+            ${opt('imageProvider', 'horde', 'AI Horde: grátis, sem chave (pode demorar uns minutos)')}
+            ${opt('imageProvider', 'fal', 'fal.ai: pago mas muito barato (~0,003 $/imagem), rápido')}
+            ${opt('imageProvider', 'pollinations', 'Pollinations (chave pk_…)')}
+            ${opt('imageProvider', 'openrouter', 'OpenRouter: pago, mantém a cara das personagens')}
+            ${opt('imageProvider', 'gemini', 'Gemini: pago, mantém a cara das personagens')}
+          </select></label>
+          <div data-prov="horde">
+            <p class="muted small">Rede comunitária de computadores. Sem conta funciona, mas espera na fila. Com uma conta grátis em <a href="https://aihorde.net/register" target="_blank" rel="noopener">aihorde.net/register</a> ficas mais à frente: cola aqui a chave (opcional).</p>
+            ${keyRow('hordeKey', 'opcional', 'test-hkey')}
+            <label class="field"><span>Modelo</span><select name="hordeModel">
+              ${opt('hordeModel', 'flux', 'FLUX Schnell (recomendado)')}${opt('hordeModel', 'sdxl', 'SDXL realista (Juggernaut / AlbedoBase)')}
+            </select></label>
+          </div>
+          <div data-prov="fal">
+            <p class="muted small">Abre <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener">fal.ai/dashboard/keys</a>, cria uma chave e cola-a aqui. Pagas só o que usares (adiciona uns créditos na conta).</p>
+            ${keyRow('falKey', 'chave fal.ai', '')}
+            <label class="field"><span>Modelo</span><select name="falModel">
+              ${opt('falModel', 'fal-ai/flux/schnell', 'FLUX Schnell: o mais barato (~0,003 $)')}${opt('falModel', 'fal-ai/flux/dev', 'FLUX Dev: melhor qualidade (~0,025 $)')}
+            </select></label>
+          </div>
+          <div data-prov="pollinations">
+            <p class="muted small">Chave em <a href="https://enter.pollinations.ai/keys" target="_blank" rel="noopener">enter.pollinations.ai/keys</a>.</p>
+            ${keyRow('pollinationsKey', 'pk_…', 'test-pkey')}
+          </div>
+          <div data-prov="openrouter"><p class="muted small">Usa a chave OpenRouter de cima. Precisa de créditos na conta (~0,04 $/imagem).</p></div>
+          <div data-prov="gemini"><p class="muted small">Precisa de faturação ativa na Google. Usa a chave Gemini das opções avançadas.</p></div>
         </div>
         <p class="muted small">As chaves ficam guardadas só neste dispositivo e não te voltam a ser pedidas.</p>
         <details class="card"><summary>Opções avançadas</summary>
+          <h4>Gemini (alternativa ao OpenRouter)</h4>
+          <p class="muted small">Se puseres as duas, o Gemini só é usado quando o OpenRouter falha. Chave em <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>.</p>
+          ${keyRow('geminiKey', 'AIza…', 'test-key')}
           <label class="field"><span>Modelo de texto (Gemini)</span><select name="textModel">
-            ${['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-2.5-pro'].map(m => `<option ${s.textModel === m ? 'selected' : ''}>${m}</option>`).join('')}
-          </select></label>
-          <label class="field"><span>Modelo de imagem (Pollinations)</span><select name="pollinationsModel">
-            ${[['zimage', 'Z-Image Turbo (rápido, barato)'], ['black-forest-labs/flux.1.1-pro', 'FLUX 1.1 Pro (melhor, mais caro)'], ['microsoft/mai-image-2.6-flash', 'MAI Image Flash']].map(([v, l]) => `<option value="${v}" ${s.pollinationsModel === v ? 'selected' : ''}>${l}</option>`).join('')}
-          </select></label>
-          <label class="field"><span>Fornecedor de imagens</span><select name="imageProvider">
-            <option value="auto" ${s.imageProvider !== 'gemini' ? 'selected' : ''}>Pollinations</option>
-            <option value="gemini" ${s.imageProvider === 'gemini' ? 'selected' : ''}>Gemini (precisa de faturação ativa na Google; mantém a cara das personagens)</option>
+            ${['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemini-2.5-pro'].map(m => opt('textModel', m, m)).join('')}
           </select></label>
           <label class="field"><span>Modelo de imagem Gemini</span><select name="imageModel">
-            ${['gemini-2.5-flash-image', 'gemini-3.1-flash-image', 'gemini-3-pro-image'].map(m => `<option ${s.imageModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+            ${['gemini-2.5-flash-image', 'gemini-3.1-flash-image', 'gemini-3-pro-image'].map(m => opt('imageModel', m, m)).join('')}
           </select></label>
         </details>
         ${P ? `<div class="card"><h4>Este projeto</h4>
@@ -708,13 +745,28 @@
           <button type="button" class="btn ghost danger" data-action="delete-project">Apagar projeto</button></div></div>` : ''}
         <div class="row-btns end"><button class="btn primary">Guardar</button></div>
       </form>`);
-    $('#settings-form').addEventListener('submit', e => {
+    const form = $('#settings-form');
+    const showProv = () => $$('[data-prov]', form).forEach(el => el.classList.toggle('hidden', el.dataset.prov !== form.imageProvider.value));
+    form.imageProvider.addEventListener('change', showProv);
+    showProv();
+    // Lista dos modelos grátis do OpenRouter (pública, não precisa de chave).
+    AI.freeModels().then(list => {
+      const sel = $('#or-model');
+      if (!sel) return;
+      sel.insertAdjacentHTML('beforeend', list.filter(m => m.id !== s.openrouterModel)
+        .map(m => `<option value="${esc(m.id)}">${esc(m.name)}${m.audio ? ' 🎵' : ''}</option>`).join(''));
+      $('#or-free-info').textContent = `${list.length} modelos grátis disponíveis agora (🎵 = ouve áudio). O automático usa: ${list.slice(0, 3).map(m => m.name).join(', ')}…`;
+    }).catch(() => {});
+    form.addEventListener('submit', e => {
       e.preventDefault();
       const f = new FormData(e.target);
+      const v = k => String(f.get(k) || '').trim();
       AI.saveSettings({
-        geminiKey: f.get('geminiKey').trim(), pollinationsKey: f.get('pollinationsKey').trim(),
-        textModel: f.get('textModel'), pollinationsModel: f.get('pollinationsModel'),
-        imageProvider: f.get('imageProvider'), imageModel: f.get('imageModel'),
+        openrouterKey: v('openrouterKey'), openrouterModel: v('openrouterModel') || 'auto',
+        geminiKey: v('geminiKey'), textModel: v('textModel'),
+        imageProvider: v('imageProvider'), hordeKey: v('hordeKey'), hordeModel: v('hordeModel'),
+        falKey: v('falKey'), falModel: v('falModel'),
+        pollinationsKey: v('pollinationsKey'), imageModel: v('imageModel'),
       });
       closeModal();
       toast('Definições guardadas ✔︎');
@@ -774,7 +826,7 @@
     switch (t.dataset.action) {
       case 'new-project': {
         const p = newProjectData(); await DB.saveProject(p); await openProject(p.id);
-        if (!AI.hasGemini() || !AI.settings().pollinationsKey) openSettings(SETUP_INTRO);
+        if (!AI.hasText()) openSettings(SETUP_INTRO);
         return;
       }
       case 'demo': {
@@ -811,6 +863,22 @@
         if (!confirm(`Apagar "${P.name}" deste dispositivo? Não dá para desfazer.`)) return;
         await DB.deleteProject(P.id); await DB.deleteAudio(P.id); closeModal(); return goHome();
       case 'toggle-key': { const i = $(`[name=${t.dataset.for}]`); i.type = i.type === 'password' ? 'text' : 'password'; return; }
+      case 'test-orkey': {
+        const key = $('[name=openrouterKey]').value.trim();
+        if (!key) return toast('Cola primeiro a chave.');
+        t.textContent = '…';
+        try { const d = await AI.testOpenRouterKey(key); toast('Chave OpenRouter válida ✔︎' + (d.is_free_tier ? ' (conta grátis)' : '')); }
+        catch (err) { toast('Chave OpenRouter não funciona: ' + err.message, 'error'); }
+        t.textContent = 'Testar'; return;
+      }
+      case 'test-hkey': {
+        const key = $('[name=hordeKey]').value.trim();
+        if (!key) return toast('Sem chave a AI Horde funciona na mesma (anónimo).');
+        t.textContent = '…';
+        try { const d = await AI.testHordeKey(key); toast(`Chave AI Horde válida ✔︎ (${d.username}, ${Math.round(d.kudos)} kudos)`); }
+        catch (err) { toast('Chave AI Horde não funciona: ' + err.message, 'error'); }
+        t.textContent = 'Testar'; return;
+      }
       case 'test-pkey': {
         const key = $('[name=pollinationsKey]').value.trim();
         if (!key) return toast('Cola primeiro a chave.');

@@ -13,17 +13,18 @@ Pré-produção de videoclipes: falas com um **realizador com IA**, ele cria o *
 3. **Produção:** equipamento, adereços, guarda-roupa, elenco, equipa e locais (como checklists), personagens com aspeto fixo e plano de rodagem agrupado por local.
 4. **Rodagem:** no telemóvel, os planos agrupados por local, com playback da música (2 s antes), contador de takes, notas, ✅ feito, barra de progresso e opção de manter o ecrã ligado. Funciona offline.
 
-## Chaves (grátis, configuradas uma vez)
+## Chaves (configuradas uma vez)
 
-| Para quê | Onde |
-|---|---|
-| Realizador (texto e áudio): Gemini | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
-| Imagens: Pollinations, modelo Z-Image Turbo | [enter.pollinations.ai/keys](https://enter.pollinations.ai/keys) (chave `pk_…`) |
+| Para quê | Serviço | Custo |
+|---|---|---|
+| Realizador (texto e áudio) | **OpenRouter**: [openrouter.ai/keys](https://openrouter.ai/keys). A app vai buscar sozinha a lista de modelos grátis, escolhe o melhor e troca se algum falhar | grátis (com limite diário de pedidos) |
+| Imagens | **AI Horde**: rede comunitária, sem chave. Uma conta grátis em [aihorde.net/register](https://aihorde.net/register) dá prioridade na fila | grátis (pode demorar minutos) |
+| Imagens rápidas | **fal.ai**: [fal.ai/dashboard/keys](https://fal.ai/dashboard/keys), FLUX Schnell | ~0,003 $/imagem |
+
+Alternativas nas opções avançadas: Gemini (texto grátis; imagens pagas), Pollinations e imagens via OpenRouter (pagas; mantêm a cara das personagens com a imagem de referência).
 
 As chaves ficam guardadas só no dispositivo (`localStorage`). Os projetos ficam no IndexedDB do browser.
 Para passar um projeto do portátil para o telemóvel: ⚙️ → **Exportar projeto**, e no outro dispositivo **Importar projeto**.
-
-> As imagens do Gemini não têm plano grátis. A opção existe nas opções avançadas para quem tiver faturação ativa: é a única que usa a imagem de referência da personagem para manter a mesma cara em todos os planos.
 
 ## Testar já (um só ficheiro)
 

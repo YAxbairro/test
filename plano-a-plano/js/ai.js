@@ -1,28 +1,54 @@
-// Camada de IA: texto (Gemini ou Pollinations) e imagens (Gemini ou Pollinations).
-// A chave Gemini é guardada UMA vez no dispositivo e nunca mais é pedida.
+// Camada de IA.
+// Texto (realizador): OpenRouter — escolhe sozinho o melhor modelo GRÁTIS e troca se falhar — ou Gemini.
+// Imagens: AI Horde (grátis, comunitária) ou fal.ai (paga, muito barata e rápida). Extra: Pollinations, Gemini, OpenRouter.
+// As chaves são guardadas UMA vez no dispositivo e nunca mais são pedidas.
 const AI = (() => {
   const SETTINGS_KEY = 'pap-settings';
   const DEFAULTS = {
+    openrouterKey: '',
+    openrouterModel: 'auto',        // auto = melhor modelo grátis disponível
     geminiKey: '',
     textModel: 'gemini-2.5-flash',
+    hordeKey: '',                   // vazio = anónimo (grátis, fila mais lenta)
+    hordeModel: 'flux',
+    falKey: '',
+    falModel: 'fal-ai/flux/schnell',
     pollinationsKey: '',
     pollinationsModel: 'zimage',
-    imageProvider: 'auto',          // auto | gemini | pollinations
+    imageProvider: 'horde',         // horde | fal | pollinations | gemini | openrouter
     imageModel: 'gemini-2.5-flash-image',
+    openrouterImageModel: 'google/gemini-2.5-flash-image',
   };
   let geminiImageBlocked = false;   // as imagens Gemini não têm plano grátis: se falharem, deixamos de tentar nesta sessão
+  let lastModel = '';
 
   function settings() {
-    try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') }; }
+    try {
+      const s = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') };
+      if (s.imageProvider === 'auto') s.imageProvider = 'horde'; // versões antigas: "auto" era Pollinations
+      return s;
+    }
     catch { return { ...DEFAULTS }; }
   }
   function saveSettings(s) {
     try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...settings(), ...s })); } catch {}
     geminiImageBlocked = false;
   }
-  const hasGemini = () => !!settings().geminiKey;
-  const hasImages = () => !!(settings().pollinationsKey || settings().geminiKey);
-  const textProviderName = () => hasGemini() ? 'Gemini' : 'sem chave';
+  const hasText = () => !!(settings().openrouterKey || settings().geminiKey);
+  function hasImages() {
+    const s = settings();
+    return {
+      horde: true, fal: !!s.falKey, pollinations: !!s.pollinationsKey,
+      gemini: !!s.geminiKey, openrouter: !!s.openrouterKey,
+    }[s.imageProvider] ?? true;
+  }
+  // AI Horde: pedidos em paralelo (cada um espera na fila da rede). Os outros: um de cada vez.
+  const imageConcurrency = () => (settings().imageProvider === 'horde' ? 4 : 1);
+  function textProviderName() {
+    const s = settings();
+    if (s.openrouterKey) return lastModel ? 'OpenRouter · ' + lastModel.split('/').pop().replace(':free', '') : 'OpenRouter (grátis)';
+    return s.geminiKey ? 'Gemini' : 'sem chave';
+  }
 
   // ---------- utilitários ----------
   const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -63,6 +89,114 @@ const AI = (() => {
     });
   }
 
+  // ---------- OpenRouter ----------
+  const OR = 'https://openrouter.ai/api/v1';
+  const OR_CACHE = 'pap-or-free';
+  // Preferência entre os grátis (os mais capazes primeiro). O resto é ordenado pelo tamanho do contexto.
+  const PREFERRED = ['google/gemma-4-31b', 'nvidia/nemotron-3-ultra', 'thinkingmachines/inkling:', 'nvidia/nemotron-3.5-super',
+    'google/gemma-4-26b', 'thinkingmachines/inkling-small', 'dots-studio/', 'nvidia/nemotron-3-nano-omni'];
+  let freeCache = null;
+
+  function paramsB(id) {
+    const sizes = [...id.matchAll(/(\d+(?:\.\d+)?)b(?![a-z0-9])/gi)].map(m => parseFloat(m[1]));
+    return sizes.length ? Math.max(...sizes) : null;
+  }
+
+  // Lista de modelos de texto grátis, do melhor para o pior. Atualiza de 6 em 6 horas.
+  async function freeModels(force = false) {
+    if (freeCache && !force) return freeCache;
+    if (!force) {
+      try {
+        const c = JSON.parse(localStorage.getItem(OR_CACHE) || 'null');
+        if (c && Date.now() - c.t < 6 * 3600e3 && c.list?.length) return (freeCache = c.list);
+      } catch {}
+    }
+    const res = await fetch(OR + '/models');
+    if (!res.ok) throw new Error(`OpenRouter: não consegui ler a lista de modelos (erro ${res.status}).`);
+    const data = (await res.json()).data || [];
+    const list = data.filter(m => {
+      const p = m.pricing || {}, a = m.architecture || {};
+      const free = Number(p.prompt) === 0 && Number(p.completion) === 0;
+      const out = a.output_modalities || ['text'];
+      const size = paramsB(m.id);
+      return free && out.includes('text') && !out.includes('audio') && !out.includes('image') &&
+        !/safety|guard|code|coder|lyria|embed/i.test(m.id) && (m.context_length || 0) >= 32000 && !(size && size < 8);
+    }).map(m => {
+      const pref = PREFERRED.findIndex(p => m.id.startsWith(p));
+      return {
+        id: m.id, name: m.name || m.id, ctx: m.context_length,
+        audio: (m.architecture?.input_modalities || []).includes('audio'),
+        score: m.id === 'openrouter/free' ? 1e6 : pref >= 0 ? pref : 100 - Math.log10(m.context_length || 1),
+      };
+    }).sort((a, b) => a.score - b.score);
+    try { localStorage.setItem(OR_CACHE, JSON.stringify({ t: Date.now(), list })); } catch {}
+    return (freeCache = list);
+  }
+
+  const AUDIO_FORMATS = { mpeg: 'mp3', mp3: 'mp3', wav: 'wav', 'x-wav': 'wav', wave: 'wav', ogg: 'ogg', flac: 'flac', 'x-flac': 'flac', mp4: 'm4a', m4a: 'm4a', 'x-m4a': 'm4a', aac: 'aac', webm: 'webm' };
+
+  async function openrouter(body) {
+    const res = await fetch(OR + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + settings().openrouterKey, 'X-Title': 'Plano a Plano' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    const msg = data.error?.message || (res.ok ? '' : `erro ${res.status}`);
+    if (!res.ok || data.error) {
+      const err = new Error(msg);
+      err.status = data.error?.code || res.status;
+      if (err.status === 401) { err.fatal = true; err.message = 'A chave OpenRouter é inválida. Verifica-a nas Definições ⚙️.'; }
+      if (err.status === 429 && /per-day|per day|daily/i.test(msg)) {
+        err.fatal = true;
+        err.message = 'Chegaste ao limite diário de pedidos grátis do OpenRouter. Volta amanhã ou adiciona créditos na tua conta OpenRouter para teres mais pedidos por dia.';
+      }
+      throw err;
+    }
+    return data;
+  }
+
+  async function openrouterText(model, system, messages) {
+    const msgs = [{ role: 'system', content: system }, ...messages.map(m => {
+      if (!m.audio) return { role: m.role, content: m.text || '(sem texto)' };
+      const fmt = AUDIO_FORMATS[(m.audio.mime.split('/')[1] || '').toLowerCase()] || 'mp3';
+      return { role: m.role, content: [{ type: 'input_audio', input_audio: { data: m.audio.base64, format: fmt } }, { type: 'text', text: m.text || '(sem texto)' }] };
+    })];
+    const data = await openrouter({ model, messages: msgs, response_format: { type: 'json_object' }, temperature: 0.8, max_tokens: 16000 });
+    const text = data.choices?.[0]?.message?.content;
+    return parseJSON(Array.isArray(text) ? text.map(p => p.text || '').join('') : text);
+  }
+
+  // Tenta os modelos grátis por ordem até um responder bem.
+  async function openrouterChatJSON(system, messages) {
+    const s = settings();
+    const hasAudio = messages.some(m => m.audio);
+    let candidates;
+    if (s.openrouterModel && s.openrouterModel !== 'auto') candidates = [s.openrouterModel];
+    else {
+      const list = await freeModels();
+      candidates = list.filter(m => !hasAudio || m.audio).map(m => m.id);
+      if (!candidates.length) {
+        throw new Error(hasAudio
+          ? 'Neste momento nenhum modelo grátis do OpenRouter ouve áudio. Cola a letra (com os tempos, se souberes) no chat.'
+          : 'Neste momento não há modelos grátis disponíveis no OpenRouter. Tenta daqui a pouco.');
+      }
+    }
+    let lastErr;
+    for (const model of candidates.slice(0, 6)) {
+      try {
+        const out = await openrouterText(model, system, messages);
+        lastModel = model;
+        return out;
+      } catch (e) {
+        if (e.fatal) throw e;
+        lastErr = e;
+        console.warn('[OpenRouter]', model, e.message);
+      }
+    }
+    throw new Error('Os modelos grátis do OpenRouter estão ocupados ou falharam. Tenta outra vez daqui a um minuto. (' + (lastErr?.message || '') + ')');
+  }
+
   // ---------- Gemini ----------
   async function gemini(model, body, { retries = 1 } = {}) {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
@@ -94,28 +228,36 @@ const AI = (() => {
   const geminiText = data => (data.candidates?.[0]?.content?.parts || [])
     .filter(p => p.text && !p.thought).map(p => p.text).join('');
 
+  async function geminiChatJSON(system, messages) {
+    const contents = messages.map(m => {
+      const parts = [];
+      if (m.audio) parts.push({ inlineData: { mimeType: m.audio.mime, data: m.audio.base64 } });
+      parts.push({ text: m.text || '(sem texto)' });
+      return { role: m.role === 'assistant' ? 'model' : 'user', parts };
+    });
+    const data = await gemini(settings().textModel, {
+      systemInstruction: { parts: [{ text: system }] },
+      contents,
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.8, maxOutputTokens: 32768 },
+    });
+    lastModel = settings().textModel;
+    return parseJSON(geminiText(data));
+  }
+
   // ---------- API pública: chat em JSON ----------
   // messages: [{role:'user'|'assistant', text, audio?:{mime, base64}}]
   async function chatJSON(system, messages) {
-    if (!hasGemini()) {
-      const err = new Error('Falta a chave Gemini (grátis). Abre as Definições ⚙️ e cola-a. Só tens de o fazer uma vez.');
+    const s = settings();
+    if (!s.openrouterKey && !s.geminiKey) {
+      const err = new Error('Falta a chave do realizador. Abre as Definições ⚙️ e cola a chave OpenRouter (grátis). Só tens de o fazer uma vez.');
       err.needsKey = true;
       throw err;
     }
-    {
-      const contents = messages.map(m => {
-        const parts = [];
-        if (m.audio) parts.push({ inlineData: { mimeType: m.audio.mime, data: m.audio.base64 } });
-        parts.push({ text: m.text || '(sem texto)' });
-        return { role: m.role === 'assistant' ? 'model' : 'user', parts };
-      });
-      const data = await gemini(settings().textModel, {
-        systemInstruction: { parts: [{ text: system }] },
-        contents,
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.8, maxOutputTokens: 32768 },
-      });
-      return parseJSON(geminiText(data));
+    if (s.openrouterKey) {
+      try { return await openrouterChatJSON(system, messages); }
+      catch (e) { if (!s.geminiKey) throw e; console.warn('[OpenRouter falhou, a tentar Gemini]', e.message); }
     }
+    return geminiChatJSON(system, messages);
   }
 
   // ---------- Imagens ----------
@@ -127,11 +269,12 @@ const AI = (() => {
     '2.39:1': { w: 1176, h: 504, gemini: '21:9' },
   };
   const aspectOf = a => ASPECTS[a] || ASPECTS['16:9'];
+  const REFS_NOTE = 'Reference image(s) of the character(s). Keep face, hair, body and clothing IDENTICAL in the new frame.';
 
   async function geminiImage(prompt, aspect, refs = []) {
     const parts = [];
     if (refs.length) {
-      parts.push({ text: 'Reference image(s) of the character(s). Keep face, hair, body and clothing IDENTICAL in the new frame:' });
+      parts.push({ text: REFS_NOTE });
       for (const r of refs) parts.push({ inlineData: { mimeType: 'image/jpeg', data: r.split(',')[1] } });
     }
     parts.push({ text: prompt });
@@ -144,6 +287,22 @@ const AI = (() => {
     return compressImage(`data:${img.inlineData.mimeType};base64,${img.inlineData.data}`);
   }
 
+  async function openrouterImage(prompt, aspect, refs = []) {
+    const content = [...refs.map(r => ({ type: 'image_url', image_url: { url: r } })), { type: 'text', text: (refs.length ? REFS_NOTE + '\n\n' : '') + prompt }];
+    const data = await openrouter({
+      model: settings().openrouterImageModel,
+      messages: [{ role: 'user', content }],
+      modalities: ['image', 'text'],
+      image_config: { aspect_ratio: aspectOf(aspect).gemini },
+    }).catch(e => {
+      if (e.status === 402) e.message = 'As imagens no OpenRouter são pagas e a tua conta não tem créditos. Usa a Pollinations (grátis) nas Definições ⚙️.';
+      throw e;
+    });
+    const url = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!url) throw new Error('O OpenRouter não devolveu imagem. Ajusta o prompt e tenta outra vez.');
+    return compressImage(url);
+  }
+
   async function pollinationsImage(prompt, aspect, seed, retries = 2) {
     const { w, h } = aspectOf(aspect);
     const s = settings();
@@ -152,7 +311,7 @@ const AI = (() => {
     const res = await fetch(url);
     if (!res.ok) {
       const msg = (await res.json().catch(() => ({}))).error?.message || '';
-      if (res.status === 401) throw new Error('A chave Pollinations é inválida. Verifica-a nas Definições.');
+      if (res.status === 401) throw new Error('A chave Pollinations é inválida. Verifica-a nas Definições ⚙️.');
       if (res.status === 402) throw new Error('Acabou o saldo grátis da Pollinations por hoje. ' + msg);
       if (retries > 0 && (res.status === 429 || res.status >= 500)) { await sleep(8000); return pollinationsImage(prompt, aspect, seed, retries - 1); }
       throw new Error(`Pollinations: erro ${res.status}. ${msg}`);
@@ -162,30 +321,95 @@ const AI = (() => {
     try { return await compressImage(local); } finally { URL.revokeObjectURL(local); }
   }
 
-  // Devolve { image, provider }.
-  // auto: Pollinations se houver chave (grátis); senão Gemini (só funciona com faturação ativa).
-  async function image(prompt, { aspect, seed, refs } = {}) {
-    const s = settings();
-    const sd = seed ?? Math.floor(Math.random() * 1e6);
-    const usePollinations = s.pollinationsKey && (s.imageProvider === 'pollinations' || s.imageProvider === 'auto');
-    if (usePollinations) return { image: await pollinationsImage(prompt, aspect, sd), provider: 'pollinations' };
-    if (!s.geminiKey) {
-      const err = new Error('Para gerar imagens falta a chave Pollinations (grátis). Abre as Definições ⚙️.');
-      err.needsKey = true;
-      throw err;
+  // AI Horde — rede comunitária, grátis. Pede, espera na fila e descarrega.
+  const HORDE = 'https://aihorde.net/api/v2';
+  const HORDE_MODELS = {
+    flux: { models: ['Flux.1-Schnell fp8 (Compact)'], params: { steps: 8, cfg_scale: 1, sampler_name: 'k_euler' } },
+    sdxl: { models: ['Juggernaut XL', 'AlbedoBase XL (SDXL)', 'AlbedoBase XL 3.1'], params: { steps: 30, cfg_scale: 6, sampler_name: 'k_dpmpp_2m', karras: true } },
+  };
+  const hordeHeaders = () => ({ 'Content-Type': 'application/json', apikey: settings().hordeKey || '0000000000', 'Client-Agent': 'plano-a-plano:1.0:github.com/YAxbairro/test' });
+
+  async function hordeImage(prompt, aspect, seed, onProgress) {
+    const { w, h } = aspectOf(aspect);
+    const cfg = HORDE_MODELS[settings().hordeModel] || HORDE_MODELS.flux;
+    // Sem conta a rede limita o tamanho: até ~1024×576, múltiplos de 64.
+    const scale = Math.min(1, Math.sqrt((1024 * 576) / (w * h)));
+    const W = Math.max(64, Math.round(w * scale / 64) * 64), H = Math.max(64, Math.round(h * scale / 64) * 64);
+    const res = await fetch(HORDE + '/generate/async', {
+      method: 'POST', headers: hordeHeaders(),
+      body: JSON.stringify({
+        prompt: prompt.slice(0, 1500) + ' ### text, watermark, logo, deformed, extra fingers',
+        params: { ...cfg.params, width: W, height: H, n: 1, seed: String(seed) },
+        models: cfg.models, nsfw: false, censor_nsfw: true, r2: true, shared: false,
+      }),
+    });
+    const sub = await res.json().catch(() => ({}));
+    if (!res.ok || !sub.id) throw new Error('AI Horde: ' + (sub.message || `erro ${res.status}`) + (res.status === 429 ? ' Espera um pouco e tenta outra vez.' : ''));
+    const started = Date.now();
+    while (true) {
+      await sleep(6000);
+      const c = await (await fetch(`${HORDE}/generate/check/${sub.id}`, { headers: hordeHeaders() })).json().catch(() => ({}));
+      if (c.faulted) throw new Error('AI Horde: a geração falhou. Tenta outra vez.');
+      if (c.is_possible === false) throw new Error('AI Horde: neste momento não há computadores na rede para este modelo. Muda o modelo nas Definições ou tenta mais tarde.');
+      if (c.done) break;
+      onProgress?.(c.queue_position ? `na fila #${c.queue_position}` : (c.wait_time ? `~${c.wait_time}s` : 'a desenhar…'));
+      if (Date.now() - started > 15 * 60e3) throw new Error('AI Horde: demorou demasiado (rede cheia). Tenta mais tarde ou usa a fal.ai.');
     }
-    if (geminiImageBlocked) throw new Error('As imagens Gemini não estão disponíveis com a tua chave (não têm plano grátis). Põe a chave Pollinations nas Definições ⚙️.');
-    try {
-      return { image: await geminiImage(prompt, aspect, refs || []), provider: 'gemini' };
-    } catch (e) {
-      if (e.status && e.status !== 429 && e.status !== 503) {
-        geminiImageBlocked = true;
-        throw new Error('As imagens Gemini precisam de faturação ativa na Google. Põe a chave Pollinations (grátis) nas Definições ⚙️ para gerar as imagens.');
-      }
-      throw e;
-    }
+    const st = await (await fetch(`${HORDE}/generate/status/${sub.id}`, { headers: hordeHeaders() })).json();
+    const gen = st.generations?.[0];
+    if (!gen?.img) throw new Error('AI Horde: não devolveu imagem.');
+    if (gen.censored) throw new Error('AI Horde: a imagem foi bloqueada pelo filtro. Ajusta o prompt.');
+    return compressImage(gen.img.startsWith('http') ? gen.img : 'data:image/webp;base64,' + gen.img);
   }
 
+  // fal.ai — pago por imagem, muito barato (FLUX schnell ≈ 0,003 $) e rápido.
+  async function falImage(prompt, aspect, seed) {
+    const { w, h } = aspectOf(aspect);
+    const res = await fetch('https://fal.run/' + settings().falModel, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Key ' + settings().falKey },
+      body: JSON.stringify({ prompt, image_size: { width: w, height: h }, num_images: 1, seed, sync_mode: true, enable_safety_checker: true }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = typeof data.detail === 'string' ? data.detail : (data.detail?.[0]?.msg || data.message || `erro ${res.status}`);
+      if (res.status === 401 || res.status === 403) throw new Error('A chave fal.ai é inválida. Verifica-a nas Definições ⚙️. (' + msg + ')');
+      if (res.status === 402 || /balance|credit|locked/i.test(msg)) throw new Error('A conta fal.ai não tem saldo. Adiciona créditos em fal.ai ou usa a AI Horde (grátis). (' + msg + ')');
+      throw new Error('fal.ai: ' + msg);
+    }
+    const url = data.images?.[0]?.url;
+    if (!url) throw new Error('A fal.ai não devolveu imagem.');
+    return compressImage(url);
+  }
+
+  // Devolve { image, provider }.
+  async function image(prompt, { aspect, seed, refs, onProgress } = {}) {
+    const s = settings();
+    const sd = seed ?? Math.floor(Math.random() * 1e6);
+    if (!hasImages()) {
+      const err = new Error('Falta a chave do fornecedor de imagens escolhido. Abre as Definições ⚙️ (ou escolhe a AI Horde, que é grátis e não precisa de chave).');
+      err.noImageKey = true;
+      throw err;
+    }
+    if (s.imageProvider === 'horde') return { image: await hordeImage(prompt, aspect, sd, onProgress), provider: 'horde' };
+    if (s.imageProvider === 'fal') return { image: await falImage(prompt, aspect, sd), provider: 'fal' };
+    if (s.imageProvider === 'openrouter') return { image: await openrouterImage(prompt, aspect, refs || []), provider: 'openrouter' };
+    if (s.imageProvider === 'gemini') {
+      if (geminiImageBlocked) throw new Error('As imagens Gemini não estão disponíveis com a tua chave (não têm plano grátis). Usa a Pollinations nas Definições ⚙️.');
+      try {
+        return { image: await geminiImage(prompt, aspect, refs || []), provider: 'gemini' };
+      } catch (e) {
+        if (e.status && e.status !== 429 && e.status !== 503) {
+          geminiImageBlocked = true;
+          throw new Error('As imagens Gemini precisam de faturação ativa na Google. Usa a Pollinations (grátis) nas Definições ⚙️.');
+        }
+        throw e;
+      }
+    }
+    return { image: await pollinationsImage(prompt, aspect, sd), provider: 'pollinations' };
+  }
+
+  // ---------- testar chaves ----------
   async function testKey(key) {
     const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1', { headers: { 'x-goog-api-key': key } });
     if (!res.ok) {
@@ -195,13 +419,30 @@ const AI = (() => {
     return true;
   }
 
+  async function testOpenRouterKey(key) {
+    const res = await fetch(OR + '/key', { headers: { Authorization: 'Bearer ' + key } });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(d.error?.message || `erro ${res.status}`);
+    return d.data || {};
+  }
+
+  async function testHordeKey(key) {
+    const res = await fetch(HORDE + '/find_user', { headers: { ...hordeHeaders(), apikey: key } });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(d.message || `erro ${res.status}`);
+    return d;
+  }
+
   async function testPollinationsKey(key) {
     const res = await fetch(`https://gen.pollinations.ai/account/balance?key=${encodeURIComponent(key)}`);
     if (res.status === 401 || res.status === 403) throw new Error('chave recusada');
     return true;
   }
 
-  return { settings, saveSettings, hasGemini, hasImages, textProviderName, chatJSON, image, testKey, testPollinationsKey, blobToBase64, aspects: Object.keys(ASPECTS) };
+  return {
+    settings, saveSettings, hasText, hasImages, imageConcurrency, textProviderName, chatJSON, image, freeModels,
+    testKey, testOpenRouterKey, testHordeKey, testPollinationsKey, blobToBase64, aspects: Object.keys(ASPECTS),
+  };
 })();
 
 // ---------- Linguagem de cinema e prompts ----------

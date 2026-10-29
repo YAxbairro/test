@@ -283,3 +283,4 @@ details summary { cursor: pointer; color: var(--muted); font-weight: 600; }
   .section-title { color: #000; }
 }
 .ok-badge { font-size: 11px; color: var(--ok); border: 1px solid currentColor; border-radius: 99px; padding: 1px 7px; margin-left: 4px; vertical-align: middle; }
+.frame-busy em { font-style: normal; text-align: center; padding: 0 6px; }
