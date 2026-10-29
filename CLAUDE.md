@@ -30,6 +30,7 @@ sabe e pedir. Nunca omitir. Rever a resposta antes de enviar para confirmar isto
 - As funções antigas (sem p_rid) ficaram sem permissão (revoke); apagá-las quando o Yanick aprovar o pedido de confirmação do Supabase.
 - Pedidos só entram por `mr_checkout` (o servidor calcula preços a partir de `mr_menu` + `mr_items`, recusa esgotados, mesa fechada e pausa).
   Pedidos ao garçom por `mr_request`. Estados por `mr_status(p_pin,p_rid,p_id,p_from,p_to,p_why,p_by)`: grava `mr_orders.log` (de/para/hora/motivo/ecrã), cancelar exige motivo, repor um cancelado volta a descontar stock (`mr_advance` antigo chama-o). Pagar por pessoa: `mr_pay_guest`. Confirmar telemóvel: `mr_ack`.
+  Recibos: `mr_pay`/`mr_pay_guest` dão número sequencial por restaurante (`mr_payments.num`, `mr_orders.rcpt`) e já não marcam cancelados como pagos. Conta (consulta) na mesa, recibo depois de pagar (imprimir 80 mm / WhatsApp), cliente vê "Ver recibo". Dados do recibo em Gestão → Programa e entregas (`rcptInfo`, `rcptFoot`). Sem valor fiscal (fatura = nôsERP no futuro).
   Fotos: Edge Function `mr-upload` (precisa do PIN). Inserção anónima direta nas tabelas e no bucket está fechada.
 - IA: Edge Function `mr-ai` (Gemini, segredo `GEMINI_API_KEY` no Supabase): `nutri` (valor nutricional, precisa PIN) e `ask` (assistente).
   Sem IA o site usa a tabela local (`nutriLocal`) e o `localAsk`. Fotos melhoradas no próprio telemóvel (`photoFlow`, sem custos).
