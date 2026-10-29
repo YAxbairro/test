@@ -172,6 +172,7 @@ textarea{min-height:64px;resize:vertical}
 .stk{display:flex;flex-direction:column;gap:6px}.stkc{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px}.stkr{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}.stkr.low{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,var(--surface))}
 .stkn{display:flex;flex-direction:column;min-width:0}.stkn small{color:var(--muted);font-size:13px}.stkb{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.stkr .stkb input{width:76px!important;flex:none;text-align:center}.stkb .ghost{min-width:44px;padding:8px 10px}
 #netbar{position:fixed;left:0;right:0;top:0;z-index:60;background:#b3261e;color:#fff;text-align:center;font-weight:600;font-size:14px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px}
+.dnav{display:flex;align-items:center;justify-content:center;gap:14px;margin:4px 0 12px}.dnav b{min-width:130px;text-align:center;font-size:17px}.dnav .ghost{min-width:48px}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:720px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -1030,7 +1031,7 @@ function renderKitchen(){
  var list=S.orders.filter(function(o){return ["novo","preparo","pronto"].indexOf(o.status)>-1&&o.createdAt>Date.now()-12*3600000&&(st==="todos"||o.station===st);});
  var reqs=S.requests.filter(function(r){return !r.done;});
  var cols=[["novo","Novos","Aceitar e preparar"],["preparo","Em preparo","Marcar como pronto"],["pronto","Prontos","Marcar como entregue"]];
- var kh=!!S.khist;var h='<div class="view"><div class="kitchen"><div class="k-head"><h1>'+(kh?'Histórico de hoje':'Pedidos em tempo real')+'</h1><div class="seg" role="group" aria-label="Ver"><button type="button" data-kh="0" aria-pressed="'+!kh+'">Agora</button><button type="button" data-kh="1" aria-pressed="'+kh+'">📋 Hoje</button></div>'+(S.settings.oneStation?'':'<div class="seg" role="group" aria-label="Posto">'+[["todos","Tudo"],["cozinha","Cozinha"],["bar","Bar"]].map(function(x){return '<button type="button" data-st="'+x[0]+'" aria-pressed="'+(st===x[0])+'">'+x[1]+'</button>';}).join("")+'</div>')+'</div>';
+ var kh=!!S.khist;var h='<div class="view"><div class="kitchen"><div class="k-head"><h1>'+(kh?'Histórico':'Pedidos em tempo real')+'</h1><div class="seg" role="group" aria-label="Ver"><button type="button" data-kh="0" aria-pressed="'+!kh+'">Agora</button><button type="button" data-kh="1" aria-pressed="'+kh+'">📋 Hoje</button></div>'+(S.settings.oneStation?'':'<div class="seg" role="group" aria-label="Posto">'+[["todos","Tudo"],["cozinha","Cozinha"],["bar","Bar"]].map(function(x){return '<button type="button" data-st="'+x[0]+'" aria-pressed="'+(st===x[0])+'">'+x[1]+'</button>';}).join("")+'</div>')+'</div>';
  if(reqs.length)h+='<div class="alerts">'+reqs.map(function(r){return '<div class="alert'+(r.type!=="conta"?" call":"")+'"><span>'+reqText(r)+'</span><button type="button" class="ghost" data-req="'+r.id+'">Feito</button></div>';}).join("")+'</div>';
  var lsh=lowStockHtml();if(lsh)h+='<div class="alerts">'+lsh+'</div>';
  if(kh){h+=histHtml()+'</div></div>';app.innerHTML=h;return;}
@@ -1045,15 +1046,24 @@ function lowStock(){return Math.max(0,+S.settings.lowStock||5);}
 function stockOf(id){var it=S.items[id];return it&&typeof it.stock==="number"?it.stock:null;}
 function lowStockHtml(){var lo=MENU.filter(function(m){var s=stockOf(m.id);return s!==null&&s<=lowStock()&&!m.hidden;});if(!lo.length)return "";
  return '<div class="alert call"><span>⚠️ Stock baixo: '+lo.map(function(m){var s=stockOf(m.id);return esc(m.n.pt)+' <b class="num">('+(s?s:"esgotado")+')</b>';}).join(", ")+'</span></div>';}
+/* dias anteriores: busca ao servidor (o ecrã só guarda as últimas 36 h) */
+var histCache={};
+function histDay(off){var a=today0()-off*86400000,b=a+86400000;if(!off)return {a:a,b:b,list:S.orders};if(histCache[off])return {a:a,b:b,list:histCache[off]};
+ if(sb&&!histCache["l"+off]){histCache["l"+off]=1;sb.from("mr_orders").select("*").eq("rid",RID).gte("created_at",a).lt("created_at",b).order("created_at").limit(2000).then(chk).then(function(d){histCache[off]=d.map(rowOrder);render();}).catch(function(){histCache["l"+off]=0;toast("Não foi possível carregar esse dia.");});}
+ return {a:a,b:b,list:sb?null:S.orders};}
+function dayName(off,a){if(!off)return "Hoje";if(off===1)return "Ontem";return new Date(a).toLocaleDateString("pt-PT",{weekday:"short",day:"numeric",month:"short"});}
 function histHtml(){
- var t0=today0(),st=S.kstation,os=S.orders.filter(function(o){return o.createdAt>=t0&&(st==="todos"||S.settings.oneStation||o.station===st);}).sort(function(a,b){return a.createdAt-b.createdAt;});
+ var off=S.kday||0,hd=histDay(off),t0=hd.a,st=S.kstation;
+ var nav='<div class="dnav"><button type="button" class="ghost" data-kday="'+(off+1)+'" aria-label="Dia anterior">◀</button><b>'+esc(dayName(off,hd.a))+'</b><button type="button" class="ghost" data-kday="'+Math.max(0,off-1)+'"'+(off?'':' disabled')+' aria-label="Dia seguinte">▶</button></div>';
+ if(!hd.list)return nav+'<p class="muted" style="text-align:center;padding:30px 0">A carregar…</p>';
+ var os=hd.list.filter(function(o){return o.createdAt>=t0&&o.createdAt<hd.b&&(st==="todos"||S.settings.oneStation||o.station===st);}).sort(function(a,b){return a.createdAt-b.createdAt;});
  var ok=os.filter(function(o){return o.status!=="cancelado";}),sold=0,paid=0,acc={},cnt={},val={},tickets={};
  ok.forEach(function(o){sold+=o.total||0;if(o.paid)paid+=o.total||0;acc[o.id]=sold;tickets[o.mesa+"|"+o.batch]=1;o.items.forEach(function(it){cnt[it.id]=(cnt[it.id]||0)+it.qty;val[it.id]=(val[it.id]||0)+it.qty*it.unit;});});
  var nameOf={};ok.forEach(function(o){o.items.forEach(function(it){nameOf[it.id]=it.name;});});
- var h='<div class="kpis"><div class="kpi"><small>Vendido hoje</small><b class="num">'+money(sold)+'</b></div><div class="kpi"><small>Já pago</small><b class="num">'+money(paid)+'</b></div><div class="kpi"><small>Por pagar</small><b class="num">'+money(sold-paid)+'</b></div><div class="kpi"><small>Pedidos</small><b class="num">'+Object.keys(tickets).length+'</b></div></div>';
+ var h=nav+'<div class="kpis"><div class="kpi"><small>Vendido '+(off?esc(dayName(off,t0).toLowerCase()):'hoje')+'</small><b class="num">'+money(sold)+'</b></div><div class="kpi"><small>Já pago</small><b class="num">'+money(paid)+'</b></div><div class="kpi"><small>Por pagar</small><b class="num">'+money(sold-paid)+'</b></div><div class="kpi"><small>Pedidos</small><b class="num">'+Object.keys(tickets).length+'</b></div></div>';
  var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];});
- if(top.length)h+='<details class="hsum" open><summary>O que saiu hoje</summary>'+top.map(function(id){return '<div class="hrow2"><span><b class="num">'+cnt[id]+'×</b> '+esc(nameOf[id]||id)+'</span><span class="num muted">'+money(val[id])+'</span></div>';}).join("")+'</details>';
- if(!os.length)return h+'<p class="muted" style="text-align:center;padding:30px 0">Ainda não há pedidos hoje.</p>';
+ if(top.length)h+='<details class="hsum" open><summary>O que saiu</summary>'+top.map(function(id){return '<div class="hrow2"><span><b class="num">'+cnt[id]+'×</b> '+esc(nameOf[id]||id)+'</span><span class="num muted">'+money(val[id])+'</span></div>';}).join("")+'</details>';
+ if(!os.length)return h+'<p class="muted" style="text-align:center;padding:30px 0">'+(off?'Não houve pedidos neste dia.':'Ainda não há pedidos hoje.')+'</p>';
  h+='<div class="hist">'+os.slice().reverse().map(function(o){var cx=o.status==="cancelado";
   return '<article class="hrow'+(cx?" hcx":"")+'"><div class="hh"><b class="num">'+hhmm(o.createdAt)+'</b> <b>'+esc(mesaLbl(o.mesa))+'</b>'+(o.guest?' · '+esc(o.guest):'')+(S.settings.oneStation?'':' · '+(o.station==="bar"?"Bar":"Cozinha"))+'<span class="pill'+(o.status==="entregue"?"":" on")+'">'+KST[o.status]+'</span></div>'+
    '<div class="hi">'+o.items.map(function(it){return '<span>'+it.qty+'× '+esc(it.name)+(it.opts&&it.opts.length?' <small>('+esc(it.opts.join(", "))+')</small>':'')+'</span>';}).join("")+'</div>'+
@@ -1529,6 +1539,7 @@ document.addEventListener("click",function(e){
  if(e.target.closest("#callBtn")){svcSheet();return;}
  if(e.target.closest("#openReq")){if(pendReq("garcom")){toast(L().openAsk);return;}sendReq("garcom",null,{abrir:true});return;}
  if(e.target.closest("#billBtn")){askBill(e.target.closest("#billBtn"));return;}
+ if((t=e.target.closest("[data-kday]"))){S.kday=Math.max(0,Math.min(60,+t.dataset.kday||0));render();return;}
  if((t=e.target.closest("[data-kh]"))){S.khist=t.dataset.kh==="1";render();window.scrollTo(0,0);return;}
  if((t=e.target.closest("[data-sk]"))){store.setStock(t.dataset.sk,undefined,+t.dataset.d).catch(pinErr);return;}
  if((t=e.target.closest("[data-skoff]"))){store.setStock(t.dataset.skoff,null).then(function(){toast("Stock deixou de ser controlado");}).catch(pinErr);return;}
