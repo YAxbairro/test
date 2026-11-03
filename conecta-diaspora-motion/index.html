@@ -2,350 +2,252 @@
 <html lang="pt">
 <head>
 <meta charset="utf-8">
-<title>Conecta Diáspora 2027 — Motion</title>
+<title>Conecta Diáspora Teaser</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800&display=block" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  :root{
-    --blue:#0B2C9E; --blue-deep:#071C6B; --blue-mid:#1446C8; --sky:#3D8BF0;
-    --lime:#E6F53B; --cream:#F6EFDF;
-  }
+  :root{--blue:#0B2C9E;--blue-deep:#06175E;--blue-mid:#1446C8;--sky:#3D8BF0;--lime:#E6F53B;--cream:#F6EFDF}
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
-  #stage{position:absolute;inset:0;overflow:hidden;background:var(--blue);font-family:Montserrat,sans-serif;color:var(--cream)}
+  #stage{position:absolute;inset:0;overflow:hidden;background:var(--blue-deep);font-family:Montserrat,sans-serif;color:var(--cream)}
   .layer{position:absolute;inset:0;overflow:hidden}
-  .anton{font-family:Anton,Impact,sans-serif;text-transform:uppercase;line-height:.92;letter-spacing:.005em}
-  .ctr{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
-  .ch{display:inline-block;will-change:transform}
-  .mask{display:block;overflow:hidden;padding-top:.14em;margin-top:-.14em}
+  .anton{font-family:Anton,Impact,sans-serif;text-transform:uppercase;line-height:1;white-space:nowrap}
+  .ch{display:inline-block}
+  .kick{font-weight:700;letter-spacing:.42em;text-transform:uppercase;font-size:34px}
 
-  /* S1 */
-  #bg-grad{background:radial-gradient(120% 80% at 50% 45%, var(--blue-mid) 0%, var(--blue) 45%, var(--blue-deep) 100%)}
-  #seed{position:absolute;left:540px;top:960px;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:var(--lime);box-shadow:0 0 60px 10px rgba(230,245,59,.45)}
-  .ring{position:absolute;left:540px;top:960px;border-radius:50%;border:3px solid var(--lime);width:44px;height:44px;margin:-22px 0 0 -22px;opacity:0}
-  #intro-txt{position:absolute;left:0;right:0;top:760px;text-align:center;font-weight:600;font-size:46px;letter-spacing:.32em;text-transform:uppercase;color:var(--cream)}
+  /* A — cities */
+  #sA{background:var(--blue)}
+  .city{position:absolute;inset:0;visibility:hidden}
+  .city .name{position:absolute;left:50%;top:50%;font-size:330px}
+  .city .de{position:absolute;left:0;right:0;text-align:center;top:640px}
+  .city .idx{position:absolute;left:70px;bottom:120px;font-weight:800;font-size:30px;letter-spacing:.3em}
+  #lineA,#islandsG{position:absolute;inset:0}
+  #cv{position:absolute;left:0;right:0;top:1330px;text-align:center;font-size:190px;color:var(--lime);overflow:hidden;padding-top:40px}
+  #cvA{position:absolute;left:0;right:0;top:1290px;text-align:center}
 
-  /* S2 */
-  #map{position:absolute;inset:0}
-  .city{position:absolute;font-weight:700;font-size:30px;letter-spacing:.28em;color:var(--cream);opacity:0}
-  .city i{display:inline-block;width:16px;height:16px;border-radius:50%;background:var(--lime);vertical-align:middle;margin:0 14px;box-shadow:0 0 18px rgba(230,245,59,.8)}
-  #s2-txt{position:absolute;left:0;right:0;top:1420px;text-align:center}
-  #s2-txt .l1{font-weight:500;font-size:64px;color:var(--cream)}
-  #s2-txt .l2{font-weight:800;font-size:92px;color:var(--lime);margin-top:6px}
+  /* B — sunrise */
+  #sB{background:var(--cream)}
+  #sun{position:absolute;left:540px;top:1080px;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;background:var(--lime)}
+  #tagB{position:absolute;left:0;right:0;top:330px;text-align:center;color:var(--blue)}
 
-  /* iris */
-  .iris{position:absolute;left:540px;top:960px;border-radius:50%;width:10px;height:10px;margin:-5px 0 0 -5px;transform:scale(0)}
+  /* C — words on lime */
+  #sC{background:var(--lime);color:var(--blue)}
+  .wd{position:absolute;left:50%;top:50%;visibility:hidden;color:var(--blue)}
+  #thread{position:absolute;left:0;top:952px;height:16px;width:1080px;background:var(--blue);transform-origin:left center;transform:scaleX(0)}
+  #ringC{position:absolute;left:540px;top:960px;width:1300px;height:1300px;margin:-650px 0 0 -650px;border-radius:50%;border:4px dashed rgba(11,44,158,.3)}
 
-  /* S3 */
-  #s3{background:var(--cream);color:var(--blue)}
-  #s3 .word{position:absolute;left:80px;font-size:300px;color:var(--blue)}
-  #s3 .bar{position:absolute;left:84px;top:1452px;height:26px;width:620px;background:var(--lime);transform-origin:left center;transform:scaleX(0)}
-  #dot{position:absolute;width:74px;height:74px;border-radius:50%;background:var(--lime)}
-  #s3-kicker{position:absolute;left:84px;top:300px;font-weight:700;font-size:34px;letter-spacing:.34em;color:var(--blue);text-transform:uppercase}
+  /* D — tunnel */
+  #sD{background:radial-gradient(circle at 50% 50%, var(--blue-mid) 0%, var(--blue) 40%, var(--blue-deep) 100%)}
+  #tunnel{position:absolute;inset:0}
+  .tr{position:absolute;left:540px;top:960px;width:600px;height:600px;margin:-300px 0 0 -300px;border-radius:50%;border-style:solid;transform:scale(0)}
+  .fly{position:absolute;left:50%;top:50%;visibility:hidden;color:var(--cream)}
 
-  /* S4 */
-  #s4{background:var(--lime);color:var(--blue)}
-  #s4 .row{position:absolute;left:0;width:100%;white-space:nowrap}
-  #s4 .big{font-size:132px}
-  #s4 .ghost{font-size:150px;color:transparent;-webkit-text-stroke:3px rgba(11,44,158,.35)}
-  #s4 .num{position:absolute;font-weight:800;font-size:34px;letter-spacing:.2em;color:var(--blue)}
-  #wipe-blue{position:absolute;left:1180px;top:2100px;width:3400px;height:3400px;margin:-1700px 0 0 -1700px;border-radius:50%;background:var(--blue);transform:scale(0)}
-  #wipe-ring{position:absolute;left:1180px;top:2100px;width:3400px;height:3400px;margin:-1700px 0 0 -1700px;border-radius:50%;border:90px solid var(--cream);transform:scale(0)}
+  /* E — lockup */
+  #sE{background:radial-gradient(90% 60% at 50% 48%, var(--blue-mid) 0%, var(--blue) 45%, var(--blue-deep) 100%)}
+  #y2027{position:absolute;left:50%;top:50%;font-size:600px;color:transparent;-webkit-text-stroke:3px rgba(61,139,240,.55)}
+  #lock{position:absolute;left:0;right:0;top:640px;text-align:center}
+  #lock .l{display:block;font-size:250px;line-height:.98;padding-top:50px;margin-top:-50px;overflow:hidden}
+  #lC{color:var(--cream)} #lD{color:var(--lime)}
+  #lbar{width:160px;height:10px;background:var(--lime);margin:44px auto 0;transform:scaleX(0)}
+  #ldate{margin-top:40px;font-weight:800;font-size:38px;letter-spacing:.32em;color:var(--cream)}
+  #sheen{position:absolute;left:0;top:560px;width:380px;height:700px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);mix-blend-mode:overlay;transform:skewX(-20deg) translateX(-600px)}
 
-  /* S5/S6 final */
-  #fin{background:radial-gradient(110% 70% at 30% 30%, var(--blue-mid) 0%, var(--blue) 50%, var(--blue-deep) 100%)}
-  #arcs{position:absolute;inset:0}
-  #title{position:absolute;left:70px;top:560px}
-  #title .mask{padding-top:70px;margin-top:-70px}
-  #t-conecta{font-size:260px;color:var(--cream);display:block}
-  #t-diaspora{font-size:260px;color:var(--lime);display:block}
-  #t-year{font-family:Montserrat;font-weight:400;font-size:120px;letter-spacing:.42em;color:var(--cream);margin-top:22px;display:block}
-  .lbar{height:9px;width:110px;background:var(--lime);transform-origin:left;transform:scaleX(0)}
-  #info{position:absolute;left:74px;top:1335px;width:960px;white-space:nowrap}
-  #info .h{font-weight:700;font-size:46px;color:var(--cream);letter-spacing:-.005em}
-  #info .tag{font-weight:400;font-size:33px;color:var(--cream);margin-top:12px;opacity:.95}
-  #info .pil{font-weight:800;font-size:27px;color:var(--lime);letter-spacing:.15em;margin-top:40px}
-  #date{position:absolute;left:74px;top:1660px}
-  #date .d1{font-weight:800;font-size:44px;letter-spacing:.14em;color:var(--cream);margin-top:24px}
-  #date .d2{font-weight:500;font-size:28px;letter-spacing:.32em;color:var(--cream);opacity:.85;margin-top:10px}
-  #stamp{position:absolute;right:60px;top:1548px;background:var(--lime);color:var(--blue);font-family:Anton;font-size:64px;padding:14px 34px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;transform:rotate(-8deg) scale(0);box-shadow:0 18px 50px rgba(0,0,0,.35)}
-
-  /* fx */
-  #flash{position:absolute;inset:0;background:#fff;opacity:0;mix-blend-mode:screen;pointer-events:none}
-  #grain{position:absolute;inset:-200px;opacity:.09;pointer-events:none;mix-blend-mode:overlay;background-size:256px 256px}
-  #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(130% 90% at 50% 50%, transparent 60%, rgba(0,0,20,.45) 100%)}
+  #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+  #grain{position:absolute;inset:-200px;opacity:.08;pointer-events:none;mix-blend-mode:overlay;background-size:256px 256px}
+  #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(130% 90% at 50% 50%, transparent 60%, rgba(0,0,25,.4) 100%)}
 </style>
 </head>
 <body>
-<div id="stage">
- <div id="cam" class="layer">
+<div id="stage"><div id="cam" class="layer">
 
-  <!-- ============ S1 + S2 : intro & diaspora map ============ -->
-  <div id="s12" class="layer">
-    <div id="bg-grad" class="layer"></div>
-    <svg id="map" viewBox="0 0 1080 1920" width="1080" height="1920">
-      <defs>
-        <linearGradient id="arcg" x1="0" x2="1"><stop offset="0" stop-color="#E6F53B" stop-opacity=".2"/><stop offset="1" stop-color="#E6F53B"/></linearGradient>
-      </defs>
-      <g id="islands"></g>
-      <g id="arcs-in" fill="none" stroke-linecap="round"></g>
-      <g id="links" fill="none" stroke-linecap="round"></g>
+  <!-- A: cities flash, one thread runs through them, lands in Cabo Verde -->
+  <div id="sA" class="layer">
+    <div class="city" id="c1" style="background:var(--blue)"><div class="de kick">de</div><div class="name anton" style="color:var(--cream)">Lisboa</div><div class="idx">38.7° N</div></div>
+    <div class="city" id="c2" style="background:var(--cream)"><div class="de kick" style="color:var(--blue)">de</div><div class="name anton" style="color:var(--blue)">Boston</div><div class="idx" style="color:var(--blue)">42.3° N</div></div>
+    <div class="city" id="c3" style="background:var(--lime)"><div class="de kick" style="color:var(--blue)">de</div><div class="name anton" style="color:var(--blue)">Paris</div><div class="idx" style="color:var(--blue)">48.8° N</div></div>
+    <div class="city" id="c4" style="background:var(--blue-deep)"><div class="de kick">de</div><div class="name anton" style="font-size:250px;color:transparent;-webkit-text-stroke:4px var(--cream)">Roterdão</div><div class="idx">51.9° N</div></div>
+    <svg id="islandsG" viewBox="0 0 1080 1920"><g id="isl"></g></svg>
+    <div id="cvA" class="kick" style="opacity:0">a</div>
+    <div id="cv" class="anton"></div>
+    <svg id="lineA" viewBox="0 0 1080 1920"><path id="thr" d="M-60 1500 C 180 1300, 320 1640, 560 1460 S 980 1180, 940 1000 S 700 760, 540 960" fill="none" stroke="#E6F53B" stroke-width="12" stroke-linecap="round"/><circle id="tip" r="20" fill="#E6F53B"/></svg>
+  </div>
+
+  <!-- B: island → sunrise over the sea -->
+  <div id="sB" class="layer" style="visibility:hidden">
+    <div id="tagB" class="kick">Da diáspora a Cabo Verde</div>
+    <div id="sun"></div>
+    <svg class="layer" viewBox="0 0 1080 1920" id="land">
+      <path d="M0 1920 L0 1180 C110 1150 170 1060 260 1040 C340 1020 380 1100 460 1090 C560 1075 600 960 700 950 C790 942 840 1060 930 1070 C1000 1078 1040 1050 1080 1060 L1080 1920Z" fill="#1446C8"/>
+      <path d="M0 1920 L0 1240 C150 1225 240 1170 360 1180 C470 1190 560 1250 680 1240 C820 1228 900 1170 1080 1185 L1080 1920Z" fill="#0B2C9E"/>
+      <g id="sea" fill="none" stroke="#3D8BF0" stroke-width="3" opacity=".7"></g>
     </svg>
-    <div id="cities"></div>
-    <div class="ring" id="r1"></div><div class="ring" id="r2"></div><div class="ring" id="r3"></div>
-    <div id="seed"></div>
-    <div id="intro-txt"></div>
-    <div id="s2-txt"><div class="mask"><div class="l1">Da diáspora</div></div><div class="mask"><div class="l2">a Cabo Verde.</div></div></div>
-    <div class="iris" id="iris-lime" style="background:var(--lime)"></div>
-    <div class="iris" id="iris-cream" style="background:var(--cream)"></div>
   </div>
 
-  <!-- ============ S3 : Ideias que nos ligam ============ -->
-  <div id="s3" class="layer" style="visibility:hidden">
-    <div id="s3-kicker">Encontro de Jovens Cabo-verdianos</div>
-    <div class="word anton" id="w1" style="top:430px">Ideias</div>
-    <div class="word anton" id="w2" style="top:730px">que nos</div>
-    <div class="word anton" id="w3" style="top:1030px">ligam<span style="visibility:hidden">.</span></div>
-    <div class="bar" id="s3bar"></div>
-    <div id="dot"></div>
+  <!-- C: kinetic words -->
+  <div id="sC" class="layer" style="visibility:hidden">
+    <div id="ringC"></div>
+    <div class="wd anton" id="k1" style="font-size:330px">Ideias</div>
+    <div class="wd anton" id="k2" style="font-size:560px">Que</div>
+    <div class="wd anton" id="k3" style="font-size:560px">Nos</div>
+    <div class="wd anton" id="k4" style="font-size:390px"></div>
+    <div id="thread"></div>
   </div>
 
-  <!-- ============ S4 : Pillars ============ -->
-  <div id="s4" class="layer" style="visibility:hidden">
-    <div class="row anton ghost" id="g1" style="top:250px">Partilha Conexões Empreendedorismo Partilha</div>
-    <div class="num" id="n1" style="left:84px;top:560px">01</div>
-    <div class="row anton big" id="p1" style="top:600px;left:80px">Empreendedorismo</div>
-    <div class="num" id="n2" style="left:84px;top:860px">02</div>
-    <div class="row anton big" id="p2" style="top:900px;left:80px">Partilha</div>
-    <div class="num" id="n3" style="left:84px;top:1160px">03</div>
-    <div class="row anton big" id="p3" style="top:1200px;left:80px">Conexões</div>
-    <div class="row anton ghost" id="g2" style="top:1520px">Conexões Empreendedorismo Partilha Conexões</div>
-    <div id="wipe-ring"></div>
-    <div id="wipe-blue"></div>
+  <!-- D: tunnel -->
+  <div id="sD" class="layer" style="visibility:hidden">
+    <div id="tunnel"></div>
+    <div class="fly anton" id="f1" style="font-size:190px">Empreender</div>
+    <div class="fly anton" id="f2" style="font-size:210px;color:var(--lime)">Partilhar</div>
+    <div class="fly anton" id="f3" style="font-size:210px">Conectar</div>
+    <div class="fly anton" id="f4" style="font-size:300px;color:var(--lime)">Jovens</div>
+    <div class="fly anton" id="f5" style="font-size:150px">Cabo-verdianos</div>
   </div>
 
-  <!-- ============ S5/S6 : Final reveal ============ -->
-  <div id="fin" class="layer" style="visibility:hidden">
-    <svg id="arcs" viewBox="0 0 1080 1920" width="1080" height="1920">
-      <!-- poster-style rings -->
-      <g id="ringA" style="transform-origin:1060px 1110px"><circle cx="1060" cy="1110" r="200" fill="none" stroke="#F6EFDF" stroke-width="70"/></g>
-      <g id="ringB" style="transform-origin:1180px 1700px"><circle cx="1180" cy="1700" r="560" fill="none" stroke="#E6F53B" stroke-width="64" stroke-dasharray="1200 2400"/></g>
-      <g id="ringC" style="transform-origin:1180px 1700px"><circle cx="1180" cy="1700" r="470" fill="none" stroke="#3D8BF0" stroke-width="40" stroke-dasharray="900 2400" opacity=".8"/></g>
-      <!-- mountains -->
-      <g id="mtns">
-        <path d="M0 1920 L0 1780 C120 1760 180 1700 260 1690 C330 1680 360 1730 430 1720 C520 1705 560 1640 640 1630 C720 1622 760 1700 860 1710 C950 1720 1010 1690 1080 1700 L1080 1920Z" fill="#0A2488"/>
-        <path d="M0 1920 L0 1850 C140 1840 220 1790 330 1795 C450 1800 520 1850 640 1845 C780 1838 860 1790 1080 1800 L1080 1920Z" fill="#081D72"/>
-      </g>
-      <g id="waves" fill="none" stroke="#3D8BF0" stroke-width="2.5" opacity=".55"></g>
-      <!-- island map, top right -->
-      <g id="fmap" transform="translate(600 120) scale(0.92)"></g>
-    </svg>
-    <div id="title">
-      <span class="mask"><span id="t-conecta" class="anton"></span></span>
-      <span class="mask"><span id="t-diaspora" class="anton"></span></span>
-      <span id="t-year">2027</span>
-      <div class="lbar" id="fbar1" style="margin-top:30px"></div>
+  <!-- E: lockup -->
+  <div id="sE" class="layer" style="visibility:hidden">
+    <svg class="layer" viewBox="0 0 1080 1920" id="threadsE" fill="none" stroke-linecap="round"></svg>
+    <div id="y2027" class="anton">2027</div>
+    <div id="lock">
+      <span class="l anton" id="lC"></span>
+      <span class="l anton" id="lD"></span>
+      <div id="lbar"></div>
+      <div id="ldate">Janeiro 2027 · Cabo Verde</div>
     </div>
-    <div id="info">
-      <div class="mask"><div class="h">Encontro de Jovens Cabo-verdianos</div></div>
-      <div class="mask"><div class="tag">Da diáspora a Cabo Verde. Ideias que nos ligam.</div></div>
-      <div class="pil"><span>EMPREENDEDORISMO</span> &nbsp;•&nbsp; <span>PARTILHA</span> &nbsp;•&nbsp; <span>CONEXÕES</span></div>
-    </div>
-    <div id="date">
-      <div class="lbar" id="fbar2"></div>
-      <div class="mask"><div class="d1">JANEIRO 2027 · CABO VERDE</div></div>
-      <div class="mask"><div class="d2">Data e local a anunciar</div></div>
-    </div>
-    <div id="stamp">Em breve</div>
+    <div id="sheen"></div>
   </div>
 
- </div>
- <div id="vig"></div>
- <div id="grain"></div>
- <div id="flash"></div>
+</div>
+<div id="vig"></div><div id="grain"></div><div id="flash"></div>
 </div>
 
 <script>
-const W=1080,H=1920, B0=0.26, BEAT=0.5;
-const b = n => B0 + n*BEAT;          // beat n timestamp (track is 120 BPM, first kick @0.26s)
-const $ = s => document.querySelector(s);
+const B0=0.26,BEAT=0.5,b=n=>B0+n*BEAT;   // 120 BPM, first kick at 0.26s
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 const NS='http://www.w3.org/2000/svg';
-const el=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.appendChild(e);return e};
+const mk=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e};
+const split=(sel,txt)=>{const e=$(sel);e.innerHTML=[...txt].map(c=>`<span class="ch">${c===' '?'&nbsp;':c}</span>`).join('');return e.querySelectorAll('.ch')};
 
-/* ---------- grain texture (deterministic) ---------- */
-(function(){const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');const im=x.createImageData(256,256);let s=7;
- for(let i=0;i<im.data.length;i+=4){s=(s*16807)%2147483647;const v=s%255;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}
+// grain
+(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d'),im=x.createImageData(256,256);let s=7;
+ for(let i=0;i<im.data.length;i+=4){s=(s*16807)%2147483647;im.data[i]=im.data[i+1]=im.data[i+2]=s%255;im.data[i+3]=255}
  x.putImageData(im,0,0);$('#grain').style.backgroundImage=`url(${c.toDataURL()})`})();
 
-/* ---------- Cape Verde islands (stylised, lon/lat projected) ---------- */
-const ISL=[ // name, lon, lat, rx, ry, rot
- ['Santo Antão',-25.17,17.07,34,22,-20],['São Vicente',-24.96,16.84,15,10,10],['Santa Luzia',-24.75,16.76,7,4,0],
- ['São Nicolau',-24.27,16.60,30,9,-12],['Sal',-22.93,16.73,8,17,0],['Boa Vista',-22.82,16.10,22,20,0],
- ['Maio',-23.17,15.22,11,14,0],['Santiago',-23.62,15.08,19,32,-15],['Fogo',-24.38,14.93,15,15,0],['Brava',-24.71,14.85,6,6,0]];
-function proj(lon,lat,cx,cy,sc){return [cx+(lon+24.0)*sc, cy-(lat-15.95)*sc]}
-function blob(g,cx,cy,rx,ry,rot,fill,seed){ // irregular island
-  let d='';const n=14;let s=seed*9301+49297;
-  const pts=[];for(let i=0;i<n;i++){s=(s*9301+49297)%233280;const r=0.78+0.32*(s/233280);const a=i/n*Math.PI*2;pts.push([Math.cos(a)*rx*r,Math.sin(a)*ry*r])}
-  for(let i=0;i<n;i++){const p=pts[i],q=pts[(i+1)%n];const m=[(p[0]+q[0])/2,(p[1]+q[1])/2];d+=(i?'Q':'M')+(i?`${p[0]} ${p[1]} ${m[0]} ${m[1]}`:`${m[0]} ${m[1]}`)}
-  d+=`Q${pts[0][0]} ${pts[0][1]} ${(pts[0][0]+pts[1][0])/2} ${(pts[0][1]+pts[1][1])/2}Z`;
-  return el('path',{d,fill,transform:`translate(${cx} ${cy}) rotate(${rot})`},g)}
+// Cape Verde islands, Santiago centred at (540,960)
+const ISL=[['SA',-25.17,17.07,34,22,-20],['SV',-24.96,16.84,15,10,10],['SL',-24.75,16.76,7,4,0],['SN',-24.27,16.60,30,9,-12],['SAL',-22.93,16.73,8,17,0],
+ ['BV',-22.82,16.10,22,20,0],['MA',-23.17,15.22,11,14,0],['ST',-23.62,15.08,19,32,-15],['FO',-24.38,14.93,15,15,0],['BR',-24.71,14.85,6,6,0]];
+function blob(g,cx,cy,rx,ry,rot,fill,seed){const n=14,pts=[];let s=seed*9301+49297;
+ for(let i=0;i<n;i++){s=(s*9301+49297)%233280;const r=.78+.32*(s/233280),a=i/n*Math.PI*2;pts.push([Math.cos(a)*rx*r,Math.sin(a)*ry*r])}
+ const m=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];let d=`M${m(pts[n-1],pts[0])}`;for(let i=0;i<n;i++){const q=m(pts[i],pts[(i+1)%n]);d+=`Q${pts[i]} ${q}`}
+ return mk('path',{d:d+'Z',fill,transform:`translate(${cx} ${cy}) rotate(${rot})`},g)}
+const isl=$('#isl');ISL.forEach((v,i)=>{const x=540+(v[1]+23.62)*300,y=960-(v[2]-15.08)*300;
+ const g=mk('g',{class:'is'},isl);blob(g,x,y,v[3]*3,v[4]*3,v[5],'#F6EFDF',i+3)});
 
-// S2 map: centred, large
-const isl=$('#islands'); const S2C=[540,900], S2S=260; const islandPos={};
-ISL.forEach((v,i)=>{const [x,y]=proj(v[1],v[2],S2C[0],S2C[1],S2S);islandPos[v[0]]=[x,y];
-  const p=blob(isl,x,y,v[3]*2.6,v[4]*2.6,v[5],'#F6EFDF',i+3);p.classList.add('isl')});
-// inter-island links (poster style)
-const links=$('#links');
-[['Santo Antão','Boa Vista'],['São Nicolau','Fogo'],['Sal','Santiago'],['Santo Antão','Brava'],['São Vicente','Maio']].forEach(([a,c],i)=>{
-  const [x1,y1]=islandPos[a],[x2,y2]=islandPos[c];const mx=(x1+x2)/2+(i%2?60:-60),my=(y1+y2)/2-70;
-  el('path',{d:`M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`,stroke:i%2?'#F6EFDF':'#E6F53B','stroke-width':3,class:'lnk',opacity:.9},links)});
-// diaspora cities: arcs from screen edges into Santiago
-const CITIES=[['LISBOA',150,250,'l'],['BOSTON',890,330,'r'],['ROTERDÃO',140,1270,'l'],['PARIS',900,1180,'r'],['LUXEMBURGO',540,175,'c']];
-const target=islandPos['Santiago'];const arcsIn=$('#arcs-in');const cityBox=$('#cities');
-CITIES.forEach(([n,x,y,al],i)=>{
-  const d=document.createElement('div');d.className='city';d.innerHTML=al==='r'?`${n}<i></i>`:`<i></i>${n}`;
-  d.style.top=(y-18)+'px'; if(al==='r'){d.style.right=(W-x-14)+'px'} else if(al==='c'){d.style.left=(x-14)+'px';d.style.transform='translateX(-50%)';d.innerHTML=`<i></i>${n}`} else d.style.left=(x-30)+'px';
-  cityBox.appendChild(d);
-  const mx=(x+target[0])/2+(x<540?-140:140),my=Math.min(y,target[1])-220;
-  el('path',{d:`M${x} ${y} Q${mx} ${my} ${target[0]} ${target[1]}`,stroke:'url(#arcg)','stroke-width':5,class:'arc'},arcsIn)});
+// sea lines
+const sea=$('#sea');for(let i=0;i<10;i++){const y=1330+i*52;let d=`M-40 ${y}`;for(let x=-40;x<1120;x+=60)d+=` q30 ${i%2?-12:12} 60 0`;mk('path',{d,class:'sw'},sea)}
 
-// final map (top-right, small)
-const fmap=$('#fmap');const fpos={};
-ISL.forEach((v,i)=>{const [x,y]=proj(v[1],v[2],250,230,150);fpos[v[0]]=[x,y];blob(fmap,x,y,v[3]*1.5,v[4]*1.5,v[5],'#F6EFDF',i+3).classList.add('fisl')});
-[['Santo Antão','Boa Vista'],['São Nicolau','Fogo'],['Sal','Santiago'],['Santo Antão','Maio']].forEach(([a,c],i)=>{
-  const [x1,y1]=fpos[a],[x2,y2]=fpos[c];el('path',{d:`M${x1} ${y1} Q${(x1+x2)/2+(i%2?40:-40)} ${(y1+y2)/2-50} ${x2} ${y2}`,fill:'none',stroke:i%2?'#F6EFDF':'#E6F53B','stroke-width':2.5,class:'flnk'},fmap)});
-const fnode=el('circle',{cx:fpos['Santiago'][0],cy:fpos['Santiago'][1],r:8,fill:'#E6F53B',class:'fnode'},fmap);
-// waves
-const wv=$('#waves');for(let i=0;i<9;i++){let d=`M-20 ${1640+i*24}`;for(let x=0;x<=560;x+=40)d+=` Q${x+20} ${1640+i*24+(x/40%2?-14:14)} ${x+40} ${1640+i*24}`;el('path',{d,class:'wave'},wv)}
+// tunnel rings
+const tun=$('#tunnel');const RC=['#E6F53B','#F6EFDF','#3D8BF0','#F6EFDF'];
+for(let i=0;i<10;i++){const r=document.createElement('div');r.className='tr';r.style.borderColor=RC[i%4];r.style.borderWidth=(i%4===0?26:i%2?6:14)+'px';tun.appendChild(r)}
 
-/* ---------- split letters ---------- */
-function split(sel,text){const e=$(sel);e.innerHTML=[...text].map(c=>`<span class="ch">${c===' '?'&nbsp;':c}</span>`).join('');return e.querySelectorAll('.ch')}
-const introCh=split('#intro-txt','Estamos a criar algo');
-const cCh=split('#t-conecta','CONECTA'), dCh=split('#t-diaspora','DIÁSPORA'), yCh=split('#t-year','2027');
+// converging threads for the end
+const thE=$('#threadsE');[[-50,200],[1130,320],[-50,1700],[1130,1600],[540,-60],[540,1980]].forEach(([x,y],i)=>{
+ const cx=(x+540)/2+(i%2?-260:260),cy=(y+960)/2;mk('path',{d:`M${x} ${y} Q${cx} ${cy} 540 960`,stroke:i%3===0?'#E6F53B':'rgba(246,239,223,.55)','stroke-width':i%3===0?6:3,class:'te'},thE)});
 
-/* ---------- prep stroke draws ---------- */
-document.querySelectorAll('.arc,.lnk,.flnk,.wave').forEach(p=>{const L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=L});
+const cvCh=split('#cv','Cabo Verde');const k4Ch=split('#k4','Ligam');
+const lC=split('#lC','Conecta'),lD=split('#lD','Diáspora');
 
-/* ---------- position the period-dot after LIGAM ---------- */
-function placeDot(){const w3=$('#w3');const r=w3.getBoundingClientRect();
-  const dot=$('#dot');dot.style.left=(80+w3.scrollWidth-6)+'px';dot.style.top=(1030+250)+'px';}
+$$('#thr,.te,.sw').forEach(p=>{const L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=L});
 
-/* ================= TIMELINE ================= */
 const tl=gsap.timeline({paused:true,defaults:{ease:'power3.out'}});
 const _ft=tl.fromTo.bind(tl);tl.fromTo=(t,a,v,p)=>_ft(t,a,Object.assign({immediateRender:false},v),p);
-function buildTimeline(){
-placeDot();
-gsap.set('#seed',{scale:0});gsap.set(introCh,{opacity:0,y:30,filter:'blur(8px)'});
-gsap.set('#s2-txt .l1,#s2-txt .l2',{yPercent:110});gsap.set('.isl',{scale:0,transformOrigin:'50% 50%',transformBox:'fill-box'});
-gsap.set('#map',{scale:3.2,transformOrigin:`${target[0]}px ${target[1]}px`});
+const punch=(t,x=0,y=-16,s=1)=>tl.fromTo('#cam',{x,y,scale:s},{x:0,y:0,scale:1,duration:.4,ease:'elastic.out(1,.35)'},t);
+const show=(sel,t)=>tl.set(sel,{visibility:'visible'},t), hide=(sel,t)=>tl.set(sel,{visibility:'hidden'},t);
 
-// ---- S1: seed (0 → b4)
-tl.fromTo('#bg-grad',{opacity:0},{opacity:1,duration:.6,ease:'none'},0)
-  .to('#seed',{scale:1,duration:.5,ease:'back.out(3)'},0.05)
-  .to(introCh,{opacity:1,y:0,filter:'blur(0px)',stagger:.035,duration:.5},0.3);
-[0,1,2,3].forEach(n=>{ // heartbeat on kicks
-  tl.fromTo('#seed',{scale:1.6},{scale:1,duration:.35,ease:'power2.out'},b(n));
-  const r=['#r1','#r2','#r3'][n%3];tl.fromTo(r,{opacity:.9,scale:1},{opacity:0,scale:6+n,duration:.9,ease:'power2.out'},b(n));});
-tl.to(introCh,{y:-60,opacity:0,filter:'blur(14px)',stagger:{each:.015,from:'center'},duration:.35,ease:'power2.in'},b(3)+.05)
-// MATCH CUT 1: seed dot glides & becomes Santiago island; camera pulls back from 3.2x
-  .to('#seed',{left:target[0],top:target[1],scale:.55,duration:.5,ease:'power3.inOut'},b(3))
-  .to('#map',{scale:1,duration:1.1,ease:'expo.out'},b(4))
-  .to('.isl',{scale:1,duration:.7,stagger:{each:.04,from:7},ease:'back.out(2)'},b(4))
-  .to('#s2-txt .l1',{yPercent:0,duration:.6,ease:'expo.out'},b(4)+.1)
-  .to('#s2-txt .l2',{yPercent:0,duration:.6,ease:'expo.out'},b(5))
-  .to('.city',{opacity:1,duration:.3,stagger:.08},b(4)+.2)
-  .to('.arc',{strokeDashoffset:0,duration:.9,stagger:.08,ease:'power2.inOut'},b(4)+.3)
-  .to('.lnk',{strokeDashoffset:0,duration:.7,stagger:.07,ease:'power2.inOut'},b(5))
-  .fromTo('#seed',{scale:1.2},{scale:.55,duration:.35},b(5))
-  .fromTo('#seed',{scale:1.2},{scale:.55,duration:.35},b(6))
-  .to('#map',{scale:1.08,rotation:-2,duration:1.2,ease:'none'},b(5))
-// IRIS: everything converges into Santiago → lime then cream circle
-  .set('.iris',{left:target[0],top:target[1]},0)
-  .to('#iris-lime',{scale:480,duration:.55,ease:'expo.in'},b(8)+.02)
-  .to('#iris-cream',{scale:480,duration:.5,ease:'expo.in'},b(8)+.18)
-  .to(['#cities','#s2-txt'],{opacity:0,duration:.25},b(8)+.2)
-  .set('#s3',{visibility:'visible'},b(9))
-  .set('#s12',{visibility:'hidden'},b(9));
+function build(){
+// ---------- A: 0 → b7  (cities, thread, landing)
+const thr=$('#thr'),L=thr.getTotalLength(),tip=$('#tip');const tipObj={p:0};
+gsap.set('.is',{scale:0,transformOrigin:'50% 50%',transformBox:'fill-box'});gsap.set(cvCh,{yPercent:110,opacity:0});
+$$('.city .name').forEach(n=>gsap.set(n,{xPercent:-50,yPercent:-50}));
+const moveTip=()=>{const pt=thr.getPointAtLength(tipObj.p*L);tip.setAttribute('cx',pt.x);tip.setAttribute('cy',pt.y);thr.style.strokeDashoffset=L*(1-tipObj.p)};
+moveTip();
+tl.to(tipObj,{p:1,duration:b(4),ease:'none',onUpdate:moveTip},0);
+['#c1','#c2','#c3','#c4'].forEach((c,i)=>{const t=i===0?0:b(i);show(c,t);if(i)hide(['#c1','#c2','#c3'][i-1],t);
+  tl.fromTo(`${c} .name`,{scale:1.35,x:i%2?-120:120,filter:'blur(10px)'},{scale:1,x:i%2?40:-40,filter:'blur(0px)',duration:.5,ease:'expo.out'},t)
+    .fromTo(`${c} .de`,{opacity:0,y:30},{opacity:1,y:0,duration:.3},t+.05);
+  if(i)punch(t,i%2?18:-18,0,1.03);});
+// line colour vs. backgrounds
+tl.set('#thr',{attr:{stroke:'#0B2C9E'}},b(1)).set('#tip',{attr:{fill:'#0B2C9E'}},b(1))
+  .set('#thr',{attr:{stroke:'#E6F53B'}},b(3)).set('#tip',{attr:{fill:'#E6F53B'}},b(3));
+// b4 BIG HIT: thread lands → islands burst, CABO VERDE
+hide('#c4',b(4));
+tl.fromTo('#flash',{opacity:.7},{opacity:0,duration:.4},b(4));punch(b(4),0,-30,1.06);
+tl.to('#lineA',{opacity:0,duration:.25},b(4)+.1)
+  .to('.is',{scale:1,duration:.8,stagger:{each:.035,from:7},ease:'back.out(2.2)'},b(4))
+  .to('#cvA',{opacity:1,duration:.3},b(4)+.1)
+  .to(cvCh,{yPercent:0,opacity:1,stagger:.03,duration:.5,ease:'expo.out'},b(4)+.1)
+  .fromTo('#islandsG',{rotation:-6,scale:1.15},{rotation:3,scale:.95,duration:1.6,ease:'power1.inOut',transformOrigin:'540px 960px'},b(4))
+// MATCH CUT: dive into Santiago → its cream fills the frame
+  .to(['#cv','#cvA'],{opacity:0,y:60,duration:.3,ease:'power2.in'},b(6)+.1)
+  .fromTo('#islandsG',{scale:.95,rotation:3},{scale:40,rotation:0,duration:.5,ease:'expo.in',transformOrigin:'540px 960px'},b(7)-.48);
+show('#sB',b(7));hide('#sA',b(7));
 
-// ---- S3: IDEIAS / QUE NOS / LIGAM. (b9 → b14)
-gsap.set(['#w1','#w2','#w3'],{opacity:0});gsap.set('#dot',{scale:0});gsap.set('#s3-kicker',{opacity:0,x:-40});
-[['#w1',9],['#w2',10],['#w3',11]].forEach(([s,n],i)=>{
-  tl.fromTo(s,{opacity:1,scale:1.7,y:-60,filter:'blur(18px)',transformOrigin:'0% 50%'},{scale:1,y:0,filter:'blur(0px)',duration:.42,ease:'expo.out'},b(n))
-    .fromTo('#cam',{x:i%2?-14:14,y:10},{x:0,y:0,duration:.3,ease:'elastic.out(1,.4)'},b(n)+.02);});
-tl.to('#s3-kicker',{opacity:1,x:0,duration:.5},b(9)+.15)
-  .to('#dot',{scale:1,duration:.4,ease:'back.out(4)'},b(11)+.12)
-  .to('#s3bar',{scaleX:1,duration:.5,ease:'expo.out'},b(12))
-  .fromTo('#s3 .word',{x:0},{x:-20,duration:1.5,ease:'none'},b(11))
-// MATCH CUT 2: the period of "LIGAM." becomes the lime world
-  .to('#dot',{scale:1.35,duration:.2,ease:'power2.out'},b(13))
-  .to('#dot',{scale:60,duration:.48,ease:'expo.in'},b(13)+.2)
-  .to(['#w1','#w2','#w3','#s3bar','#s3-kicker'],{scale:.9,opacity:0,filter:'blur(10px)',duration:.4,ease:'power2.in',transformOrigin:'50% 50%'},b(13)+.25)
-  .set('#s4',{visibility:'visible'},b(14))
-  .set('#s3',{visibility:'hidden'},b(14));
+// ---------- B: b7 → b11  sunrise
+gsap.set('#sun',{y:520});gsap.set('#land',{y:700});gsap.set('#tagB',{opacity:0,letterSpacing:'.9em'});
+tl.to('#land',{y:0,duration:.9,ease:'expo.out'},b(7))
+  .to('#sun',{y:0,duration:1.3,ease:'expo.out'},b(7)+.15)
+  .to('.sw',{strokeDashoffset:0,duration:1,stagger:.04,ease:'power2.out'},b(7)+.2)
+  .to('#tagB',{opacity:1,letterSpacing:'.32em',duration:1,ease:'expo.out'},b(8))
+  .fromTo('#sun',{scale:1},{scale:1.08,duration:.25,yoyo:true,repeat:1,ease:'sine.inOut'},b(9))
+// push into the sun → lime
+  .to('#sB',{scale:16,duration:.55,ease:'expo.in',transformOrigin:'540px 1080px'},b(10)-.05)
+  .to('#tagB',{opacity:0,duration:.2},b(10));
+show('#sC',b(11));hide('#sB',b(11));
 
-// ---- S4: pillars on lime (b14 → b18)
-gsap.set(['#p1','#p2','#p3'],{xPercent:0,x:1200});gsap.set(['#n1','#n2','#n3'],{opacity:0,y:20});
-tl.fromTo('#g1',{x:0},{x:-700,duration:2.2,ease:'none'},b(14))
-  .fromTo('#g2',{x:-900},{x:-200,duration:2.2,ease:'none'},b(14));
-[['#p1','#n1',14,1200],['#p2','#n2',15,-1200],['#p3','#n3',16,1200]].forEach(([p,n,bt,from])=>{
-  tl.fromTo(p,{x:from,skewX:from>0?-18:18,filter:'blur(12px)'},{x:0,skewX:0,filter:'blur(0px)',duration:.45,ease:'expo.out'},b(bt))
-    .to(n,{opacity:1,y:0,duration:.3},b(bt)+.1)
-    .fromTo('#cam',{scale:1.025},{scale:1,duration:.4,ease:'power2.out'},b(bt));});
-// sweep: cream ring + blue planet roll in from bottom-right (poster arcs)
-tl.to('#wipe-ring',{scale:1,duration:.65,ease:'power2.in'},b(17)-.15)
-  .to('#wipe-blue',{scale:.97,duration:.5,ease:'power2.in'},b(17))
-  .to(['#p1','#p2','#p3','#n1','#n2','#n3'],{x:-260,opacity:0,stagger:.04,duration:.4,ease:'power2.in'},b(17)+.05)
-  .set('#fin',{visibility:'visible'},b(18))
-  .set('#s4',{visibility:'hidden'},b(18));
+// ---------- C: b11 → b15  IDEIAS QUE NOS LIGAM
+const words=[['#k1',b(11),-4],['#k2',b(12),3],['#k3',b(12)+.25,-3],['#k4',b(13),0]];
+words.forEach(([w,t,r],i)=>{show(w,t);if(i)hide(words[i-1][0],t);
+  tl.fromTo(w,{xPercent:-50,yPercent:-52,scale:1.5,rotation:r*2,filter:'blur(16px)'},{xPercent:-50,yPercent:-52,scale:1,rotation:r,filter:'blur(0px)',duration:.4,ease:'expo.out'},t);
+  punch(t,i%2?14:-14,-10,1.02);});
+tl.fromTo('#ringC',{scale:.6,rotation:0},{scale:1.1,rotation:90,duration:2,ease:'none'},b(11))
+// the thread passes through LIGAM, letters scatter, thread opens up into the next world
+  .to('#thread',{scaleX:1,duration:.35,ease:'expo.out'},b(14))
+  .to(k4Ch,{y:i=>i%2?-900:900,rotation:i=>(i%2?-1:1)*25,opacity:0,duration:.45,stagger:.03,ease:'power3.in'},b(14)+.05)
+  .to('#thread',{scaleY:130,duration:.4,ease:'expo.in'},b(14)+.12);
+show('#sD',b(15));hide('#sC',b(15));
 
-// ---- S5: title reveal (b18 → b21)
-gsap.set(cCh,{yPercent:120});gsap.set(dCh,{yPercent:120});gsap.set(yCh,{opacity:0,letterSpacing:'0em'});
-gsap.set('#t-year',{letterSpacing:'1.2em',opacity:0});
-gsap.set(['#ringA','#ringB','#ringC'],{scale:0});gsap.set('#mtns',{y:300});
-tl.to(cCh,{yPercent:0,duration:.55,stagger:.035,ease:'expo.out'},b(18))
-  .fromTo('#cam',{y:-18},{y:0,duration:.4,ease:'elastic.out(1,.35)'},b(18))
-  .to(dCh,{yPercent:0,duration:.55,stagger:.035,ease:'expo.out'},b(19))
-  .fromTo('#cam',{y:-18},{y:0,duration:.4,ease:'elastic.out(1,.35)'},b(19))
-  .to('#t-year',{opacity:1,letterSpacing:'.42em',duration:.9,ease:'expo.out'},b(20))
-  .to(yCh,{opacity:1,stagger:.06,duration:.3},b(20))
-  .fromTo('#flash',{opacity:.55},{opacity:0,duration:.45,ease:'power2.out'},b(20))
-  .fromTo('#cam',{scale:1.05},{scale:1,duration:.6,ease:'expo.out'},b(20))
-  .to('#fbar1',{scaleX:1,duration:.5,ease:'expo.out'},b(21))
-  .to('#ringA',{scale:1,duration:.9,ease:'expo.out'},b(18)+.1)
-  .to('#ringB',{scale:1,duration:1,ease:'expo.out'},b(19)+.1)
-  .to('#ringC',{scale:1,duration:1,ease:'expo.out'},b(19)+.25)
-  .fromTo('#ringB',{rotation:-60},{rotation:40,duration:6.5,ease:'none'},b(19))
-  .fromTo('#ringC',{rotation:30},{rotation:-50,duration:6.5,ease:'none'},b(19))
-  .to('#mtns',{y:0,duration:1.2,ease:'expo.out'},b(19))
-  .to('.wave',{strokeDashoffset:0,duration:1.4,stagger:.05,ease:'power2.out'},b(20))
-  .from('.fisl',{scale:0,transformOrigin:'50% 50%',transformBox:'fill-box',duration:.5,stagger:.04,ease:'back.out(2)'},b(20)+.1)
-  .to('.flnk',{strokeDashoffset:0,duration:.8,stagger:.08,ease:'power2.inOut'},b(21))
-  .from('.fnode',{scale:0,transformOrigin:'50% 50%',transformBox:'fill-box',duration:.4,ease:'back.out(4)'},b(21));
+// ---------- D: b15 → b20  tunnel
+$$('.tr').forEach((r,i)=>{tl.fromTo(r,{scale:.02,opacity:0},{scale:5,opacity:1,duration:1.4,ease:'power2.in',repeat:3},b(15)-1.4+i*.14)});
+const flys=['#f1','#f2','#f3','#f4','#f5'],ft=[b(15),b(16),b(17),b(18),b(18)+.25];
+flys.forEach((f,i)=>{const t=ft[i],end=ft[i+1]||b(19);show(f,t);
+  tl.fromTo(f,{xPercent:-50,yPercent:-50,scale:.15,opacity:0,filter:'blur(6px)'},{xPercent:-50,yPercent:-50,scale:1,opacity:1,filter:'blur(0px)',duration:.22,ease:'expo.out'},t)
+    .to(f,{scale:1.12,duration:Math.max(.05,end-t-.34),ease:'none'},t+.22)
+    .to(f,{scale:7,opacity:0,filter:'blur(14px)',duration:.18,ease:'power2.in'},end-.1);hide(f,end+.1);
+  punch(t,0,0,1.03);});
+tl.fromTo('#tunnel',{rotation:0},{rotation:40,duration:2.5,ease:'power1.in'},b(15))
+  .fromTo('#flash',{opacity:0},{opacity:1,duration:.35,ease:'expo.in'},b(20)-.35);
+show('#sE',b(20));hide('#sD',b(20));
 
-// ---- S6: info, date, stamp (b21 → 15s)
-gsap.set(['#info .h','#info .tag','#date .d1','#date .d2'],{yPercent:110});gsap.set('#info .pil span',{opacity:0,y:16});
-tl.to('#info .h',{yPercent:0,duration:.55,ease:'expo.out'},b(22))
-  .to('#info .tag',{yPercent:0,duration:.55,ease:'expo.out'},b(22)+.15)
-  .to('#info .pil span',{opacity:1,y:0,stagger:.12,duration:.35},b(23))
-  .to('#fbar2',{scaleX:1,duration:.5,ease:'expo.out'},b(24))
-  .to('#date .d1',{yPercent:0,duration:.5,ease:'expo.out'},b(24)+.05)
-  .to('#date .d2',{yPercent:0,duration:.5,ease:'expo.out'},b(24)+.2)
-  .to('#stamp',{scale:1,duration:.5,ease:'back.out(3.5)'},b(26))
-  .fromTo('#cam',{x:8},{x:0,duration:.3,ease:'elastic.out(1,.3)'},b(26))
-  .fromTo('#fin',{scale:1},{scale:1.035,duration:15-b(21),ease:'none',transformOrigin:'30% 40%'},b(21))
-  .fromTo('.fnode',{attr:{r:8}},{attr:{r:14},duration:.4,repeat:5,yoyo:true,ease:'sine.inOut'},b(22))
-  .to({}, {duration:.01},15);
+// ---------- E: b20 → 15s  lockup
+gsap.set([...lC,...lD],{yPercent:110});gsap.set('#ldate',{opacity:0,letterSpacing:'.9em'});gsap.set('#y2027',{xPercent:-50,yPercent:-50,opacity:0});
+tl.fromTo('#flash',{opacity:1},{opacity:0,duration:.6,ease:'power2.out'},b(20))
+  .to('.te',{strokeDashoffset:0,duration:.9,stagger:.05,ease:'expo.out'},b(20))
+  .to(lC,{yPercent:0,duration:.6,stagger:.04,ease:'expo.out'},b(20))
+  .to(lD,{yPercent:0,duration:.6,stagger:.04,ease:'expo.out'},b(21))
+  .to('#lbar',{scaleX:1,duration:.5,ease:'expo.out'},b(22))
+  .to('#ldate',{opacity:1,letterSpacing:'.32em',duration:1,ease:'expo.out'},b(22)+.1)
+  .fromTo('#y2027',{scale:1.5,opacity:0},{scale:1.05,opacity:1,duration:4.7,ease:'power2.out'},b(20))
+  .fromTo('#sheen',{x:-600},{x:1500,duration:.9,ease:'power2.inOut'},b(23)+.2)
+  .fromTo('#lock',{scale:1},{scale:1.04,duration:15-b(20),ease:'none'},b(20));
+punch(b(20),0,0,1.08);punch(b(21),0,-20,1);
+tl.to({},{duration:.01},15);
 }
 
-/* grain jitter + exposure */
-window.seek=(t)=>{tl.seek(t,false);const f=Math.floor(t*30);$('#grain').style.transform=`translate(${(f*73)%160-80}px,${(f*131)%160-80}px)`;};
-window.ready=(async()=>{await document.fonts.ready;await document.fonts.load('260px Anton');buildTimeline();window.DURATION=15;return true})();
-
-/* preview mode: play in real time when opened directly */
+window.seek=t=>{tl.seek(t,false);const f=Math.floor(t*30);$('#grain').style.transform=`translate(${(f*73)%160-80}px,${(f*131)%160-80}px)`};
+window.ready=(async()=>{await document.fonts.ready;await document.fonts.load('300px Anton');build();return true})();
 if(!location.search.includes('render')){window.ready.then(()=>{const a=new Audio('audio/track.wav');let t0=null;
-  document.body.addEventListener('click',()=>{a.currentTime=0;a.play();t0=performance.now()});
-  (function loop(now){const t=t0?((now-t0)/1000)%15:0;seek(t);requestAnimationFrame(loop)})(performance.now())})}
+ document.body.addEventListener('click',()=>{a.currentTime=0;a.play();t0=performance.now()});
+ (function loop(now){seek(t0?((now-t0)/1000)%15:0);requestAnimationFrame(loop)})(performance.now())})}
 </script>
 </body>
 </html>
